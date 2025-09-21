@@ -3,8 +3,11 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import Link from "next/link";
 import { useEntitlements } from "../../components/entitlement-context";
 import { appConfig } from "../../lib/config";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
 
 type Device = {
   deviceId: string;
@@ -44,48 +47,87 @@ export default function ElmPage() {
 
   if (!entitlements.elm) {
     return (
-      <div className="rounded-lg border border-dashed border-amber-300 bg-amber-50 p-6 text-amber-700">
-        Checking ELM entitlement...
-      </div>
+      <Card className="border-dashed border-warning bg-warning-bg">
+        <CardHeader>
+          <CardTitle>Checking ELM entitlement…</CardTitle>
+          <CardDescription>
+            Upgrade to unlock the Equipment Lifecycle Management workspace for your dental locations.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Link href="/upgrade" className="btn btn--primary">
+            Upgrade now
+          </Link>
+        </CardContent>
+      </Card>
     );
   }
 
   return (
-    <section className="space-y-6">
-      <header>
-        <h1 className="text-3xl font-semibold text-slate-900">Equipment Lifecycle Management</h1>
-        <p className="mt-2 text-slate-600">Track medical devices, maintenance coverage, and dealer relationships.</p>
+    <section className="stack-lg">
+      <header className="stack-md">
+        <div className="space-y-3">
+          <h1 className="text-3xl font-semibold text-text">Equipment Lifecycle Management</h1>
+          <p className="text-lg text-text-muted">
+            Track practice equipment, maintenance coverage, and dealer relationships across every operatory.
+          </p>
+        </div>
+        <div className="inline-flex items-center gap-3 rounded-full bg-brand-50 px-4 py-2 text-sm font-semibold text-brand-700">
+          <span>ELM entitlement active</span>
+          <span className="rounded-full bg-brand-200 px-2 py-1 text-xs uppercase text-brand-700">Dental</span>
+        </div>
       </header>
-      {error && <p className="rounded bg-amber-100 px-4 py-2 text-sm text-amber-800">{error}</p>}
-      <div className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
-        <table className="min-w-full divide-y divide-slate-200 text-sm">
-          <thead className="bg-slate-50">
-            <tr>
-              <th className="px-4 py-3 text-left font-semibold uppercase tracking-wide text-slate-500">OEM</th>
-              <th className="px-4 py-3 text-left font-semibold uppercase tracking-wide text-slate-500">Model</th>
-              <th className="px-4 py-3 text-left font-semibold uppercase tracking-wide text-slate-500">Serial</th>
-              <th className="px-4 py-3 text-left font-semibold uppercase tracking-wide text-slate-500">Status</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-200">
-            {devices.map((device) => (
-              <tr key={device.deviceId}>
-                <td className="px-4 py-3 font-medium text-slate-900">{device.oem}</td>
-                <td className="px-4 py-3 text-slate-600">{device.model}</td>
-                <td className="px-4 py-3 text-slate-600">{device.serial}</td>
-                <td className="px-4 py-3 text-slate-600">{device.status}</td>
-              </tr>
-            ))}
-            {devices.length === 0 && (
-              <tr>
-                <td colSpan={4} className="px-4 py-6 text-center text-slate-500">
-                  No devices yet. Use the API or upcoming forms to add equipment.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+      {error && <p className="rounded-md bg-warning-bg px-4 py-2 text-sm text-warning">{error}</p>}
+      <Card>
+        <CardHeader>
+          <CardTitle>Operatory devices</CardTitle>
+          <CardDescription>Stay ahead of downtime with live device status and coverage insights.</CardDescription>
+        </CardHeader>
+        <CardContent className="p-0">
+          <div className="overflow-x-auto">
+            <table className="min-w-full text-left text-sm">
+              <thead className="border-b border-border bg-surface-muted text-xs font-semibold uppercase tracking-wide text-text-muted">
+                <tr>
+                  <th className="px-4 py-3">OEM</th>
+                  <th className="px-4 py-3">Model</th>
+                  <th className="px-4 py-3">Serial</th>
+                  <th className="px-4 py-3">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {devices.map((device) => (
+                  <tr key={device.deviceId} className="border-b border-border text-text">
+                    <td className="px-4 py-3 font-medium">{device.oem}</td>
+                    <td className="px-4 py-3 text-text-muted">{device.model}</td>
+                    <td className="px-4 py-3 text-text-muted">{device.serial}</td>
+                    <td className="px-4 py-3">
+                      <span className="badge badge--brand">{device.status}</span>
+                    </td>
+                  </tr>
+                ))}
+                {devices.length === 0 && (
+                  <tr>
+                    <td colSpan={4} className="px-4 py-6 text-center text-text-muted">
+                      No devices yet. Use the API or upcoming forms to add equipment.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+        <CardContent className="gap-4 border-t border-border bg-surface-muted">
+          <p className="text-sm text-text-muted">
+            Import devices via the API or sync a spreadsheet—Practx keeps dealer metadata and coverage windows aligned.
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <Button type="button">Add device</Button>
+            <Button type="button" variant="subtle">
+              Upload spreadsheet
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     </section>
   );
 }

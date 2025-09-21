@@ -1,6 +1,6 @@
-# practx-io / practix
+# practx-io / practx
 
-This repository bootstraps the practix.io platform. It includes the Next.js web experience, .NET 8 API, Stripe webhook function, Azure infrastructure as code (Bicep), API Management policy, SQL schemas, and Azure DevOps pipeline definitions required for the Equipment Lifecycle Management (ELM) module.
+This repository bootstraps the practx.io platform. It includes the Next.js web experience, .NET 8 API, Stripe webhook function, Azure infrastructure as code (Bicep), API Management policy, SQL schemas, and Azure DevOps pipeline definitions required for the Equipment Lifecycle Management (ELM) module.
 
 ## Structure
 

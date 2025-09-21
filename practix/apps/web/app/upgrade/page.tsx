@@ -3,6 +3,8 @@
 import { useState } from "react";
 import axios from "axios";
 import { appConfig } from "../../lib/config";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
 
 type CheckoutResponse = {
   checkoutUrl: string;
@@ -26,32 +28,44 @@ export default function UpgradePage() {
   };
 
   return (
-    <section className="mx-auto max-w-3xl space-y-8">
-      <header className="space-y-3">
-        <h1 className="text-4xl font-semibold text-slate-900">Unlock Equipment Lifecycle Management</h1>
-        <p className="text-lg text-slate-600">
+    <section className="mx-auto max-w-4xl space-y-10">
+      <header className="stack-md">
+        <h1 className="text-4xl font-semibold text-text">Unlock Equipment Lifecycle Management</h1>
+        <p className="text-lg text-text-muted">
           Upgrade your organization to access the ELM workspace. Pricing reflects MSRP and billing is handled securely via
           Stripe Checkout.
         </p>
       </header>
-      <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
-        <h2 className="text-2xl font-semibold text-brand">ELM Pro</h2>
-        <ul className="mt-4 space-y-2 text-sm text-slate-600">
-          <li>✅ Unlimited device tracking</li>
-          <li>✅ TPM contract repository</li>
-          <li>✅ Dealer order logging</li>
-          <li>✅ Entitlement-backed API access</li>
-        </ul>
-        <p className="mt-6 text-3xl font-bold text-slate-900">$499<span className="text-base font-normal text-slate-500">/mo MSRP</span></p>
-        <button
-          onClick={startCheckout}
-          disabled={loading}
-          className="mt-6 inline-flex items-center justify-center rounded-lg bg-brand px-6 py-3 text-base font-semibold text-white shadow hover:bg-brand-light disabled:cursor-not-allowed disabled:opacity-70"
-        >
-          {loading ? "Redirecting to Stripe..." : "Upgrade with Stripe"}
-        </button>
-        {error && <p className="mt-4 rounded bg-amber-100 px-4 py-2 text-sm text-amber-800">{error}</p>}
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>ELM Pro</CardTitle>
+          <CardDescription>Everything you need to orchestrate practice equipment with confidence.</CardDescription>
+        </CardHeader>
+        <CardContent className="gap-4 text-sm text-text-muted">
+          <ul className="space-y-2">
+            <li>✅ Unlimited device tracking</li>
+            <li>✅ TPM contract repository</li>
+            <li>✅ Dealer order logging</li>
+            <li>✅ Entitlement-backed API access</li>
+          </ul>
+          <p className="text-3xl font-semibold text-text">
+            $499<span className="ml-2 text-base font-normal text-text-muted">/mo MSRP</span>
+          </p>
+          <p className="text-sm text-text-subtle">
+            Need enterprise rollout? <a className="text-brand-600 hover:underline" href="mailto:hello@practx.io">Contact sales</a> for
+            tailored onboarding.
+          </p>
+        </CardContent>
+        <CardFooter className="flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-sm text-text-muted">Includes practice onboarding, entitlement setup, and dealer training.</p>
+            {error && <p className="mt-2 rounded-md bg-warning-bg px-3 py-2 text-sm text-warning">{error}</p>}
+          </div>
+          <Button onClick={startCheckout} disabled={loading} size="lg">
+            {loading ? "Redirecting to Stripe…" : "Upgrade with Stripe"}
+          </Button>
+        </CardFooter>
+      </Card>
     </section>
   );
 }
