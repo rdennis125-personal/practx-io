@@ -1,0 +1,26 @@
+<policies>
+  <inbound>
+    <base />
+    <validate-jwt header-name="Authorization" failed-validation-httpcode="401">
+      <openid-config url="https://{b2cTenant}.b2clogin.com/{b2cTenant}.onmicrosoft.com/v2.0/.well-known/openid-configuration?p=B2C_1_signupsignin" />
+      <required-claims>
+        <claim name="aud"><value>api://practix</value></claim>
+      </required-claims>
+    </validate-jwt>
+    <choose>
+      <when condition="@(context.Principal?.Claims?.Exists(c => c.Type == \"practix/entitlements\" && c.Value.Contains(\"elm\")) == true)"></when>
+      <otherwise>
+        <return-response>
+          <set-status code="402" reason="Payment Required" />
+          <set-body>ELM not enabled</set-body>
+        </return-response>
+      </otherwise>
+    </choose>
+  </inbound>
+  <backend>
+    <base />
+  </backend>
+  <outbound>
+    <base />
+  </outbound>
+</policies>

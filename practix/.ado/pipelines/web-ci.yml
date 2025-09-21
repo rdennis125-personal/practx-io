@@ -1,0 +1,44 @@
+trigger:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  webAppName: $(baseName)-$(env)-web
+  workingDirectory: practix/apps/web
+
+steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '18.x'
+    displayName: 'Use Node 18'
+
+  - script: |
+      npm ci
+      npm run build
+    workingDirectory: $(workingDirectory)
+    displayName: 'Install and build Next.js app'
+
+  - task: AzureWebApp@1
+    displayName: 'Deploy web app'
+    inputs:
+      azureSubscription: $(azureServiceConnection)
+      appType: webAppLinux
+      appName: $(webAppName)
+      package: '$(workingDirectory)/.next'
+      runtimeStack: 'NODE|18-lts'
+
+  - task: AzureCLI@2
+    displayName: 'Run SQL migrations'
+    inputs:
+      azureSubscription: $(azureServiceConnection)
+      scriptType: bash
+      scriptLocation: inlineScript
+      inlineScript: |
+        for file in practix/schemas/sql/*.sql; do
+          echo "Running $file"
+          sqlcmd -S $(sqlServer) -d $(sqlDatabase) -U $(sqlAdminLogin) -P $(sqlAdminPassword) -i $file
+        done
