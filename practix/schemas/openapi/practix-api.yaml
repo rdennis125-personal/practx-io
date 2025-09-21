@@ -1,0 +1,146 @@
+openapi: 3.0.3
+info:
+  title: PRACTIX API
+  version: 0.1.0
+servers:
+  - url: https://api.practix.io
+paths:
+  /auth/me:
+    get:
+      summary: Current user/org profile
+      responses:
+        '200':
+          description: OK
+  /entitlements:
+    get:
+      summary: Return current org entitlements
+      responses:
+        '200':
+          description: OK
+  /elm/devices:
+    get:
+      summary: List devices
+      responses:
+        '200':
+          description: OK
+    post:
+      summary: Create device
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceDto'
+      responses:
+        '201':
+          description: Created
+  /elm/devices/{deviceId}:
+    get:
+      summary: Get device
+      parameters:
+        - in: path
+          name: deviceId
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Not found
+    patch:
+      summary: Update device
+      parameters:
+        - in: path
+          name: deviceId
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceUpdateDto'
+      responses:
+        '204':
+          description: No content
+  /elm/orders:
+    post:
+      summary: Create order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderDto'
+      responses:
+        '201':
+          description: Created
+  /elm/dealers:
+    get:
+      summary: List dealers by region
+      parameters:
+        - in: query
+          name: region
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+components:
+  schemas:
+    DeviceDto:
+      type: object
+      required:
+        - oem
+        - model
+        - serial
+      properties:
+        oem:
+          type: string
+        model:
+          type: string
+        serial:
+          type: string
+        installDate:
+          type: string
+          format: date
+        location:
+          type: string
+    DeviceUpdateDto:
+      type: object
+      properties:
+        location:
+          type: string
+        status:
+          type: string
+    OrderDto:
+      type: object
+      required:
+        - type
+        - totalMsrp
+      properties:
+        type:
+          type: string
+          enum:
+            - TPM
+            - PARTS
+        dealerId:
+          type: string
+          format: uuid
+        oem:
+          type: string
+        totalMsrp:
+          type: number
+          format: double
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+  - bearerAuth: []

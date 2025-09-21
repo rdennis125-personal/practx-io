@@ -1,0 +1,18 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "env": { "value": "dev" },
+    "baseName": { "value": "practix" },
+    "location": { "value": "eastus" },
+    "sqlAdminLogin": { "value": "practixadmin" },
+    "sqlAdminPassword": { "value": "ChangeMe123!" },
+    "stripeSecretKey": { "value": "sk_test_placeholder" },
+    "stripePublicKey": { "value": "pk_test_placeholder" },
+    "stripeWebhookSecret": { "value": "whsec_placeholder" },
+    "stripePriceId": { "value": "price_123" },
+    "b2cTenant": { "value": "yourtenant" },
+    "b2cClientId": { "value": "00000000-0000-0000-0000-000000000000" },
+    "b2cSignInPolicy": { "value": "B2C_1_signupsignin" }
+  }
+}

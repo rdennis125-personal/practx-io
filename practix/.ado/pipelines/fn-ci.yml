@@ -1,0 +1,45 @@
+trigger:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  functionAppName: $(baseName)-$(env)-fn
+  projectDir: practix/functions/StripeWebhook
+
+steps:
+  - task: UseDotNet@2
+    displayName: 'Use .NET 8'
+    inputs:
+      version: '8.0.x'
+
+  - script: dotnet restore
+    workingDirectory: $(projectDir)
+    displayName: 'Restore function dependencies'
+
+  - script: dotnet publish --configuration Release --output $(Build.ArtifactStagingDirectory)/publish
+    workingDirectory: $(projectDir)
+    displayName: 'Publish function'
+
+  - task: AzureFunctionApp@2
+    displayName: 'Deploy Stripe webhook function'
+    inputs:
+      azureSubscription: $(azureServiceConnection)
+      appType: functionAppLinux
+      appName: $(functionAppName)
+      package: $(Build.ArtifactStagingDirectory)/publish
+
+  - task: AzureCLI@2
+    displayName: 'Run SQL migrations'
+    inputs:
+      azureSubscription: $(azureServiceConnection)
+      scriptType: bash
+      scriptLocation: inlineScript
+      inlineScript: |
+        for file in practix/schemas/sql/*.sql; do
+          echo "Running $file"
+          sqlcmd -S $(sqlServer) -d $(sqlDatabase) -U $(sqlAdminLogin) -P $(sqlAdminPassword) -i $file
+        done
