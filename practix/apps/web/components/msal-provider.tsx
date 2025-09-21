@@ -17,7 +17,7 @@ const baseConfig: Configuration = {
   }
 };
 
-export function PractixMsalProvider({ children }: { children: ReactNode }) {
+export function PractxMsalProvider({ children }: { children: ReactNode }) {
   const instance = useMemo(() => new PublicClientApplication(baseConfig), []);
   return <MsalProvider instance={instance}>{children}</MsalProvider>;
 }

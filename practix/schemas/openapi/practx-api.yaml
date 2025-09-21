@@ -1,9 +1,9 @@
 openapi: 3.0.3
 info:
-  title: PRACTIX API
+  title: PRACTX API
   version: 0.1.0
 servers:
-  - url: https://api.practix.io
+  - url: https://api.practx.io
 paths:
   /auth/me:
     get:

@@ -12,15 +12,15 @@ resource apim 'Microsoft.ApiManagement/service@2022-08-01' = {
     capacity: 1
   }
   properties: {
-    publisherEmail: 'admin@practix.io'
-    publisherName: 'Practix'
+    publisherEmail: 'admin@practx.io'
+    publisherName: 'Practx'
   }
 }
 
 resource api 'Microsoft.ApiManagement/service/apis@2022-08-01' = {
-  name: '${apim.name}/practix-api'
+  name: '${apim.name}/practx-api'
   properties: {
-    displayName: 'Practix API'
+    displayName: 'Practx API'
     path: 'api'
     protocols: [
       'https'
