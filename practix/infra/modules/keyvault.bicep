@@ -1,5 +1,6 @@
 param name string
 param location string
+@secure()
 param secrets object
 
 resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
@@ -17,10 +18,10 @@ resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
   }
 }
 
-resource secretResources 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = [for secretName in union([], keys(secrets)) : {
-  name: '${keyVault.name}/${secretName}'
+resource secretResources 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = [for secret in items(secrets) : {
+  name: '${keyVault.name}/${secret.key}'
   properties: {
-    value: secrets[secretName]
+    value: secret.value
   }
 }]
 

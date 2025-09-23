@@ -1,0 +1,43 @@
+$schema: https://schema.management.azure.com/schemas/2023-10-01/EnvironmentDefinition.json
+name: practx-shared-storage
+summary: Deploys a StorageV2 account with secure defaults for Practx.io environments.
+description: |
+  Provisions a StorageV2 account tagged with the requested Dev Center environment type. Use the
+  storage account for application assets, configuration files, or other shared resources required by
+  the practx.io platform.
+runner: azureDevCenter
+templatePath: main.bicep
+parameters:
+  - id: environmentType
+    type: string
+    displayName: Environment type
+    description: Dev Center environment type this deployment is for.
+    required: true
+    allowed:
+      - DEV
+      - QA1
+      - PROD
+  - id: location
+    type: string
+    displayName: Azure region
+    description: Azure region used to deploy the environment resources.
+    required: true
+    default: eastus
+  - id: storageAccountSku
+    type: string
+    displayName: Storage SKU
+    description: Storage account redundancy tier.
+    default: Standard_LRS
+    allowed:
+      - Standard_LRS
+      - Standard_GRS
+      - Standard_RAGRS
+  - id: enableHierarchicalNamespace
+    type: boolean
+    displayName: Enable hierarchical namespace
+    description: Enables Data Lake Storage Gen2 features when true.
+    default: false
+roles:
+  - id: Contributor
+    displayName: Contributor
+    description: Grants contributors rights on the environment resource group when deployed through Dev Center.
