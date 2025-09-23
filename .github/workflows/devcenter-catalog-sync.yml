@@ -1,0 +1,46 @@
+name: Sync Dev Center catalog
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'Environments/**'
+      - '.github/workflows/devcenter-catalog-sync.yml'
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Azure login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Ensure Dev Center CLI extension is installed
+        env:
+          AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        run: |
+          az extension add --name devcenter --upgrade
+          if [ -n "$AZURE_SUBSCRIPTION_ID" ]; then
+            az account set --subscription "$AZURE_SUBSCRIPTION_ID"
+          fi
+
+      - name: Sync catalog
+        env:
+          AZURE_DEV_CENTER_RG: ${{ secrets.AZURE_DEV_CENTER_RG }}
+          AZURE_DEV_CENTER_NAME: ${{ secrets.AZURE_DEV_CENTER_NAME }}
+          AZURE_DEV_CENTER_CATALOG_NAME: ${{ secrets.AZURE_DEV_CENTER_CATALOG_NAME }}
+        run: |
+          az devcenter admin catalog sync \
+            --name "$AZURE_DEV_CENTER_CATALOG_NAME" \
+            --resource-group "$AZURE_DEV_CENTER_RG" \
+            --dev-center-name "$AZURE_DEV_CENTER_NAME"
