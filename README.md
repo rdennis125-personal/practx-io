@@ -2,7 +2,7 @@
 
 This repository bootstraps the practx.io platform. It includes the Next.js web experience, .NET 8 API, Stripe webhook function, Azure infrastructure as code (Bicep), API Management policy, SQL schemas, and Azure DevOps pipeline definitions required for the Equipment Lifecycle Management (ELM) module.
 
-Hosted in Git, there is CICD integration with Azure Dev Center.
+Hosted in Git, there is CICD integration with Azure Dev Center, if it works.
 
 ## Structure
 
