@@ -1,11 +1,11 @@
-$schema: https://schema.management.azure.com/schemas/2023-10-01/EnvironmentDefinition.json
+#$schema: https://schema.management.azure.com/schemas/2023-10-01/EnvironmentDefinition.json
 name: practx-shared-storage
 summary: Deploys a StorageV2 account with secure defaults for Practx.io environments.
 description: |
   Provisions a StorageV2 account tagged with the requested Dev Center environment type. Use the
   storage account for application assets, configuration files, or other shared resources required by
   the practx.io platform.
-runner: azureDevCenter
+runner: Bicep
 templatePath: main.bicep
 parameters:
   - id: environmentType
