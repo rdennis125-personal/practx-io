@@ -1,0 +1,40 @@
+@description('Azure region where the environment will be deployed.')
+param location string = resourceGroup().location
+
+@description('Dev Center environment type (e.g. DEV, QA1, PROD).')
+@allowed([
+  'DEV'
+  'QA1'
+  'PROD'
+])
+param environmentType string
+
+@description('Base name used to build resource names.')
+param baseName string = 'practx'
+
+@description('Resource ID for the Key Vault that stores application secrets.')
+param keyVaultId string
+
+@description('Name of the Key Vault that stores application secrets.')
+param keyVaultName string
+
+@description('Application Insights connection string used by the apps.')
+@secure()
+param appInsightsConnectionString string
+
+var namePrefix = toLower('${baseName}-${environmentType}')
+
+module appService '../../../practix/infra/modules/appservice.bicep' = {
+  name: '${namePrefix}-apps'
+  params: {
+    namePrefix: namePrefix
+    location: location
+    keyVaultId: keyVaultId
+    keyVaultName: keyVaultName
+    insightsConnectionString: appInsightsConnectionString
+  }
+}
+
+output webAppName string = appService.outputs.webAppName
+output apiAppName string = appService.outputs.apiAppName
+output planResourceId string = appService.outputs.planId

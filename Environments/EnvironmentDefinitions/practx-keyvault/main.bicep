@@ -1,0 +1,70 @@
+@description('Azure region where the environment will be deployed.')
+param location string = resourceGroup().location
+
+@description('Dev Center environment type (e.g. DEV, QA1, PROD).')
+@allowed([
+  'DEV'
+  'QA1'
+  'PROD'
+])
+param environmentType string
+
+@description('Base name used to build resource names.')
+param baseName string = 'practx'
+
+@description('SQL connection string seeded into the Key Vault.')
+@secure()
+param sqlConnectionString string
+
+@description('Stripe secret key stored in the Key Vault.')
+@secure()
+param stripeSecretKey string
+
+@description('Stripe publishable key stored in the Key Vault.')
+param stripePublicKey string
+
+@description('Stripe price identifier stored in the Key Vault.')
+param stripePriceId string
+
+@description('Stripe webhook signing secret stored in the Key Vault.')
+@secure()
+param stripeWebhookSecret string
+
+@description('Entra External ID tenant name stored in the Key Vault.')
+param b2cTenant string
+
+@description('Entra External ID client ID stored in the Key Vault.')
+param b2cClientId string
+
+@description('Entra External ID sign-in policy stored in the Key Vault.')
+param b2cSignInPolicy string
+
+@description('Storage connection string stored in the Key Vault.')
+@secure()
+param storageConnectionString string
+
+var namePrefix = toLower('${baseName}-${environmentType}')
+var keyVaultName = replace('${namePrefix}-kv', '-', '')
+
+module keyVault '../../../practix/infra/modules/keyvault.bicep' = {
+  name: '${namePrefix}-kv'
+  params: {
+    name: keyVaultName
+    location: location
+    secrets: {
+      SQLCONN: sqlConnectionString
+      STRIPE_SECRET_KEY: stripeSecretKey
+      STRIPE_PUBLIC_KEY: stripePublicKey
+      STRIPE_PRICE_ID: stripePriceId
+      STRIPE_WEBHOOK_SECRET: stripeWebhookSecret
+      B2C_TENANT: b2cTenant
+      B2C_CLIENT_ID: b2cClientId
+      B2C_SIGNIN_POLICY: b2cSignInPolicy
+      STORAGE_CONNECTION: storageConnectionString
+    }
+  }
+}
+
+output keyVaultName string = keyVault.outputs.keyVaultName
+output keyVaultId string = keyVault.outputs.keyVaultId
+output keyVaultUri string = keyVault.outputs.keyVaultUri
