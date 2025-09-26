@@ -1,5 +1,6 @@
 # yaml-language-server: $schema=https://github.com/Azure/deployment-environments/releases/download/2022-11-11-preview/manifest.schema.json
 
+
 name: practx-sql
 summary: Deploys an Azure SQL Server and elastic database for Practx.io environments.
 description: |
