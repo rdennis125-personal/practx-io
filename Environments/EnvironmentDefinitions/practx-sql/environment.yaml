@@ -45,4 +45,3 @@ parameters:
     type: string
     description: Password for the SQL administrator account.
     required: true
-    secure: true
