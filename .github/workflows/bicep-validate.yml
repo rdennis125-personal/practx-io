@@ -4,9 +4,13 @@ on:
   pull_request:
     branches:
       - main
+    paths:
+      - '**/*.bicep'
   push:
     branches:
       - main
+    paths:
+      - '**/*.bicep'
 
 jobs:
   validate:
@@ -14,21 +18,53 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
+        with:
+          # We need full history so both BASE and HEAD SHAs exist in the local clone
+          fetch-depth: 0
+          
       - name: Install Bicep CLI
         run: az bicep install
 
-      - name: Build all Bicep files
+      - name: Find changed .bicep files
+        id: changes
         shell: bash
         run: |
           set -euo pipefail
-          mapfile -t bicep_files < <(git ls-files '*.bicep')
-          if [ ${#bicep_files[@]} -eq 0 ]; then
-            echo 'No Bicep files detected.'
-            exit 0
+
+          # Determine BASE..HEAD for diff depending on event type
+          if [[ "${GITHUB_EVENT_NAME}" == "pull_request" ]]; then
+            BASE="${{ github.event.pull_request.base.sha }}"
+          else
+            # push event
+            BASE="${{ github.event.before }}"
+          fi
+          HEAD="${GITHUB_SHA}"
+
+          # Ensure we have the SHAs locally
+          git fetch --no-tags --prune --progress --depth=0 origin +${BASE}:${BASE} || true
+          git fetch --no-tags --prune --progress --depth=0 origin +${HEAD}:${HEAD} || true
+
+          # List changed .bicep files (Added/Copied/Modified/Renamed)
+          mapfile -t CHANGED < <(git diff --name-only --diff-filter=ACMR "${BASE}..${HEAD}" | grep -E '\.bicep$' || true)
+
+          if (( ${#CHANGED[@]} == 0 )); then
+            echo "No changed .bicep files detected."
+            echo "count=0" >> "$GITHUB_OUTPUT"
+          else
+            printf '%s\n' "${CHANGED[@]}"
+            # Join as newline-separated string for later step
+            printf 'files<<EOF\n' >> "$GITHUB_OUTPUT"
+            printf '%s\n' "${CHANGED[@]}" >> "$GITHUB_OUTPUT"
+            printf 'EOF\n' >> "$GITHUB_OUTPUT"
+            echo "count=${#CHANGED[@]}" >> "$GITHUB_OUTPUT"
           fi
 
-          for file in "${bicep_files[@]}"; do
-            echo "\nValidating ${file}"
+      - name: Build changed Bicep files
+        if: steps.changes.outputs.count != '0'
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r file; do
+            echo "Validating ${file}"
             az bicep build --file "$file"
-          done
+          done <<< "${{ steps.changes.outputs.files || '' }}"
