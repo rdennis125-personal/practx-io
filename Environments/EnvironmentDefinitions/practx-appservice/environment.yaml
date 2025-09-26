@@ -1,5 +1,4 @@
-# yaml-language-server: $schema=https://github.com/Azure/deployment-environments/releases/download/2022-11-11-preview/manifest.
-# schema.json
+# yaml-language-server: $schema=https://github.com/Azure/deployment-environments/releases/download/2022-11-11-preview/manifest.schema.json
 
 name: practx-appservice
 summary: Deploys a Linux App Service plan hosting the Practx.io web and API applications.
