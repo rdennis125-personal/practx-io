@@ -44,7 +44,6 @@ parameters:
     type: string
     description: Connection string used to emit telemetry.
     required: true
-    secure: true
 
   - id: keyVaultId
     name: Key Vault resource ID
