@@ -39,14 +39,12 @@ parameters:
     type: string
     description: Connection string seeded into the SQLCONN secret.
     required: true
-    secure: true
 
   - id: stripeSecretKey
     name: Stripe secret key
     type: string
     description: Secret key for Stripe API calls.
     required: true
-    secure: true
 
   - id: stripePublicKey
     name: Stripe publishable key
@@ -65,7 +63,6 @@ parameters:
     type: string
     description: Secret used to validate Stripe webhook signatures.
     required: true
-    secure: true
 
   - id: b2cTenant
     name: Entra External ID (B2C) tenant name
@@ -90,4 +87,3 @@ parameters:
     type: string
     description: Connection string stored as STORAGE_CONNECTION.
     required: true
-    secure: true
