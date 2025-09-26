@@ -40,7 +40,7 @@ jobs:
       - name: Sync catalog
         env:
           AZURE_DEV_CENTER_RG: ${{ vars.AZURE_DEV_CENTER_RG }}
-          AZURE_DEV_CENTER_NAME: ${{ vars.AZURE_DEV_CENTER }}
+          AZURE_DEV_CENTER_NAME: ${{ vars.AZURE_DEVCENTER }}
           AZURE_DEV_CENTER_CATALOG_NAME: ${{ vars.AZURE_CATALOG }}
         run: |
           az devcenter admin catalog sync \
