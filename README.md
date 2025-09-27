@@ -201,10 +201,13 @@ practix/
    - `cd practix/apps/web && npm install`
    - `cd practix/apps/api && dotnet restore`
    - `cd practix/functions/StripeWebhook && dotnet restore`
-2. Provision infrastructure with `az deployment group create` using `infra/main.bicep`.
-3. Configure Entra External ID (B2C) user flow and update Key Vault secrets for B2C and Stripe settings.
-4. Deploy the apps using the provided Azure DevOps pipelines or manually (`npm run build`, `dotnet publish`, etc.).
-5. Seed the SQL database with `schemas/sql/001_core.sql` (and optional seed data) before running the app.
+2. When using Visual Studio, open `practix/Practix.sln` to load the API and Stripe webhook projects (`practix/apps/api/Practix.Api.csproj`
+   and `practix/functions/StripeWebhook/StripeWebhook.csproj`). Opening the repository folder directly (File → Open → Folder…)
+   also works if you want Visual Studio to discover the projects without the solution file.
+3. Provision infrastructure with `az deployment group create` using `infra/main.bicep`.
+4. Configure Entra External ID (B2C) user flow and update Key Vault secrets for B2C and Stripe settings.
+5. Deploy the apps using the provided Azure DevOps pipelines or manually (`npm run build`, `dotnet publish`, etc.).
+6. Seed the SQL database with `schemas/sql/001_core.sql` (and optional seed data) before running the app.
 
 Refer to the spec for full acceptance criteria: registration via B2C, Stripe paywall gating the `/elm` workspace, SQL persistence, APIM entitlement enforcement, and logging via Application Insights.
 
