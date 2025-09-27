@@ -38,7 +38,6 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
     isHnsEnabled: enableHierarchicalNamespace
   }
   tags: {
-    'EnvironmentType': environmentType
     'practx.io:environmentType': environmentType
     'practx.io:managedBy': 'Azure Dev Center'
   }
