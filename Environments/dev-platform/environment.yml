@@ -65,3 +65,19 @@ parameters:
     description: Connection string stored in the Key Vault as STORAGE_CONNECTION.
     required: true
     secret: true
+  - id: staticWebAppRepositoryUrl
+    type: string
+    displayName: Static Web App repository URL
+    description: Git repository that hosts the Practx.io Static Web App source.
+    required: true
+  - id: staticWebAppRepositoryBranch
+    type: string
+    displayName: Static Web App repository branch
+    description: Branch used for the Static Web App continuous deployment connection.
+    required: true
+    default: main
+  - id: staticWebAppRepositoryToken
+    type: string
+    displayName: Static Web App repository token
+    description: Optional token that authorises the Static Web App repository connection.
+    secret: true

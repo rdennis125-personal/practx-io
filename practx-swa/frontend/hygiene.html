@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Practx Hygiene Subscription | Practx</title>
+  <meta name="description" content="Deliver curated hygiene kits on autopilot with Practx hygiene subscriptions designed for modern dental teams." />
+  <meta property="og:title" content="Practx Hygiene Subscription" />
+  <meta property="og:description" content="Deliver curated hygiene kits on autopilot with Practx hygiene subscriptions designed for modern dental teams." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://practx.io/hygiene.html" />
+  <meta property="og:image" content="https://practx.io/assets/logo.svg" />
+  <meta name="twitter:card" content="summary" />
+  <link rel="icon" href="assets/logo.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="assets/styles.css" />
+  <script defer src="signup.js"></script>
+</head>
+<body>
+  <header>
+    <nav>
+      <a class="logo" href="/">
+        <img src="assets/logo.svg" alt="Practx logo" width="32" height="32" />
+        <span>Practx</span>
+      </a>
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a class="active" href="/hygiene.html">Hygiene</a></li>
+        <li><a href="/outreach.html">Outreach</a></li>
+        <li><a href="/franchise.html">Franchise</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main>
+    <section class="hero">
+      <h1>Hygiene kits your patients can’t wait to open.</h1>
+      <p>Practx hygiene subscriptions deliver curated kits that extend the value of every visit. Delight patients, boost loyalty, and drive referrals without adding staff hours.</p>
+      <a class="button" href="/index.html#signup">Join the waitlist</a>
+    </section>
+
+    <section>
+      <h2>Why dental teams choose Practx hygiene subscriptions</h2>
+      <ul class="benefits">
+        <li>Curated kits tailored to hygiene milestones and treatment plans.</li>
+        <li>Hands-off fulfillment with branded packaging and messaging.</li>
+        <li>Engagement analytics that highlight active patients and upsell moments.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Practices sharing the love</h2>
+      <div class="quotes">
+        <div class="quote">
+          “Our hygiene team finally has a proactive way to keep patients excited about their next visit.”
+          <br /><strong>– Smile Studio, Austin</strong>
+        </div>
+        <div class="quote">
+          “Patients post unboxing videos weekly. That energy translates directly into referrals.”
+          <br /><strong>– Harbor Dental Collective</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="faq">
+      <div class="faq-item">
+        <button type="button" aria-expanded="false">How often are kits shipped?</button>
+        <p>Kits follow your hygiene cadence—typically quarterly—and can be customized per patient segment.</p>
+      </div>
+      <div class="faq-item">
+        <button type="button" aria-expanded="false">Can we include our own products?</button>
+        <p>Yes. Practx integrates your inventory or recommends curated suppliers that match your brand standards.</p>
+      </div>
+      <div class="faq-item">
+        <button type="button" aria-expanded="false">What about compliance?</button>
+        <p>We manage labeling, lot tracking, and recalls with a compliance team versed in dental regulations.</p>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <div class="footer-content">
+      <div>&copy; <span id="year"></span> Practx. Access above all.</div>
+      <small><a href="mailto:hello@practx.io">hello@practx.io</a> • <a href="/sitemap.xml">Sitemap</a></small>
+    </div>
+  </footer>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+    document.querySelectorAll('.faq-item button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const expanded = btn.getAttribute('aria-expanded') === 'true';
+        btn.setAttribute('aria-expanded', !expanded);
+      });
+    });
+  </script>
+</body>
+</html>
