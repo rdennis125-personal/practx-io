@@ -1,0 +1,14 @@
+{
+  "name": "practx-api",
+  "version": "1.0.0",
+  "description": "Azure Functions API for Practx Static Web App",
+  "main": "Signup/index.js",
+  "scripts": {
+    "start": "func start",
+    "test": "echo \"No tests\""
+  },
+  "dependencies": {
+    "@azure/data-tables": "^13.2.3",
+    "nanoid": "^4.0.2"
+  }
+}

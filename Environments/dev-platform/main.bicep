@@ -38,6 +38,16 @@ param b2cSignInPolicy string
 @secure()
 param storageConnectionString string
 
+@description('Repository URL for the Practx Static Web App source.')
+param staticWebAppRepositoryUrl string
+
+@description('Repository branch used for the Practx Static Web App deployment connection.')
+param staticWebAppRepositoryBranch string = 'main'
+
+@description('Token authorising the Static Web App to access the repository. Optional.')
+@secure()
+param staticWebAppRepositoryToken string = ''
+
 // Modules auto-discovered from Environments/EnvironmentDefinitions/practx-*/main.bicep
 module sharedStorage '../EnvironmentDefinitions/practx-shared-storage/main.bicep' = {
   name: 'sharedStorage'
@@ -105,6 +115,17 @@ module appservice '../EnvironmentDefinitions/practx-appservice/main.bicep' = {
   }
 }
 
+module staticWebApp '../EnvironmentDefinitions/practx-staticwebapp/main.bicep' = {
+  name: 'staticWebApp'
+  params: {
+    location: location
+    environmentType: environmentType
+    repositoryUrl: staticWebAppRepositoryUrl
+    repositoryBranch: staticWebAppRepositoryBranch
+    repositoryToken: staticWebAppRepositoryToken
+  }
+}
+
 module apim '../EnvironmentDefinitions/practx-apim/main.bicep' = {
   name: 'apim'
   params: {
@@ -129,3 +150,6 @@ output apiAppName string = appservice.outputs.apiAppName
 output appServicePlanResourceId string = appservice.outputs.planResourceId
 output functionAppName string = functions.outputs.functionAppName
 output functionPlanResourceId string = functions.outputs.planResourceId
+output staticWebAppName string = staticWebApp.outputs.staticWebAppName
+output staticWebAppDefaultHostname string = staticWebApp.outputs.staticWebAppDefaultHostname
+output staticWebAppResourceId string = staticWebApp.outputs.staticWebAppResourceId

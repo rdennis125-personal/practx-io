@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Service &amp; Smile Spa Franchise | Practx</title>
+  <meta name="description" content="Launch a white-glove dental service and smile spa franchise with Practx operations, brand playbooks, and membership tech." />
+  <meta property="og:title" content="Service &amp; Smile Spa Franchise" />
+  <meta property="og:description" content="Launch a white-glove dental service and smile spa franchise with Practx operations, brand playbooks, and membership tech." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://practx.io/franchise.html" />
+  <meta property="og:image" content="https://practx.io/assets/logo.svg" />
+  <meta name="twitter:card" content="summary" />
+  <link rel="icon" href="assets/logo.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="assets/styles.css" />
+  <script defer src="signup.js"></script>
+</head>
+<body>
+  <header>
+    <nav>
+      <a class="logo" href="/">
+        <img src="assets/logo.svg" alt="Practx logo" width="32" height="32" />
+        <span>Practx</span>
+      </a>
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/hygiene.html">Hygiene</a></li>
+        <li><a href="/outreach.html">Outreach</a></li>
+        <li><a class="active" href="/franchise.html">Franchise</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main>
+    <section class="hero">
+      <h1>Scale a service &amp; smile spa franchise without the guesswork.</h1>
+      <p>Practx equips dental entrepreneurs with plug-and-play franchise operations, membership tech, and concierge support to open new locations faster.</p>
+      <a class="button" href="/index.html#signup">Talk with us</a>
+    </section>
+
+    <section>
+      <h2>Build your franchise on the Practx platform</h2>
+      <ul class="benefits">
+        <li>Launch playbooks covering staffing, service menus, and brand experience.</li>
+        <li>Centralized membership billing, loyalty, and multi-location analytics.</li>
+        <li>Concierge support team that handles vendor onboarding and compliance.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Founders putting Practx to work</h2>
+      <div class="quotes">
+        <div class="quote">
+          “Practx gave us the roadmap and team we needed to open our second spa in half the time.”
+          <br /><strong>– Nova Service Studios</strong>
+        </div>
+        <div class="quote">
+          “The membership platform pays for itself. Guests rave about the seamless perks experience.”
+          <br /><strong>– Luster Labs</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="faq">
+      <div class="faq-item">
+        <button type="button" aria-expanded="false">What markets do you support?</button>
+        <p>Practx partners with metro areas that have high-demand for elective dental and aesthetics services. We help you evaluate market readiness.</p>
+      </div>
+      <div class="faq-item">
+        <button type="button" aria-expanded="false">Do we need existing locations?</button>
+        <p>We work with established practices and first-time founders. Our incubator guides you through site selection and launch.</p>
+      </div>
+      <div class="faq-item">
+        <button type="button" aria-expanded="false">How soon can we open?</button>
+        <p>Most founders reach soft launch in 120 days with Practx operations, procurement, and talent pipelines.</p>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <div class="footer-content">
+      <div>&copy; <span id="year"></span> Practx. Access above all.</div>
+      <small><a href="mailto:hello@practx.io">hello@practx.io</a> • <a href="/sitemap.xml">Sitemap</a></small>
+    </div>
+  </footer>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+    document.querySelectorAll('.faq-item button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const expanded = btn.getAttribute('aria-expanded') === 'true';
+        btn.setAttribute('aria-expanded', !expanded);
+      });
+    });
+  </script>
+</body>
+</html>
