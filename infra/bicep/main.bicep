@@ -4,8 +4,6 @@ param tags object = {}
 param functionSku string = 'Y1'
 param tenantId string
 
-var baseName = toLower('${namePrefix}${uniqueString(resourceGroup().id)}')
-
 module insights 'modules/appInsights.bicep' = {
   name: 'appInsights'
   params: {

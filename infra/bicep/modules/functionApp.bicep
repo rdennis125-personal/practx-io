@@ -51,7 +51,7 @@ resource functionApp 'Microsoft.Web/sites@2022-03-01' = {
       appSettings: [
         {
           name: 'AzureWebJobsStorage'
-          value: listKeys(storage.id, '2023-01-01').keys[0].value
+          value: storage.listKeys().keys[0].value
         }
         {
           name: 'FUNCTIONS_EXTENSION_VERSION'
@@ -68,9 +68,6 @@ resource functionApp 'Microsoft.Web/sites@2022-03-01' = {
       ]
     }
   }
-  dependsOn: [
-    storage
-  ]
 }
 
 output name string = functionApp.name

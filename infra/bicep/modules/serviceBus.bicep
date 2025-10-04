@@ -20,8 +20,6 @@ resource topic 'Microsoft.ServiceBus/namespaces/topics@2022-10-01-preview' = {
   }
 }
 
-@batchSize(1)
-@minLength(1)
 var subscriptions = [
   'dealer'
   'resolve'

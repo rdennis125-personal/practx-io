@@ -3,6 +3,7 @@ param location string
 param tags object = {}
 param tenantId string
 param functionPrincipalId string
+@secure()
 param secrets object = {
   STRIPE_TEST_KEY: 'placeholder'
   RESOLVE_TEST_KEY: 'placeholder'
@@ -34,10 +35,11 @@ resource vault 'Microsoft.KeyVault/vaults@2022-07-01' = {
   }
 }
 
-resource secretResources 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = [for secretName in union([], keys(secrets)): {
-  name: '${vault.name}/${secretName}'
+resource secretResources 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = [for secret in items(secrets): {
+  parent: vault
+  name: secret.key
   properties: {
-    value: secrets[secretName]
+    value: secret.value
   }
 }]
 
