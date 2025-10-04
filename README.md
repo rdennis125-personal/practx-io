@@ -237,3 +237,62 @@ invokes `az devcenter admin catalog sync` using the remaining variables.
 
 An equivalent Azure Pipelines definition is available at
 `practix/.ado/pipelines/environment-catalog-ci.yml` for teams running CI/CD in Azure DevOps.
+
+
+## Payments and settlements prototype
+
+### Components
+
+- `apps/orchestrator/Practx.Orchestrator.sln` – Azure Functions solution hosting the payment orchestration stubs (dealer, Resolve, Stripe Connect mocks).
+- `apps/woo-practx-payments` – WooCommerce plugin exposing the three payment options, dealer checkout fields, acknowledgement REST API, and admin dashboards.
+- `infra/bicep` – Bicep modules for the orchestrator Function App, Service Bus namespace/topic, Application Insights, and Key Vault.
+- `pipelines` – Azure DevOps YAML pipelines for orchestrator CI/CD and Woo plugin packaging.
+
+### Local debugging (Visual Studio)
+
+1. Restore tools if needed with `dotnet restore` from the `apps/orchestrator` directory.
+2. Open `apps/orchestrator/Practx.Orchestrator.sln`, set **Practx.Orchestrator** as the startup project, and press <kbd>F5</kbd>.
+3. Update `apps/orchestrator/src/Practx.Orchestrator/local.settings.json` to match your local secrets. Required keys:
+   ```json
+   {
+     "STRIPE_TEST_KEY": "sk_test_mock",
+     "RESOLVE_TEST_KEY": "resolve_test_mock",
+     "SERVICE_BUS_CONNECTION": "Endpoint=sb://local/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=local",
+     "AUTO_RELEASE_DAYS": "7",
+     "DEALER_TIMEOUT_MINUTES": "30",
+     "ACK_URL_BASE": "http://localhost:7071/api/ack",
+     "WEBHOOK_HMAC_SECRET": "local_secret"
+   }
+   ```
+4. Use the HTTP samples in `docs/local-debug.md` to simulate dealer approvals, Resolve funding, acknowledgement, and disputes end to end.
+
+### Azure DevOps pipelines
+
+1. Import `pipelines/orchestrator-ci-cd.yml` and `pipelines/woo-plugin-build.yml` into Azure DevOps.
+2. Create a service connection with access to the target subscription for the Function App deploy stage.
+3. Define variable groups for secrets (Key Vault-backed groups recommended). Expected variables:
+   - `AZ_SUBSCRIPTION`
+   - `AZ_RESOURCE_GROUP`
+   - `AZ_FUNCTIONAPP_NAME`
+   - Key Vault group linked via `azureKeyVault` references for STRIPE/RESOLVE secrets.
+4. The Woo pipeline publishes `woo-practx-payments.zip` as an artifact ready for WordPress deployment.
+
+### Infrastructure deployment
+
+1. Run `infra/scripts/deploy.sh <resource-group> <name-prefix> <tenant-id> <location>` for a dry run (what-if).
+2. Append `--deploy` to execute the deployment.
+3. The script provisions:
+   - Linux Azure Function App with managed identity and storage account.
+   - Service Bus namespace with the `payments` topic and dealer/resolve/settlement subscriptions.
+   - Application Insights instance for telemetry.
+   - Key Vault with an access policy granting the Function App identity `get`/`list` permissions for secrets (Stripe/Resolve keys, Service Bus connection string).
+4. Update secrets in Key Vault post-deployment with actual vendor credentials.
+
+### WooCommerce configuration
+
+1. Copy `apps/woo-practx-payments` into your WordPress plugins directory and activate **Practx Payments**.
+2. Configure the orchestrator endpoint and webhook secret from the **Practx Payments → Dealer Account Matches** admin page.
+3. Enable the new payment gateways under **WooCommerce → Settings → Payments**.
+4. Place a test order using **Bill my dealer account** to exercise the dealer timeout → Resolve fallback path.
+
+Refer to `docs/sequence.md` for sequence diagrams and `docs/local-debug.md` for curl/httpie test plans.
