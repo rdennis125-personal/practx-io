@@ -19,6 +19,18 @@ Hosted in Git, there is CICD integration with Azure Dev Center, if it works.
 - [Getting Started](#getting-started)
 - [Dev Center automation](#dev-center-automation)
 
+## Styling with the Practx brand system
+
+The web application imports the source-of-truth brand tokens from `UX/brand.css` at the app shell. Keep UI changes aligned with the design system by following these guardrails:
+
+- DM Sans is loaded globally via `app/head.tsx`; do not add additional font packages.
+- Use the `@/ui` primitives (Button, Input, Card, Alert, Navbar, Tabs, Toast, Modal, ThemeToggle) whenever possible—they wrap the CSS primitives shipped in `UX/brand.css` and include accessibility defaults.
+- Tailwind utilities are mapped to the token set (`primary`, `accent`, `neutral`, etc.) in `tailwind.config.ts`. Stick to those semantic names or reference the CSS variables directly (e.g., `var(--color-primary-800)`).
+- Run `npm run scan:tokens` inside `practix/apps/web` to surface legacy hard-coded colors, radii, and shadows that still need migration.
+- Component and accessibility tests live under `src/ui/__tests__`; run `npm test` after modifying UI primitives to ensure coverage and axe checks stay green.
+
+See `MIGRATION_REPORT.md` for detailed progress, mapping tables, and follow-up items.
+
 ## Quick Start
 
 > Want to deploy straight from GitHub without touching Azure Dev Center? Follow the streamlined instructions in [Using GitHub Without Azure Dev Center](docs/github-without-devcenter.md) and then return here when you are ready to adopt Dev Center again.
