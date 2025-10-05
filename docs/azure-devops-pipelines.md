@@ -21,7 +21,7 @@ Create a variable group named **`Practx-Infra`** (or define equivalent pipeline 
 | --- | --- |
 | `AZURE_SERVICE_CONNECTION` | Name of an Azure Resource Manager service connection with permissions to the target subscription/resource group. |
 | `AZ_RESOURCE_GROUP` | Resource group that will host the Practx infrastructure. |
-| `AZ_LOCATION` | Azure region for the deployment (e.g., `westus2`). |
+| `AZ_LOCATION` | Azure region for the deployment (set to `westus2` for all Practx environments). |
 | `NAME_PREFIX` | Prefix applied to deployed resource names (for example `practx`). |
 | `TENANT_ID` | Azure AD tenant ID used when creating Key Vault access policies. |
 | `FUNCTION_SKU` | *(Optional)* Azure Functions plan SKU. Defaults to `Y1` if omitted. |

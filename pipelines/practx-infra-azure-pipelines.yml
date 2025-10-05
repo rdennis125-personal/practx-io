@@ -2,7 +2,7 @@
 # Configure the following variable group or pipeline variables before running:
 #   AZURE_SERVICE_CONNECTION - name of service connection with contributor rights
 #   AZ_RESOURCE_GROUP - target resource group for the deployment
-#   AZ_LOCATION - Azure region for resources (e.g., westus2)
+#   AZ_LOCATION - Azure region for resources (must be westus2)
 #   NAME_PREFIX - prefix used for resource names (e.g., practx)
 #   TENANT_ID - Azure AD tenant id used for Key Vault access policies
 #   FUNCTION_SKU - optional Functions plan SKU (default Y1)
@@ -19,6 +19,8 @@ trigger:
 
 variables:
   - group: Practx-Infra
+  - name: AZ_LOCATION
+    value: 'westus2'
   - name: FUNCTION_SKU
     value: 'Y1'
 

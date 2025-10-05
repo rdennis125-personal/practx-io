@@ -21,13 +21,13 @@ You can leave the `Environments/` catalog intact. Nothing in the steps below dep
    az account set --subscription <subscription-id>
    ```
 
-2. Create (or reuse) a resource group for the practx environment:
+2. Create (or reuse) a resource group for the practx environment in **West US 2** (the required deployment region):
 
    ```bash
-   az group create --name <resource-group> --location <azure-region>
+   az group create --name <resource-group> --location westus2
    ```
 
-3. Deploy the Bicep template that normally runs through Dev Center. The `practix/infra/main.bicep` file emits the App Service plan/web app, API, Functions app, Key Vault, SQL flexible server, Storage account, Application Insights, and API Management resources for the chosen environment label.【F:practix/infra/main.bicep†L1-L87】 Prepare a parameters file (you can start from `practix/infra/main.parameters.json`) with the environment name, base name, admin credentials, Stripe keys, and B2C identifiers.【F:practix/infra/main.parameters.json†L1-L20】 Then run:
+3. Deploy the Bicep template that normally runs through Dev Center. The `practix/infra/main.bicep` file emits the App Service plan/web app, API, Functions app, Key Vault, SQL flexible server, Storage account, Application Insights, and API Management resources for the chosen environment label.【F:practix/infra/main.bicep†L1-L87】 Prepare a parameters file (you can start from `practix/infra/main.parameters.json`) with the environment name, base name, admin credentials, Stripe keys, and B2C identifiers—keep the `location` parameter set to `westus2` to match the required region.【F:practix/infra/main.parameters.json†L1-L20】 Then run:
 
    ```bash
    az deployment group create \

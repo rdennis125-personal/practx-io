@@ -1,5 +1,8 @@
 param namePrefix string
-param location string = resourceGroup().location
+@allowed([
+  'westus2'
+])
+param location string = 'westus2'
 param tags object = {}
 param functionSku string = 'Y1'
 param tenantId string

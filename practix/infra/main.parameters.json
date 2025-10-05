@@ -4,7 +4,7 @@
   "parameters": {
     "env": { "value": "dev" },
     "baseName": { "value": "practix" },
-    "location": { "value": "eastus" },
+    "location": { "value": "westus2" },
     "sqlAdminLogin": { "value": "practixadmin" },
     "sqlAdminPassword": { "value": "ChangeMe123!" },
     "stripeSecretKey": { "value": "sk_test_placeholder" },
