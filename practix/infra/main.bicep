@@ -1,6 +1,9 @@
 param env string
 param baseName string
-param location string = resourceGroup().location
+@allowed([
+  'westus2'
+])
+param location string = 'westus2'
 
 @secure()
 param sqlAdminLogin string
