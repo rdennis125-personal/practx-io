@@ -59,6 +59,10 @@ Production-ready starter for the Practx marketing site running on Azure Static W
 
 A workflow at `.github/workflows/azure-static-web-apps.yml` deploys the app whenever changes are pushed to the `main` branch. The workflow expects a repository secret named `AZURE_STATIC_WEB_APPS_API_TOKEN` generated from the Azure portal for the Static Web App.
 
+### Azure DevOps Pipelines
+
+An alternative Azure DevOps pipeline definition is available at `pipelines/practx-swa-azure-pipelines.yml`. Import it into Azure DevOps and link a variable group containing `AZURE_STATIC_WEB_APPS_API_TOKEN` (the deployment token) along with any optional `APP_LOCATION` or `API_LOCATION` overrides. See [Azure DevOps Pipelines for Practx](../docs/azure-devops-pipelines.md) for detailed setup steps.
+
 ### Azure CLI Bootstrap Script
 
 Use the following script to create the resource group and Static Web App (fill in variables first):

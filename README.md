@@ -4,8 +4,15 @@ This repository bootstraps the practx.io platform. It includes the Next.js web e
 
 Hosted in Git, there is CICD integration with Azure Dev Center, if it works.
 
+## Deployment paths
+
+- **GitHub + Azure Dev Center** – the original workflow that syncs the `Environments/` catalog and lets developers self-serve environments from the Developer Portal.
+- **GitHub only (no Dev Center)** – run the Bicep templates directly with the Azure CLI and keep shipping the Static Web App through GitHub Actions. See [Using GitHub Without Azure Dev Center](docs/github-without-devcenter.md).
+- **Azure DevOps pipelines** – reuse the YAML definitions under `pipelines/` to validate and deploy infrastructure or publish the Static Web App from Azure DevOps. Details live in [Azure DevOps Pipelines for Practx](docs/azure-devops-pipelines.md).
+
 ## Table of Contents
 
+- [Deployment paths](#deployment-paths)
 - [Quick Start](#quick-start)
 - [Azure Dev Center catalog](#azure-dev-center-catalog)
 - [Structure](#structure)
@@ -13,6 +20,8 @@ Hosted in Git, there is CICD integration with Azure Dev Center, if it works.
 - [Dev Center automation](#dev-center-automation)
 
 ## Quick Start
+
+> Want to deploy straight from GitHub without touching Azure Dev Center? Follow the streamlined instructions in [Using GitHub Without Azure Dev Center](docs/github-without-devcenter.md) and then return here when you are ready to adopt Dev Center again.
 
 ### Prerequisites
 
