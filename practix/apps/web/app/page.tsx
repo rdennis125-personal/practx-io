@@ -1,15 +1,18 @@
 import Link from "next/link";
-import { Header } from "@/components/ui/Header";
-import { Button } from "@/components/ui/Button";
 import {
+  Alert,
+  Button,
   Card,
   CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
-  CardTitle
-} from "@/components/ui/Card";
-import { Input } from "@/components/ui/Input";
+  CardTitle,
+  Input,
+  Navbar,
+  Tabs,
+  ThemeToggle as ThemeToggleButton
+} from "@/ui";
 import { LogoMark } from "@/components/LogoMark";
 
 const heroFeatures = [
@@ -28,20 +31,112 @@ const heroFeatures = [
 ];
 
 export default function HomePage() {
+  const tabs = [
+    {
+      id: "overview",
+      label: "Overview",
+      content: (
+        <p className="text-base text-[color:var(--color-neutral-700)]">
+          Practx synchronizes equipment lifecycle, service coverage, and compliance signals so every operatory stays ready.
+        </p>
+      )
+    },
+    {
+      id: "automation",
+      label: "Automation",
+      content: (
+        <p className="text-base text-[color:var(--color-neutral-700)]">
+          Automations keep PM visits on track, trigger escalations, and notify dealer partners the moment a threshold is met.
+        </p>
+      )
+    },
+    {
+      id: "analytics",
+      label: "Analytics",
+      content: (
+        <p className="text-base text-[color:var(--color-neutral-700)]">
+          Real-time dashboards highlight chair uptime, warranty runway, and high-risk assets that demand immediate attention.
+        </p>
+      )
+    }
+  ];
+
   return (
-    <main className="bg-[var(--color-bg)] text-text">
-      <Header
-        eyebrow="Practice-centered equipment lifecycle"
-        title="Keep every operatory performing with Practx"
-        description="Practx unites asset intelligence, service coverage, and dealer accountability so dental practices deliver chairside care without disruption. Extend the same operating model to any practice-centered business as you grow."
-        navLinks={[
+    <main className="bg-[var(--color-white)] text-[color:var(--color-neutral-900)]">
+      <Navbar
+        brand={
+          <Link href="/" className="flex items-center gap-2" aria-label="Practx home">
+            <LogoMark size={32} />
+            <span className="text-lg font-semibold text-[color:var(--color-deep-navy)]">Practx</span>
+          </Link>
+        }
+        links={[
           { label: "Platform", href: "#platform" },
-          { label: "Security", href: "#trust" }
+          { label: "Security", href: "#trust" },
+          { label: "Docs", href: "/upgrade" }
         ]}
-        primaryCta={{ label: "Sign in", href: "/app", variant: "primary" }}
-        secondaryCta={{ label: "Explore pricing", href: "/upgrade", variant: "ghost" }}
-        features={heroFeatures}
+        endSlot={
+          <div className="flex items-center gap-3">
+            <ThemeToggleButton />
+            <Link href="/app" className="btn btn--ghost">
+              Sign in
+            </Link>
+          </div>
+        }
       />
+
+      <header className="mx-auto flex w-full max-w-6xl flex-col gap-12 px-6 py-16">
+        <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.8fr)] lg:items-start">
+          <div className="stack-md">
+            <span className="badge badge--success max-w-max">Practice-centered equipment lifecycle</span>
+            <h1 className="text-balance text-4xl font-bold text-[color:var(--color-deep-navy)]">
+              Keep every operatory performing with Practx
+            </h1>
+            <p className="max-w-2xl text-lg text-[color:var(--color-neutral-700)]">
+              Practx unites asset intelligence, service coverage, and dealer accountability so dental practices deliver
+              chairside care without disruption. Extend the same operating model to any practice-centered business as you
+              grow.
+            </p>
+            <div className="flex flex-wrap items-center gap-3">
+              <Link href="/app" className="btn btn--primary">
+                Get started
+              </Link>
+              <Link href="/upgrade" className="btn btn--accent">
+                Explore pricing
+              </Link>
+            </div>
+          </div>
+          <Card>
+            <CardHeader>
+              <CardTitle>Lifecycle coverage built for dental teams</CardTitle>
+              <CardDescription>
+                Practx keeps operations managers and dealer partners aligned with contextual tasks and automation.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Tabs items={tabs} />
+              <Alert variant="info" title="New">
+                Practitioner rollouts now support franchise hierarchies and delegated administration.
+              </Alert>
+            </CardContent>
+            <CardFooter>
+              <Link href="#platform" className="btn btn--ghost">
+                Discover the platform
+              </Link>
+            </CardFooter>
+          </Card>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {heroFeatures.map((feature) => (
+            <Card key={feature.title}>
+              <CardHeader>
+                <CardTitle>{feature.title}</CardTitle>
+                <CardDescription>{feature.description}</CardDescription>
+              </CardHeader>
+            </Card>
+          ))}
+        </div>
+      </header>
 
       <section id="platform" className="mx-auto max-w-6xl px-6 py-16">
         <div className="grid gap-10 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.85fr)] lg:items-start">
@@ -52,29 +147,32 @@ export default function HomePage() {
                 Practx keeps operations managers and dealer partners aligned with contextual tasks and automation.
               </CardDescription>
             </CardHeader>
-            <CardContent className="gap-6">
-              <div className="flex items-center gap-3 text-sm font-medium text-text-muted">
-                <LogoMark size={32} />
-                <span>Operatory 3 · Steri-Vac Sterilizer</span>
-              </div>
-              <Input label="Dealer contact" placeholder="dealer@trustedrep.com" helperText="We&apos;ll copy them on the work order." />
-              <div className="grid gap-4 md:grid-cols-2">
-                <Input label="Preferred date" type="date" required />
-                <Input label="Window" placeholder="8:00 AM – 11:00 AM" />
-              </div>
-              <Input
-                label="Notes for the field tech"
-                placeholder="Recalibrate pressure sensor after routine maintenance."
-                helperText="Keep notes action-oriented and secure—patients are never referenced."
-              />
-            </CardContent>
-            <CardFooter className="justify-between">
-              <p className="text-sm text-text-muted">Every request is logged with entitlement checks and audit trails.</p>
-              <Button type="button">Send to dealer</Button>
-            </CardFooter>
-          </Card>
+              <CardContent className="gap-6">
+                <div className="flex items-center gap-3 text-sm font-medium text-[color:var(--color-neutral-700)]">
+                  <LogoMark size={32} />
+                  <span>Operatory 3 · Steri-Vac Sterilizer</span>
+                </div>
+                <Input label="Dealer contact" placeholder="dealer@trustedrep.com" helperText="We&apos;ll copy them on the work order." />
+                <div className="grid gap-4 md:grid-cols-2">
+                  <Input label="Preferred date" type="date" required />
+                  <Input label="Window" placeholder="8:00 AM – 11:00 AM" />
+                </div>
+                <Input
+                  label="Notes for the field tech"
+                  placeholder="Recalibrate pressure sensor after routine maintenance."
+                  helperText="Keep notes action-oriented and secure—patients are never referenced."
+                  multiline
+                />
+              </CardContent>
+              <CardFooter className="justify-between">
+                <p className="text-sm text-[color:var(--color-neutral-500)]">
+                  Every request is logged with entitlement checks and audit trails.
+                </p>
+                <Button type="button">Send to dealer</Button>
+              </CardFooter>
+            </Card>
 
-          <div className="stack-lg">
+            <div className="stack-lg">
             <Card>
               <CardHeader>
                 <CardTitle>Lifecycle at a glance</CardTitle>
@@ -83,17 +181,17 @@ export default function HomePage() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="gap-4">
-                <div className="flex items-center justify-between rounded-lg bg-brand-50 px-4 py-3">
-                  <span className="text-sm font-medium text-brand-700">Ready operatories</span>
-                  <span className="text-2xl font-semibold text-text">18 / 20</span>
+                <div className="flex items-center justify-between rounded-xl bg-[color:var(--color-neutral-100)] px-4 py-3">
+                  <span className="text-sm font-medium text-[color:var(--color-primary-800)]">Ready operatories</span>
+                  <span className="text-2xl font-semibold text-[color:var(--color-deep-navy)]">18 / 20</span>
                 </div>
-                <div className="flex items-center justify-between rounded-lg bg-surface-muted px-4 py-3">
-                  <span className="text-sm font-medium text-text-muted">Preventive visits scheduled</span>
-                  <span className="text-lg font-semibold text-text">12</span>
+                <div className="flex items-center justify-between rounded-xl bg-[color:var(--color-neutral-100)] px-4 py-3">
+                  <span className="text-sm font-medium text-[color:var(--color-neutral-700)]">Preventive visits scheduled</span>
+                  <span className="text-lg font-semibold text-[color:var(--color-neutral-900)]">12</span>
                 </div>
-                <div className="flex items-center justify-between rounded-lg bg-surface-muted px-4 py-3">
-                  <span className="text-sm font-medium text-text-muted">Warranties expiring next 30 days</span>
-                  <span className="text-lg font-semibold text-warning">3</span>
+                <div className="flex items-center justify-between rounded-xl bg-[color:var(--color-neutral-100)] px-4 py-3">
+                  <span className="text-sm font-medium text-[color:var(--color-neutral-700)]">Warranties expiring next 30 days</span>
+                  <span className="text-lg font-semibold text-[color:var(--color-accent-800)]">3</span>
                 </div>
               </CardContent>
             </Card>
@@ -104,7 +202,7 @@ export default function HomePage() {
                   Practx aligns with HIPAA and dental board standards while supporting Azure-native identity controls.
                 </CardDescription>
               </CardHeader>
-              <CardContent className="gap-4 text-sm text-text-muted">
+              <CardContent className="gap-4 text-sm text-[color:var(--color-neutral-700)]">
                 <p>✔️ Azure Entra External ID with adaptive MFA</p>
                 <p>✔️ SOC 2 Type II controls in progress</p>
                 <p>✔️ End-to-end audit trails for every entitlement change</p>
@@ -119,10 +217,12 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section id="trust" className="border-t border-border bg-surface px-6 py-16">
+      <section id="trust" className="border-t border-[color:var(--color-neutral-100)] bg-[color:var(--color-neutral-100)] px-6 py-16">
         <div className="mx-auto flex max-w-6xl flex-col gap-8">
-          <h2 className="text-balance text-3xl font-semibold text-text">Secure practice data every step of the way</h2>
-          <p className="max-w-3xl text-lg text-text-muted">
+          <h2 className="text-balance text-3xl font-semibold text-[color:var(--color-deep-navy)]">
+            Secure practice data every step of the way
+          </h2>
+          <p className="max-w-3xl text-lg text-[color:var(--color-neutral-700)]">
             Practx was designed alongside dental DSOs and solo practices alike. Service teams gain the context they need while
             respecting PHI boundaries and keeping chairside workflows moving.
           </p>
