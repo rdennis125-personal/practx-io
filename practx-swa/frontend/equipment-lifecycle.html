@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Equipment Lifecycle Management | Practx</title>
+  <meta name="description" content="Centralize dental equipment lifecycle management with Practx for registration, TPM subscriptions, parts, and service scheduling." />
+  <meta property="og:title" content="Equipment Lifecycle Management" />
+  <meta property="og:description" content="Centralize dental equipment lifecycle management with Practx for registration, TPM subscriptions, parts, and service scheduling." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://practx.io/equipment-lifecycle.html" />
+  <meta property="og:image" content="https://practx.io/assets/logo.svg" />
+  <meta name="twitter:card" content="summary" />
+  <link rel="icon" href="assets/logo.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="assets/styles.css" />
+  <script defer src="signup.js"></script>
+</head>
+<body>
+  <header>
+    <nav>
+      <a class="logo" href="/">
+        <img src="assets/logo.svg" alt="Practx logo" width="32" height="32" />
+        <span>Practx</span>
+      </a>
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/hygiene.html">Hygiene</a></li>
+        <li><a href="/outreach.html">Outreach</a></li>
+        <li><a href="/franchise.html">Franchise</a></li>
+        <li><a class="active" href="/equipment-lifecycle.html">Equipment Lifecycle</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main>
+    <section class="hero">
+      <h1>Keep every operatory running with Practx ELM.</h1>
+      <p>Practx Equipment Lifecycle Management unifies asset registration, predictive maintenance, and service coordination so dental teams can focus on care while their equipment performs at peak reliability.</p>
+      <a class="button" href="/index.html#signup">Join the pilot</a>
+    </section>
+
+    <section>
+      <h2>Why practices adopt Practx Equipment Lifecycle Management</h2>
+      <ul class="benefits">
+        <li>Centralize warranties, service history, and compliance documents for every device in one secure hub.</li>
+        <li>Lock in total productive maintenance (TPM) plans that reduce downtime and protect revenue.</li>
+        <li>Automate parts procurement with dealer and manufacturer integrations that shorten repair cycles.</li>
+        <li>Coordinate onsite installs and repairs with transparent availability and quality ratings across providers.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Everything you need to manage the lifecycle</h2>
+      <div class="features">
+        <article class="card">
+          <h3>Unified equipment registry</h3>
+          <p>Digitize onboarding with barcode scans or serial uploads, keeping warranty status and utilization data at your fingertips.</p>
+        </article>
+        <article class="card">
+          <h3>Predictive TPM subscriptions</h3>
+          <p>Use smart maintenance schedules informed by vendor recommendations, IoT telemetry, and practice production goals.</p>
+        </article>
+        <article class="card">
+          <h3>Parts and service marketplace</h3>
+          <p>Source OEM parts, track shipments, and dispatch certified technicians without juggling emails or phone calls.</p>
+        </article>
+        <article class="card">
+          <h3>Lifecycle analytics</h3>
+          <p>Identify aging assets, forecast replacement budgets, and quantify uptime improvements across locations.</p>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <h2>Dental organizations seeing the impact</h2>
+      <div class="quotes">
+        <div class="quote">
+          “Practx gave us visibility into 600+ assets and trimmed reactive repairs by 35% in six months.”
+          <br /><strong>– Apex Dental Group</strong>
+        </div>
+        <div class="quote">
+          “Our TPM subscriptions practically paid for themselves when compressor downtime dropped to zero.”
+          <br /><strong>– Lumina Smile Studios</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="faq">
+      <div class="faq-item">
+        <button type="button" aria-expanded="false">Can Practx integrate with our dealers and manufacturers?</button>
+        <p>Yes. Practx connects through secure APIs and partner portals to synchronize service status, invoices, and warranty coverage.</p>
+      </div>
+      <div class="faq-item">
+        <button type="button" aria-expanded="false">How quickly can we onboard equipment?</button>
+        <p>Most practices import existing inventories in days using CSV uploads or guided onboarding with Practx customer success.</p>
+      </div>
+      <div class="faq-item">
+        <button type="button" aria-expanded="false">Does Practx support multi-location DSOs?</button>
+        <p>Absolutely. Role-based access, standardized workflows, and analytics make it easy to manage fleets across dozens of sites.</p>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <div class="footer-content">
+      <div>&copy; <span id="year"></span> Practx. Access above all.</div>
+      <small><a href="mailto:hello@practx.io">hello@practx.io</a> • <a href="/sitemap.xml">Sitemap</a></small>
+    </div>
+  </footer>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+    document.querySelectorAll('.faq-item button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const expanded = btn.getAttribute('aria-expanded') === 'true';
+        btn.setAttribute('aria-expanded', !expanded);
+      });
+    });
+  </script>
+</body>
+</html>
