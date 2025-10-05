@@ -56,3 +56,61 @@ If you prefer to deploy the Static Web App from your local machine instead of Gi
 - Azure DevOps pipelines remain available if you decide to manage deployments there instead of GitHub; they do not conflict with the GitHub-only flow.【F:pipelines/practx-infra-azure-pipelines.yml†L1-L80】【F:pipelines/practx-swa-azure-pipelines.yml†L1-L46】
 
 With these steps you can keep the repository on GitHub, deploy infrastructure with a straightforward CLI invocation, and continue publishing the Static Web App without involving Azure Dev Center.
+=======
+# Deploy Practx from GitHub Without Azure DevCenter
+
+## Deploy the Static Web App from GitHub
+
+If you prefer to provision or update the Static Web App resource directly instead of relying on GitHub Actions, you can run the Azure CLI commands below (see the [bootstrap script in `practx-swa/README.md`](../practx-swa/README.md) for full context and explanation).
+
+### Bash
+
+```bash
+# variables to set
+SUBSCRIPTION_ID=<subs-id>
+RG=rg-practx-web
+LOCATION=westus2
+APP_NAME=practx-website
+GITHUB_REPO=https://github.com/<org>/<repo>
+GITHUB_BRANCH=main
+
+az account set --subscription $SUBSCRIPTION_ID
+az group create -n $RG -l $LOCATION
+az staticwebapp create \
+  -n $APP_NAME \
+  -g $RG \
+  --source $GITHUB_REPO \
+  --branch $GITHUB_BRANCH \
+  --login-with-github \
+  --location $LOCATION \
+  --sku Free \
+  --app-location "frontend" \
+  --api-location "api" \
+  --output-location ""
+```
+
+### PowerShell
+
+```powershell
+# variables to set
+$SUBSCRIPTION_ID = "<subs-id>"
+$RG = "rg-practx-web"
+$LOCATION = "westus2"
+$APP_NAME = "practx-website"
+$GITHUB_REPO = "https://github.com/<org>/<repo>"
+$GITHUB_BRANCH = "main"
+
+az account set --subscription $SUBSCRIPTION_ID
+az group create -n $RG -l $LOCATION
+az staticwebapp create `
+  -n $APP_NAME `
+  -g $RG `
+  --source $GITHUB_REPO `
+  --branch $GITHUB_BRANCH `
+  --login-with-github `
+  --location $LOCATION `
+  --sku Free `
+  --app-location "frontend" `
+  --api-location "api" `
+  --output-location ""
+```
