@@ -42,10 +42,10 @@ You can leave the `Environments/` catalog intact. Nothing in the steps below dep
 
 ## Deploy the Static Web App from GitHub
 
-The Static Web App does not rely on Dev Center. The workflow at `practx-swa/.github/workflows/azure-static-web-apps.yml` builds the frontend and API and uploads them when you push to `main` as long as the `AZURE_STATIC_WEB_APPS_API_TOKEN` secret is present.【F:practx-swa/.github/workflows/azure-static-web-apps.yml†L1-L33】
+The Static Web App does not rely on Dev Center. The workflow at `.github/workflows/azure-static-web-apps.yml` builds the frontend and API and uploads them when you push to `main` as long as the `AZURE_STATIC_WEB_APPS_API_TOKEN_MANGO_HILL_0CB59961E` secret is present.【F:.github/workflows/azure-static-web-apps.yml†L1-L40】
 
-1. In the Azure portal, open the Static Web App you created manually (or via the CLI bootstrap script in `practx-swa/README.md`). Generate a deployment token and store it as the `AZURE_STATIC_WEB_APPS_API_TOKEN` repository secret.
-2. Commit changes to `main` to publish. Pull requests continue to generate preview environments without additional configuration.【F:practx-swa/.github/workflows/azure-static-web-apps.yml†L18-L33】
+1. In the Azure portal, open the Static Web App you created manually (or via the CLI bootstrap script in `practx-swa/README.md`). Generate a deployment token and store it as the `AZURE_STATIC_WEB_APPS_API_TOKEN_MANGO_HILL_0CB59961E` repository secret.
+2. Commit changes to `main` to publish. Pull requests continue to generate preview environments without additional configuration.【F:.github/workflows/azure-static-web-apps.yml†L9-L40】
 
 If you prefer to deploy the Static Web App from your local machine instead of GitHub Actions, run the bootstrap script documented in the SWA README to create/update the resource and then push local builds with `az staticwebapp upload`. The script already targets the `frontend` and `api` folders in this repository.【F:practx-swa/README.md†L42-L84】
 

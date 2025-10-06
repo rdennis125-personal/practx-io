@@ -57,7 +57,7 @@ Production-ready starter for the Practx marketing site running on Azure Static W
 
 ### GitHub Actions
 
-A workflow at `.github/workflows/azure-static-web-apps.yml` deploys the app whenever changes are pushed to the `main` branch. The workflow expects a repository secret named `AZURE_STATIC_WEB_APPS_API_TOKEN` generated from the Azure portal for the Static Web App.
+A workflow at `../.github/workflows/azure-static-web-apps.yml` deploys the app whenever changes are pushed to the `main` branch. The workflow expects a repository secret named `AZURE_STATIC_WEB_APPS_API_TOKEN_MANGO_HILL_0CB59961E` generated from the Azure portal for the Static Web App.
 
 ### Azure DevOps Pipelines
 
@@ -125,9 +125,6 @@ practx-swa/
     package.json
     host.json
     .funcignore
-  .github/
-    workflows/
-      azure-static-web-apps.yml
   README.md
   LICENSE
 ```
