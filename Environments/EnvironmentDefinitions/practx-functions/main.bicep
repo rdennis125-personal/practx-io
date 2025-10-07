@@ -27,7 +27,7 @@ param keyVaultName string
 
 var namePrefix = toLower('${baseName}-${environmentType}')
 
-module functions '../../../practix/infra/modules/functions.bicep' = {
+module functions '../../../Practx/infra/modules/functions.bicep' = {
   name: '${namePrefix}-fn'
   params: {
     namePrefix: namePrefix

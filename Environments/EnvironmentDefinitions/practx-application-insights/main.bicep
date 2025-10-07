@@ -15,7 +15,7 @@ param baseName string = 'practx'
 var namePrefix = toLower('${baseName}-${environmentType}')
 var insightsName = '${namePrefix}-appi'
 
-module insights '../../../practix/infra/modules/insights.bicep' = {
+module insights '../../../Practx/infra/modules/insights.bicep' = {
   name: '${namePrefix}-insights'
   params: {
     name: insightsName

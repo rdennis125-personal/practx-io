@@ -42,7 +42,7 @@ public class EventRepository
             return;
         }
 
-        var fileSystem = _dataLake.GetFileSystemClient("practix");
+        var fileSystem = _dataLake.GetFileSystemClient("Practx");
         await fileSystem.CreateIfNotExistsAsync();
 
         var now = DateTime.UtcNow;

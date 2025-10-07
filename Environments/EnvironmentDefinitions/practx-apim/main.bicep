@@ -16,10 +16,10 @@ param baseName string = 'practx'
 param policyOverride string = ''
 
 var namePrefix = toLower('${baseName}-${environmentType}')
-var defaultPolicy = loadTextContent('../../../practix/apim/policies/check-entitlement.xml')
+var defaultPolicy = loadTextContent('../../../Practx/apim/policies/check-entitlement.xml')
 var policyContent = empty(policyOverride) ? defaultPolicy : policyOverride
 
-module apim '../../../practix/infra/modules/apim.bicep' = {
+module apim '../../../Practx/infra/modules/apim.bicep' = {
   name: '${namePrefix}-apim'
   params: {
     namePrefix: namePrefix

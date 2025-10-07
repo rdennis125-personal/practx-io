@@ -1,7 +1,7 @@
 # Practx Brand System Migration Report
 
 ## Discovery Summary
-- **Application stack:** Next.js 14 (App Router) with TypeScript 5.3, Tailwind CSS 3.4, PostCSS, and ESLint. Package manifest located at `practix/apps/web/package.json`.
+- **Application stack:** Next.js 14 (App Router) with TypeScript 5.3, Tailwind CSS 3.4, PostCSS, and ESLint. Package manifest located at `Practx/apps/web/package.json`.
 - **Entry points:** Global layout defined in `app/layout.tsx` and global stylesheet `app/globals.css`. App router pages live under `app/`.
 - **Styling today:** Source-of-truth tokens now live in `UX/brand.css` and are imported once at the app shell. Legacy `src/styles/*` files were removed.
 - **Assets:** Brand artifacts located in `UX/` (tokens.json, brand.css, practx-tailwind.config.js, component-gallery.html, README). Gallery replicated to `public/brand-gallery.html` for quick QA.

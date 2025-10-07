@@ -10,7 +10,7 @@ builder.Services.AddSwaggerGen();
 var connectionString = builder.Configuration.GetConnectionString("SQLCONN") ?? builder.Configuration["SQLCONN"];
 if (string.IsNullOrWhiteSpace(connectionString))
 {
-    connectionString = "Server=localhost;Database=practix;Integrated Security=true;Encrypt=false";
+    connectionString = "Server=localhost;Database=Practx;Integrated Security=true;Encrypt=false";
 }
 
 builder.Services.AddSingleton(new SqlConnectionFactory(connectionString));
@@ -171,13 +171,13 @@ app.Run();
 
 static bool TryResolveOrgId(ClaimsPrincipal user, HttpContext context, out Guid orgId)
 {
-    var orgClaim = user.FindFirst("practix/org_id")?.Value;
+    var orgClaim = user.FindFirst("Practx/org_id")?.Value;
     if (Guid.TryParse(orgClaim, out orgId))
     {
         return true;
     }
 
-    if (Guid.TryParse(context.Request.Headers["x-practix-org"], out orgId))
+    if (Guid.TryParse(context.Request.Headers["x-Practx-org"], out orgId))
     {
         return true;
     }

@@ -2,7 +2,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.34723.18
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Practix.Api", "apps\api\Practix.Api.csproj", "{9B9E4E08-DBA4-4BDF-B7E3-FA46BFEA925A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Practx.Api", "apps\api\Practx.Api.csproj", "{9B9E4E08-DBA4-4BDF-B7E3-FA46BFEA925A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StripeWebhook", "functions\StripeWebhook\StripeWebhook.csproj", "{ECC862EA-AE01-4D79-9867-BECD8C2F8EA0}"
 EndProject
