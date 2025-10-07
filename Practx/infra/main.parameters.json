@@ -3,9 +3,9 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "env": { "value": "dev" },
-    "baseName": { "value": "practix" },
+    "baseName": { "value": "Practx" },
     "location": { "value": "westus2" },
-    "sqlAdminLogin": { "value": "practixadmin" },
+    "sqlAdminLogin": { "value": "Practxadmin" },
     "sqlAdminPassword": { "value": "ChangeMe123!" },
     "stripeSecretKey": { "value": "sk_test_placeholder" },
     "stripePublicKey": { "value": "pk_test_placeholder" },

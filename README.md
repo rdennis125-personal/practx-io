@@ -26,7 +26,7 @@ The web application imports the source-of-truth brand tokens from `UX/brand.css`
 - DM Sans is loaded globally via `app/head.tsx`; do not add additional font packages.
 - Use the `@/ui` primitives (Button, Input, Card, Alert, Navbar, Tabs, Toast, Modal, ThemeToggle) whenever possible—they wrap the CSS primitives shipped in `UX/brand.css` and include accessibility defaults.
 - Tailwind utilities are mapped to the token set (`primary`, `accent`, `neutral`, etc.) in `tailwind.config.ts`. Stick to those semantic names or reference the CSS variables directly (e.g., `var(--color-primary-800)`).
-- Run `npm run scan:tokens` inside `practix/apps/web` to surface legacy hard-coded colors, radii, and shadows that still need migration.
+- Run `npm run scan:tokens` inside `Practx/apps/web` to surface legacy hard-coded colors, radii, and shadows that still need migration.
 - Component and accessibility tests live under `src/ui/__tests__`; run `npm test` after modifying UI primitives to ensure coverage and axe checks stay green.
 
 See `MIGRATION_REPORT.md` for detailed progress, mapping tables, and follow-up items.
@@ -41,7 +41,7 @@ See `MIGRATION_REPORT.md` for detailed progress, mapping tables, and follow-up i
 2. Azure CLI (latest) with Bicep support (`az bicep install`).
 3. Access to the Azure Dev Center/Developer Portal where the `DEV` environment type is published.【F:Environments/README.md†L3-L22】
 4. GitHub repository administrator rights to configure Actions secrets/variables.
-5. Application runtimes for local validation as needed: Node.js 18 for the Next.js web app and .NET 8 for the API and Stripe Function.【F:practix/infra/modules/appservice.bicep†L33-L62】【F:practix/apps/api/Practix.Api.csproj†L1-L11】【F:practix/infra/modules/functions.bicep†L35-L68】
+5. Application runtimes for local validation as needed: Node.js 18 for the Next.js web app and .NET 8 for the API and Stripe Function.【F:Practx/infra/modules/appservice.bicep†L33-L62】【F:Practx/apps/api/Practx.Api.csproj†L1-L11】【F:Practx/infra/modules/functions.bicep†L35-L68】
 
 ### One-time GitHub setup (OIDC)
 
@@ -72,10 +72,10 @@ See `MIGRATION_REPORT.md` for detailed progress, mapping tables, and follow-up i
 
 **Infra components provisioned**
 
-- Azure API Management Developer SKU enforcing the entitlement policy.【F:practix/infra/modules/apim.bicep†L7-L33】
-- Application Insights instance for telemetry (connection string exported for other modules).【F:practix/infra/modules/insights.bicep†L1-L18】
-- Premium v3 Linux App Service plan with web (Next.js) and API (.NET 8) apps wired to Key Vault secrets.【F:practix/infra/modules/appservice.bicep†L11-L123】
-- Azure Functions Consumption plan hosting the Stripe webhook function, backed by the shared storage account and Key Vault secrets.【F:practix/infra/modules/functions.bicep†L15-L75】
+- Azure API Management Developer SKU enforcing the entitlement policy.【F:Practx/infra/modules/apim.bicep†L7-L33】
+- Application Insights instance for telemetry (connection string exported for other modules).【F:Practx/infra/modules/insights.bicep†L1-L18】
+- Premium v3 Linux App Service plan with web (Next.js) and API (.NET 8) apps wired to Key Vault secrets.【F:Practx/infra/modules/appservice.bicep†L11-L123】
+- Azure Functions Consumption plan hosting the Stripe webhook function, backed by the shared storage account and Key Vault secrets.【F:Practx/infra/modules/functions.bicep†L15-L75】
 - Azure Key Vault seeded with SQL, Stripe, B2C, and storage secrets for downstream apps.【F:Environments/EnvironmentDefinitions/practx-keyvault/main.bicep†L49-L70】
 - Azure SQL flexible server + database using the supplied administrator credentials.【F:Environments/EnvironmentDefinitions/practx-sql/main.bicep†L24-L36】
 - Shared StorageV2 account (Data Lake optional) for artifacts and Functions storage.【F:Environments/EnvironmentDefinitions/practx-shared-storage/main.bicep†L12-L47】
@@ -97,20 +97,20 @@ Use the Azure portal to confirm the resource group contains the components liste
 ### App configuration
 
 1. From the environment deployment outputs, note the Key Vault name/URI, SQL connection string, Application Insights connection string, and Storage account connection string.【F:Environments/EnvironmentDefinitions/practx-keyvault/main.bicep†L49-L70】【F:Environments/EnvironmentDefinitions/practx-application-insights/main.bicep†L18-L28】【F:Environments/EnvironmentDefinitions/practx-sql/main.bicep†L24-L36】
-2. Verify that the App Service apps and Function app picked up their app settings via Key Vault references (e.g., `SQLCONN`, `STRIPE_*`, `B2C_*`, `STORAGE_CONNECTION`).【F:practix/infra/modules/appservice.bicep†L34-L117】【F:practix/infra/modules/functions.bicep†L35-L68】
-3. Populate the SQL database with the baseline schema and optional seed data before testing the API.【F:practix/schemas/sql/001_core.sql†L1-L39】【F:practix/schemas/sql/010_seed.sql†L1-L40】
+2. Verify that the App Service apps and Function app picked up their app settings via Key Vault references (e.g., `SQLCONN`, `STRIPE_*`, `B2C_*`, `STORAGE_CONNECTION`).【F:Practx/infra/modules/appservice.bicep†L34-L117】【F:Practx/infra/modules/functions.bicep†L35-L68】
+3. Populate the SQL database with the baseline schema and optional seed data before testing the API.【F:Practx/schemas/sql/001_core.sql†L1-L39】【F:Practx/schemas/sql/010_seed.sql†L1-L40】
 4. If you deploy additional application code from CI/CD, replicate these settings as App Service application settings or Azure Function configuration. For local development, place the same values in `.env.local`, `local.settings.json`, or user secrets as appropriate.
 
 ### First run / Smoke test
 
-1. Browse to `https://<web-app-name>.azurewebsites.net` to confirm the Next.js front end loads with the correct API base URL and B2C settings sourced from Key Vault.【F:practix/infra/modules/appservice.bicep†L34-L62】【F:practix/apps/web/lib/config.ts†L1-L8】
+1. Browse to `https://<web-app-name>.azurewebsites.net` to confirm the Next.js front end loads with the correct API base URL and B2C settings sourced from Key Vault.【F:Practx/infra/modules/appservice.bicep†L34-L62】【F:Practx/apps/web/lib/config.ts†L1-L8】
 2. Exercise the API by invoking the placeholder Stripe checkout endpoint (no auth required):
 
 ```
 curl https://<api-app-name>.azurewebsites.net/billing/checkout
 ```
 
-The response should include a `checkoutUrl` as defined in the API project.【F:practix/apps/api/Program.cs†L164-L168】
+The response should include a `checkoutUrl` as defined in the API project.【F:Practx/apps/api/Program.cs†L164-L168】
 
 ### CI/CD hooks in this repo
 
@@ -155,15 +155,15 @@ The response should include a `checkoutUrl` as defined in the API project.【F:p
 | `AZURE_DEV_CENTER_RG` | `.github/workflows/devcenter-catalog-sync.yml`【F:.github/workflows/devcenter-catalog-sync.yml†L40-L49】 | Resource group containing the Dev Center. | GitHub repository variable set to the resource group name. |
 | `AZURE_DEVCENTER` | `.github/workflows/devcenter-catalog-sync.yml`【F:.github/workflows/devcenter-catalog-sync.yml†L40-L49】 | Dev Center resource name for catalog sync. | GitHub repository variable with the Dev Center name. |
 | `AZURE_CATALOG` | `.github/workflows/devcenter-catalog-sync.yml`【F:.github/workflows/devcenter-catalog-sync.yml†L40-L49】 | Catalog name targeted by the sync workflow. | GitHub repository variable set to the catalog resource name. |
-| `SQLCONN` | Key Vault secret referenced by App Service & Functions; API reads the value at runtime.【F:Environments/EnvironmentDefinitions/practx-keyvault/main.bicep†L49-L70】【F:practix/infra/modules/appservice.bicep†L79-L117】【F:practix/infra/modules/functions.bicep†L35-L68】【F:practix/apps/api/Program.cs†L10-L16】 | SQL connection string shared across the API and Functions. | Store as a Key Vault secret populated during environment deployment (value from SQL module output). |
-| `STRIPE_SECRET_KEY` | Key Vault secret consumed by App Service and Functions.【F:Environments/EnvironmentDefinitions/practx-keyvault/main.bicep†L49-L70】【F:practix/infra/modules/appservice.bicep†L79-L104】【F:practix/infra/modules/functions.bicep†L35-L67】 | Stripe secret API key for server-side calls and webhooks. | Store as a Key Vault secret using the Stripe dashboard value. |
-| `STRIPE_PUBLIC_KEY` | Key Vault secret exposed to the API app settings.【F:Environments/EnvironmentDefinitions/practx-keyvault/main.bicep†L49-L70】【F:practix/infra/modules/appservice.bicep†L79-L105】 | Stripe publishable key used by the API/frontend. | Store as a Key Vault secret from the Stripe dashboard. |
-| `STRIPE_PRICE_ID` | Key Vault secret consumed by the API and Function apps.【F:Environments/EnvironmentDefinitions/practx-keyvault/main.bicep†L49-L70】【F:practix/infra/modules/appservice.bicep†L79-L104】【F:practix/infra/modules/functions.bicep†L35-L67】 | Stripe price identifier for subscription enforcement. | Store as a Key Vault secret using the target Stripe price ID. |
-| `STRIPE_WEBHOOK_SECRET` | Key Vault secret for the Stripe webhook Function.【F:Environments/EnvironmentDefinitions/practx-keyvault/main.bicep†L49-L70】【F:practix/infra/modules/functions.bicep†L35-L64】 | Verifies inbound Stripe webhook signatures. | Store as a Key Vault secret generated by Stripe webhook setup. |
-| `B2C_TENANT` | Key Vault secret injected into App Service apps.【F:Environments/EnvironmentDefinitions/practx-keyvault/main.bicep†L49-L63】【F:practix/infra/modules/appservice.bicep†L34-L117】 | Entra External ID tenant domain for authentication. | Store as a Key Vault secret sourced from the B2C tenant. |
-| `B2C_CLIENT_ID` | Key Vault secret injected into App Service apps.【F:Environments/EnvironmentDefinitions/practx-keyvault/main.bicep†L49-L63】【F:practix/infra/modules/appservice.bicep†L34-L117】 | Entra External ID application (SPA/API) client ID. | Store as a Key Vault secret from the B2C app registration. |
-| `B2C_SIGNIN_POLICY` | Key Vault secret injected into App Service apps.【F:Environments/EnvironmentDefinitions/practx-keyvault/main.bicep†L49-L63】【F:practix/infra/modules/appservice.bicep†L34-L117】 | Entra External ID sign-in/user flow policy name. | Store as a Key Vault secret from the B2C user flow. |
-| `STORAGE_CONNECTION` | Key Vault secret consumed by App Service and Functions.【F:Environments/EnvironmentDefinitions/practx-keyvault/main.bicep†L49-L63】【F:practix/infra/modules/appservice.bicep†L79-L117】【F:practix/infra/modules/functions.bicep†L35-L68】 | Storage account connection string for data lake or integration scenarios. | Store as a Key Vault secret populated from the storage account access keys. |
+| `SQLCONN` | Key Vault secret referenced by App Service & Functions; API reads the value at runtime.【F:Environments/EnvironmentDefinitions/practx-keyvault/main.bicep†L49-L70】【F:Practx/infra/modules/appservice.bicep†L79-L117】【F:Practx/infra/modules/functions.bicep†L35-L68】【F:Practx/apps/api/Program.cs†L10-L16】 | SQL connection string shared across the API and Functions. | Store as a Key Vault secret populated during environment deployment (value from SQL module output). |
+| `STRIPE_SECRET_KEY` | Key Vault secret consumed by App Service and Functions.【F:Environments/EnvironmentDefinitions/practx-keyvault/main.bicep†L49-L70】【F:Practx/infra/modules/appservice.bicep†L79-L104】【F:Practx/infra/modules/functions.bicep†L35-L67】 | Stripe secret API key for server-side calls and webhooks. | Store as a Key Vault secret using the Stripe dashboard value. |
+| `STRIPE_PUBLIC_KEY` | Key Vault secret exposed to the API app settings.【F:Environments/EnvironmentDefinitions/practx-keyvault/main.bicep†L49-L70】【F:Practx/infra/modules/appservice.bicep†L79-L105】 | Stripe publishable key used by the API/frontend. | Store as a Key Vault secret from the Stripe dashboard. |
+| `STRIPE_PRICE_ID` | Key Vault secret consumed by the API and Function apps.【F:Environments/EnvironmentDefinitions/practx-keyvault/main.bicep†L49-L70】【F:Practx/infra/modules/appservice.bicep†L79-L104】【F:Practx/infra/modules/functions.bicep†L35-L67】 | Stripe price identifier for subscription enforcement. | Store as a Key Vault secret using the target Stripe price ID. |
+| `STRIPE_WEBHOOK_SECRET` | Key Vault secret for the Stripe webhook Function.【F:Environments/EnvironmentDefinitions/practx-keyvault/main.bicep†L49-L70】【F:Practx/infra/modules/functions.bicep†L35-L64】 | Verifies inbound Stripe webhook signatures. | Store as a Key Vault secret generated by Stripe webhook setup. |
+| `B2C_TENANT` | Key Vault secret injected into App Service apps.【F:Environments/EnvironmentDefinitions/practx-keyvault/main.bicep†L49-L63】【F:Practx/infra/modules/appservice.bicep†L34-L117】 | Entra External ID tenant domain for authentication. | Store as a Key Vault secret sourced from the B2C tenant. |
+| `B2C_CLIENT_ID` | Key Vault secret injected into App Service apps.【F:Environments/EnvironmentDefinitions/practx-keyvault/main.bicep†L49-L63】【F:Practx/infra/modules/appservice.bicep†L34-L117】 | Entra External ID application (SPA/API) client ID. | Store as a Key Vault secret from the B2C app registration. |
+| `B2C_SIGNIN_POLICY` | Key Vault secret injected into App Service apps.【F:Environments/EnvironmentDefinitions/practx-keyvault/main.bicep†L49-L63】【F:Practx/infra/modules/appservice.bicep†L34-L117】 | Entra External ID sign-in/user flow policy name. | Store as a Key Vault secret from the B2C user flow. |
+| `STORAGE_CONNECTION` | Key Vault secret consumed by App Service and Functions.【F:Environments/EnvironmentDefinitions/practx-keyvault/main.bicep†L49-L63】【F:Practx/infra/modules/appservice.bicep†L79-L117】【F:Practx/infra/modules/functions.bicep†L35-L68】 | Storage account connection string for data lake or integration scenarios. | Store as a Key Vault secret populated from the storage account access keys. |
 
 ### Troubleshooting
 
@@ -200,7 +200,7 @@ Secrets required by the workflows are detailed in the **Dev Center automation** 
 ## Structure
 
 ```
-practix/
+Practx/
 ├─ apps/
 │  ├─ web/                     # Next.js 14 application (marketing + /app + /elm)
 │  └─ api/                     # .NET 8 minimal API
@@ -219,11 +219,11 @@ practix/
 ## Getting Started
 
 1. Install dependencies for each project:
-   - `cd practix/apps/web && npm install`
-   - `cd practix/apps/api && dotnet restore`
-   - `cd practix/functions/StripeWebhook && dotnet restore`
-2. When using Visual Studio, open `practix/Practix.sln` to load the API and Stripe webhook projects (`practix/apps/api/Practix.Api.csproj`
-   and `practix/functions/StripeWebhook/StripeWebhook.csproj`). Opening the repository folder directly (File → Open → Folder…)
+   - `cd Practx/apps/web && npm install`
+   - `cd Practx/apps/api && dotnet restore`
+   - `cd Practx/functions/StripeWebhook && dotnet restore`
+2. When using Visual Studio, open `Practx/Practx.sln` to load the API and Stripe webhook projects (`Practx/apps/api/Practx.Api.csproj`
+   and `Practx/functions/StripeWebhook/StripeWebhook.csproj`). Opening the repository folder directly (File → Open → Folder…)
    also works if you want Visual Studio to discover the projects without the solution file.
 3. Provision infrastructure with `az deployment group create` using `infra/main.bicep`.
 4. Configure Entra External ID (B2C) user flow and update Key Vault secrets for B2C and Stripe settings.
@@ -257,7 +257,7 @@ invokes `az devcenter admin catalog sync` using the remaining variables.
 ### Azure DevOps pipeline
 
 An equivalent Azure Pipelines definition is available at
-`practix/.ado/pipelines/environment-catalog-ci.yml` for teams running CI/CD in Azure DevOps.
+`Practx/.ado/pipelines/environment-catalog-ci.yml` for teams running CI/CD in Azure DevOps.
 
 
 ## Payments and settlements prototype

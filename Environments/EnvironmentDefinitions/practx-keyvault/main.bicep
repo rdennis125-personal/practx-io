@@ -46,7 +46,7 @@ param storageConnectionString string
 var namePrefix = toLower('${baseName}-${environmentType}')
 var keyVaultName = replace('${namePrefix}-kv', '-', '')
 
-module keyVault '../../../practix/infra/modules/keyvault.bicep' = {
+module keyVault '../../../Practx/infra/modules/keyvault.bicep' = {
   name: '${namePrefix}-kv'
   params: {
     name: keyVaultName

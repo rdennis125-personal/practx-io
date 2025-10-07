@@ -27,16 +27,16 @@ You can leave the `Environments/` catalog intact. Nothing in the steps below dep
    az group create --name <resource-group> --location westus2
    ```
 
-3. Deploy the Bicep template that normally runs through Dev Center. The `practix/infra/main.bicep` file emits the App Service plan/web app, API, Functions app, Key Vault, SQL flexible server, Storage account, Application Insights, and API Management resources for the chosen environment label.【F:practix/infra/main.bicep†L1-L87】 Prepare a parameters file (you can start from `practix/infra/main.parameters.json`) with the environment name, base name, admin credentials, Stripe keys, and B2C identifiers—keep the `location` parameter set to `westus2` to match the required region.【F:practix/infra/main.parameters.json†L1-L20】 Then run:
+3. Deploy the Bicep template that normally runs through Dev Center. The `Practx/infra/main.bicep` file emits the App Service plan/web app, API, Functions app, Key Vault, SQL flexible server, Storage account, Application Insights, and API Management resources for the chosen environment label.【F:Practx/infra/main.bicep†L1-L87】 Prepare a parameters file (you can start from `Practx/infra/main.parameters.json`) with the environment name, base name, admin credentials, Stripe keys, and B2C identifiers—keep the `location` parameter set to `westus2` to match the required region.【F:Practx/infra/main.parameters.json†L1-L20】 Then run:
 
    ```bash
    az deployment group create \
      --resource-group <resource-group> \
-     --template-file practix/infra/main.bicep \
-     --parameters @practix/infra/main.parameters.json
+     --template-file Practx/infra/main.bicep \
+     --parameters @Practx/infra/main.parameters.json
    ```
 
-   Replace the parameter file path if you keep secrets in a secure location (for example, Azure Key Vault or an encrypted storage account). The deployment outputs include the web app, API app, Function app, SQL connection string, and Key Vault URI for follow-up configuration.【F:practix/infra/main.bicep†L73-L87】
+   Replace the parameter file path if you keep secrets in a secure location (for example, Azure Key Vault or an encrypted storage account). The deployment outputs include the web app, API app, Function app, SQL connection string, and Key Vault URI for follow-up configuration.【F:Practx/infra/main.bicep†L73-L87】
 
 4. Keep the `.github/workflows/bicep-validate.yml` workflow enabled so pull requests still build any changed Bicep files. This guardrail catches template regressions even though you are not provisioning through Dev Center.【F:.github/workflows/bicep-validate.yml†L1-L57】
 

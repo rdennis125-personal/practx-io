@@ -24,7 +24,7 @@ param appInsightsConnectionString string
 
 var namePrefix = toLower('${baseName}-${environmentType}')
 
-module appService '../../../practix/infra/modules/appservice.bicep' = {
+module appService '../../../Practx/infra/modules/appservice.bicep' = {
   name: '${namePrefix}-apps'
   params: {
     namePrefix: namePrefix

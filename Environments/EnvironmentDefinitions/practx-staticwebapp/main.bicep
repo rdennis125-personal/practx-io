@@ -40,7 +40,7 @@ param stagingEnvironmentPolicy string = 'Enabled'
 
 var namePrefix = toLower('${baseName}-${environmentType}')
 
-module staticWebApp '../../../practix/infra/modules/staticwebapp.bicep' = {
+module staticWebApp '../../../Practx/infra/modules/staticwebapp.bicep' = {
   name: '${namePrefix}-staticwebapp'
   params: {
     namePrefix: namePrefix
