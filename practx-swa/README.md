@@ -107,7 +107,7 @@ az staticwebapp create \
 practx-swa/
   frontend/
     assets/
-      logo.svg
+      logo.png
       styles.css
     index.html
     hygiene.html
