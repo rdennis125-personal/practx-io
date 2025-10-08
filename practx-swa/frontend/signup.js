@@ -11,6 +11,57 @@
     alertBox.classList.add('show');
   }
 
+  const COOKIE_NAME = 'practx_uid';
+
+  function getCookie(name) {
+    return document.cookie
+      .split(';')
+      .map((cookie) => cookie.trim())
+      .find((cookie) => cookie.startsWith(`${name}=`))
+      ?.split('=')[1];
+  }
+
+  function setCookie(name, value, days) {
+    const expires = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toUTCString();
+    document.cookie = `${name}=${value}; expires=${expires}; path=/; SameSite=Lax`;
+  }
+
+  function getUserToken() {
+    let token = getCookie(COOKIE_NAME);
+    if (!token) {
+      token = window.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+      setCookie(COOKIE_NAME, token, 365);
+    }
+    return token;
+  }
+
+  function toHex(buffer) {
+    return Array.from(new Uint8Array(buffer))
+      .map((b) => b.toString(16).padStart(2, '0'))
+      .join('');
+  }
+
+  function fallbackHash(text) {
+    let hash = 2166136261;
+    for (let i = 0; i < text.length; i += 1) {
+      hash ^= text.charCodeAt(i);
+      hash += (hash << 1) + (hash << 4) + (hash << 7) + (hash << 8) + (hash << 24);
+    }
+    return `fnv1a:${(hash >>> 0).toString(16).padStart(8, '0')}`;
+  }
+
+  async function hashText(text) {
+    if (window.crypto?.subtle?.digest) {
+      try {
+        const buffer = await window.crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+        return `sha256:${toHex(buffer)}`;
+      } catch (error) {
+        // fall through to fallback hash
+      }
+    }
+    return fallbackHash(text);
+  }
+
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
 
@@ -36,30 +87,49 @@
       return;
     }
 
-    showAlert('Submitting…');
+    showAlert('Opening your email client…');
 
-    try {
-      const response = await fetch('/api/signup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name, email, company, interest }),
-      });
-
-      const data = await response.json().catch(() => ({ ok: false, error: 'Invalid response' }));
-
-      if (!response.ok || !data.ok) {
-        throw new Error(data.error || 'Unable to submit. Please try again.');
-      }
-
-      showAlert('Success! Redirecting…');
-      setTimeout(() => {
-        window.location.href = '/thank-you.html';
-      }, 1200);
-    } catch (err) {
-      console.error('Signup error', err);
-      showAlert(err.message || 'Something went wrong. Please retry.', true);
+    const subjectParts = ['Practx waitlist request'];
+    if (interest) {
+      subjectParts.push(`- ${interest}`);
     }
+
+    const userToken = getUserToken();
+    const submitterIdentity = (() => {
+      if (!event.submitter) return 'unknown';
+      return (
+        event.submitter.dataset?.trackingId ||
+        event.submitter.id ||
+        event.submitter.name ||
+        event.submitter.value ||
+        event.submitter.textContent?.trim() ||
+        'anonymous'
+      );
+    })();
+
+    const interactionSource = `${window.location.pathname}::${submitterIdentity}`;
+
+    const [userHash, interactionHash] = await Promise.all([
+      hashText(userToken),
+      hashText(interactionSource)
+    ]);
+
+    const details = [
+      `Name: ${name}`,
+      `Email: ${email}`,
+      company ? `Practice / Company: ${company}` : null,
+      `Primary interest: ${interest}`,
+      '',
+      '---',
+      'Tracking:',
+      `User hash: ${userHash}`,
+      `Interaction hash: ${interactionHash}`
+    ].filter(Boolean);
+
+    const mailto = `mailto:rdennis125@gmail.com?subject=${encodeURIComponent(subjectParts.join(' '))}&body=${encodeURIComponent(details.join('\n'))}`;
+
+    setTimeout(() => {
+      window.location.href = mailto;
+    }, 150);
   });
 })();
