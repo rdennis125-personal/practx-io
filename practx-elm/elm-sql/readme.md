@@ -226,3 +226,74 @@ components:
         occurredAt: { type: string, format: date-time }
         warrantyContractId: { type: string, format: uuid, nullable: true }
       required: [eventId, deviceId, providerId, serviceTypeId, occurredAt]
+
+    You are the database lead. Produce schema + seed that align to OpenAPI and the fixed GUIDs.
+
+File Tree
+elm-sql/
+  schema/
+    01_elm_schema.sql
+    02_seed_minimal.sql
+  scripts/
+    create_local.sqlcmd.ps1
+  bicep/
+    sql.bicep              # optional
+  ef/
+    ElmDbContext.cs        # optional
+    Migrations/            # optional
+
+Requirements
+
+Implement schema previously specified (all tables + FKs) under schema elm.
+
+Include:
+
+Trigger elm.trg_DeviceSpace_BlockFloating
+
+View elm.vw_WarrantyEligibility
+
+Function elm.fn_ProviderCertValid
+
+Trigger elm.trg_ServiceEvent_Validate
+
+Helpful indexes (as provided earlier)
+
+Use the exact fixed GUIDs in 02_seed_minimal.sql to match UX/API:
+
+Practice/Clinic/Spaces (PRACTICE_ID, CLINIC_ID, SPACE_OP1_ID, SPACE_STERIL_ID)
+
+Manufacturer, DeviceTypes, Models
+
+Devices: DEVICE_CHAIR_01, DEVICE_INSTR_01
+
+ServiceTypes: SERVTYPE_PM_ID, SERVTYPE_REPAIR_ID
+
+Provider + Certifications for PM on the chair model/type
+
+WarrantyDefinition WDEF_12MO_STD_ID covering PM; WarrantyContract WCONTRACT_CHAIR_01
+
+Ensure that:
+
+GET /clinics/{clinicId}/devices can join and return: type/model names, serial (nullable), and compute warranty badge (derive in API or expose a helper view).
+
+A PM service event on DEVICE_CHAIR_01 with WCONTRACT_CHAIR_01 on a valid date passes.
+
+A PM event with an expired cert or non-covered type fails with trigger message.
+
+Commands
+
+scripts/create_local.sqlcmd.ps1 should:
+
+Create DB practx_elm
+
+Execute schema/01_elm_schema.sql
+
+Execute schema/02_seed_minimal.sql
+
+Acceptance
+
+DB builds clean; seeds create rows with the exact GUIDs.
+
+Selecting elm.vw_WarrantyEligibility shows coverage for the seeded contract.
+
+Invalid ServiceEvent inserts fail as designed.
