@@ -1,0 +1,38 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --brand-primary: #2e5aac;
+  --brand-primary-dark: #20417a;
+  --brand-accent: #f4a261;
+  --brand-surface: #f5f7fb;
+  --brand-muted: #52606d;
+  --brand-text: #1f2933;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  * {
+    border-color: rgba(82, 96, 109, 0.16);
+  }
+
+  body {
+    font-family: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    @apply bg-brand-surface text-brand-text antialiased;
+  }
+
+  a {
+    @apply text-inherit no-underline transition-colors;
+  }
+
+  a:hover,
+  a:focus {
+    @apply text-brand-primary underline;
+  }
+}

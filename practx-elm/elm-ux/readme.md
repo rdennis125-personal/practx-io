@@ -256,13 +256,13 @@ elm-ux/
       dialogs/
         RegisterWarrantyDialog.tsx
         LogServiceEventDialog.tsx
-    assets/
-      logo.svg
   index.html
 
 Brand + Env
 
-Tailwind uses CSS vars set in styles/theme.css (--brand-primary, etc.).
+Tailwind uses CSS vars set in styles/theme.css (--brand-primary, etc.). Shared assets
+such as logo.png are consumed directly from practx-swa/frontend/assets via the
+@swa-assets alias to keep branding consistent across projects.
 
 .env.local.example
 
@@ -296,3 +296,59 @@ Commands
 npm i then npm run dev (port 5173).
 
 Include quickstart in README.
+
+---
+
+## Quick start
+
+1. Install dependencies:
+
+   ```bash
+   npm install
+   ```
+
+2. Copy the sample environment file and update values when needed:
+
+   ```bash
+   cp .env.local.example .env.local
+   ```
+
+3. Run the development server (listens on [http://localhost:5173](http://localhost:5173)):
+
+   ```bash
+   npm run dev
+   ```
+
+4. Build for production and preview the build:
+
+   ```bash
+   npm run build
+   npm run preview
+   ```
+
+The app expects the Practx ELM API to be available at `http://localhost:5080` with CORS enabled for `http://localhost:5173`.
+
+---
+
+## Practx ELM UX Quick Start
+
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
+2. Copy the example environment file and adjust as needed:
+   ```bash
+   cp .env.local.example .env.local
+   ```
+3. Start the Vite dev server (expects the API at `http://localhost:5080`):
+   ```bash
+   npm run dev
+   ```
+4. Open the app at [http://localhost:5173](http://localhost:5173) and sign in with any credentials to reach the equipment experience.
+5. Run quality checks before committing:
+   ```bash
+   npm run lint
+   npm run build
+   ```
+
+Tailwind, shadcn-inspired UI primitives, Axios, and Zod are pre-configured. Update `VITE_API_BASE_URL` in `.env.local` to point at other Practx API environments when necessary.
