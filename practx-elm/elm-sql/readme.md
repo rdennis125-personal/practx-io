@@ -297,3 +297,26 @@ DB builds clean; seeds create rows with the exact GUIDs.
 Selecting elm.vw_WarrantyEligibility shows coverage for the seeded contract.
 
 Invalid ServiceEvent inserts fail as designed.
+
+## Local database setup
+
+1. Ensure the [sqlcmd utility](https://learn.microsoft.com/sql/tools/sqlcmd/sqlcmd-utility) is available in your shell.
+2. From the `practx-elm/elm-sql` directory run the helper:
+
+   ```powershell
+   ./scripts/create_local.sqlcmd.ps1 -Server "localhost,1433" -IntegratedSecurity
+   ```
+
+   Use `-User`/`-Password` instead of `-IntegratedSecurity` when connecting to Azure SQL or SQL Edge containers.
+3. The script creates (or recreates) the `practx_elm` database, applies `schema/01_elm_schema.sql`, and then loads `schema/02_seed_minimal.sql`.
+
+### Connection string notes
+
+- Local developer default: `Server=localhost,1433;Database=practx_elm;Integrated Security=true;Encrypt=false;`
+- Azure SQL (AAD default auth): `Server=tcp:<your-server>.database.windows.net,1433;Database=practx_elm;Authentication=Active Directory Default;Encrypt=true;`
+
+### Validation checklist
+
+- Query `SELECT * FROM elm.vw_WarrantyEligibility;` to confirm the seeded contract is surfaced for device `DEVICE_CHAIR_01`.
+- Attempting to insert a service event without a valid certification or warranty coverage raises the trigger messages defined in `elm.trg_ServiceEvent_Validate`.
+- The API projects (`elm-api`, `elm-ux`) can connect with the connection strings above and immediately interact with the seeded entities.
