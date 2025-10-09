@@ -315,3 +315,60 @@ Strict compliance with OpenAPI payloads.
 CORS allows http://localhost:5173.
 
 Swappable adapters; both Blob & SQL pass tests for happy path.
+
+Run & Test
+---------
+
+```bash
+dotnet build
+dotnet test
+dotnet run --project src/Practx.ELM.Api --urls http://0.0.0.0:5080
+```
+
+The API automatically seeds the default data set on startup. For the Blob adapter you can re-run the seed data at any time (development only):
+
+```bash
+curl -X POST http://localhost:5080/dev/seed
+```
+
+Curl Examples
+-------------
+
+```bash
+# List clinic devices
+curl http://localhost:5080/clinics/22222222-2222-2222-2222-222222222222/devices
+
+# Device detail
+curl http://localhost:5080/devices/88888888-8888-8888-8888-888888888888
+
+# Active warranty snapshot on a date
+curl "http://localhost:5080/devices/88888888-8888-8888-8888-888888888888/warranty/active?on=2024-06-01"
+
+# Register a warranty contract
+curl -X POST http://localhost:5080/warranties/contracts \
+  -H "Content-Type: application/json" \
+  -d '{
+        "deviceId": "88888888-8888-8888-8888-888888888888",
+        "manufacturerId": "33333333-3333-3333-3333-333333333333",
+        "warrantyDefId": "ffffffff-ffff-ffff-ffff-ffffffffffff",
+        "registeredOn": "2024-01-01"
+      }'
+
+# Create a service event (valid against domain rules)
+curl -X POST http://localhost:5080/service-events \
+  -H "Content-Type: application/json" \
+  -d '{
+        "deviceId": "88888888-8888-8888-8888-888888888888",
+        "providerId": "cccccccc-cccc-cccc-cccc-cccccccccccc",
+        "serviceTypeId": "dddddddd-dddd-dddd-dddd-dddddddddddd",
+        "occurredAt": "2024-07-01T16:00:00Z",
+        "spaceId": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+        "warrantyContractId": "12121212-1212-1212-1212-121212121212",
+        "parts": [ { "partId": "00000000-0000-0000-0000-000000000001", "qty": 1, "lineCost": 500 } ]
+      }'
+
+# Lookups
+curl http://localhost:5080/lookups/service-types
+curl http://localhost:5080/lookups/device-types
+curl http://localhost:5080/lookups/providers
+```
