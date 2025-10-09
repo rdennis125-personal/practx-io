@@ -226,3 +226,73 @@ components:
         occurredAt: { type: string, format: date-time }
         warrantyContractId: { type: string, format: uuid, nullable: true }
       required: [eventId, deviceId, providerId, serviceTypeId, occurredAt]
+You are the front-end lead. Produce a production-quality React SPA that implements the OpenAPI above exactly.
+
+File Tree (create these files)
+elm-ux/
+  package.json
+  vite.config.ts
+  tsconfig.json
+  postcss.config.js
+  tailwind.config.js
+  .eslintrc.cjs
+  .prettierrc
+  .env.local.example
+  src/
+    main.tsx
+    App.tsx
+    styles/theme.css
+    lib/api.ts
+    lib/types.ts          # generated from OpenAPI (or hand-mirrored)
+    routes/
+      index.tsx
+      Login.tsx
+      ClinicDevices.tsx
+      DeviceDetail.tsx
+    components/
+      Layout.tsx
+      DeviceTable.tsx
+      WarrantyBadge.tsx
+      dialogs/
+        RegisterWarrantyDialog.tsx
+        LogServiceEventDialog.tsx
+    assets/
+      logo.svg
+  index.html
+
+Brand + Env
+
+Tailwind uses CSS vars set in styles/theme.css (--brand-primary, etc.).
+
+.env.local.example
+
+VITE_API_BASE_URL=http://localhost:5080
+VITE_ENV_NAME=DEV
+
+Data Contracts (mirror OpenAPI types)
+
+Implement TS types in lib/types.ts from the schemas above (or wire an OpenAPI client generator).
+
+Axios instance in lib/api.ts with base URL + error interceptor.
+
+Screens
+
+/clinics/:clinicId/devices: table with filters; uses GET /clinics/{id}/devices.
+
+/devices/:deviceId: detail + warranty panel (calls /devices/{id}, /devices/{id}/warranty/active?on=).
+
+Dialogs for POST /warranties/contracts and POST /service-events, showing server validation messages inline + toasts.
+
+Acceptance
+
+Matches OpenAPI exactly (fields & shapes).
+
+Renders warranty badge states: active, expired, none.
+
+Form submits show server-side validation details.
+
+Commands
+
+npm i then npm run dev (port 5173).
+
+Include quickstart in README.
