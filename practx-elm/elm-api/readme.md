@@ -226,3 +226,92 @@ components:
         occurredAt: { type: string, format: date-time }
         warrantyContractId: { type: string, format: uuid, nullable: true }
       required: [eventId, deviceId, providerId, serviceTypeId, occurredAt]
+You are the back-end lead. Implement the API that fulfills the OpenAPI contract above, with a persistence factory (“Blob” | “Sql”).
+
+Solution Structure
+elm-api/
+  src/
+    Practx.ELM.Api/
+      Program.cs
+      appsettings.json
+      appsettings.Development.json
+      OpenApi/elm-v1.yaml         # copy of contract above for swagger examples
+      Endpoints/
+        DevicesEndpoints.cs
+        WarrantiesEndpoints.cs
+        ServiceEventsEndpoints.cs
+        LookupsEndpoints.cs
+      Dtos/
+        DevicesDtos.cs
+        WarrantiesDtos.cs
+        ServiceEventsDtos.cs
+      Validation/
+        *.cs
+    Practx.ELM.Domain/
+      Entities/ (Device, DeviceModel, Manufacturer, Warranty* ...)
+      ValueObjects/
+      Services/ (WarrantyValidator, CertChecker)
+      Ports/
+        IDeviceRepository.cs
+        IWarrantyRepository.cs
+        IServiceEventRepository.cs
+        ILookupRepository.cs
+    Practx.ELM.Persistence/
+      PersistenceFactory.cs
+      Blob/
+        BlobDeviceRepository.cs
+        BlobWarrantyRepository.cs
+        BlobServiceEventRepository.cs
+        TableIndexes.cs
+      Sql/
+        ElmDbContext.cs
+        Configurations/*.cs
+        SqlDeviceRepository.cs
+        SqlWarrantyRepository.cs
+        SqlServiceEventRepository.cs
+  tests/
+    Practx.ELM.Tests/
+      WarrantyValidatorTests.cs
+      CertCheckerTests.cs
+      PlacementRuleTests.cs
+      ServiceEventIntegration_BlobTests.cs
+
+Behavior Requirements
+
+Domain rules enforced in code:
+
+No DeviceSpace for types INSTRUMENT, HANDPIECE.
+
+Provider cert must match (manufacturer + type [+model optional]) & be time-valid.
+
+Warranty (if given) must be active for date and cover service type.
+
+Swagger auto from attributes; include examples mirroring the OpenAPI shapes.
+
+Config toggle in appsettings.json:
+
+{
+  "Persistence": {
+    "Kind": "Blob",
+    "Blob": { "ConnectionString": "UseDevelopmentStorage=true", "ContainerFormat": "practx-elm-{env}-{tenantId}" },
+    "Sql":  { "ConnectionString": "Server=localhost;Database=practx_elm;Authentication=Active Directory Default;" }
+  },
+  "Cors": { "AllowedOrigins": [ "http://localhost:5173" ] }
+}
+
+
+Seed endpoint (dev only) /dev/seed to insert objects with the static GUIDs above when Blob adapter is active (mirrors SQL seed).
+
+Commands
+
+dotnet run (port 5080).
+
+curl smoke tests in README for each endpoint using the fixed GUIDs.
+
+Acceptance
+
+Strict compliance with OpenAPI payloads.
+
+CORS allows http://localhost:5173.
+
+Swappable adapters; both Blob & SQL pass tests for happy path.
