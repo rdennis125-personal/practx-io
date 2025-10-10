@@ -33,8 +33,8 @@ WCONTRACT_CHAIR_01 = 12121212-1212-1212-1212-121212121212
 
 ## CI/CD quick start
 
-- **GitHub** – The repository ships with `.github/workflows/practx-elm-ci.yml`, which restores the .NET API, runs `dotnet test`, lint/builds the Vite UX, and uploads both build outputs as artifacts. No additional secrets are necessary; enabling GitHub Actions for the repository is sufficient.
-- **Azure DevOps** – Import `pipelines/practx-elm-azure-pipelines.yml` into a new pipeline and (optionally) attach a variable group named `Practx-ELM` to override defaults such as `BUILD_CONFIGURATION`, `DOTNET_VERSION`, `NODE_VERSION`, or the artifact names. The pipeline does not require service connections because it only produces build artifacts.
+- **GitHub** – The repository ships with `.github/workflows/practx-elm-ci.yml`, which packages the SQL schema, helper scripts, and README from `elm-sql` as a reusable artifact. No additional secrets are necessary; enabling GitHub Actions for the repository is sufficient.
+- **Azure DevOps** – Import `pipelines/practx-elm-azure-pipelines.yml` into a new pipeline and (optionally) attach a variable group named `Practx-ELM` to override defaults such as `DATA_WORKING_DIR` or `DATA_ARTIFACT_NAME`. The pipeline does not require service connections because it only stages files.
 
 
 OpenAPI v1 (authoritative; both API & UX must conform)

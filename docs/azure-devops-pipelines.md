@@ -52,32 +52,25 @@ Create a variable group named **`Practx-SWA`** (or define the variables directly
 
 ## Practx ELM pipeline (`pipelines/practx-elm-azure-pipelines.yml`)
 
-The Practx ELM pipeline validates both halves of the ELM module: the .NET 8 API (`elm-api`) and the Vite/React UX (`elm-ux`). It restores dependencies, runs unit tests and lint checks, and publishes build artifacts for downstream release pipelines.
+The Practx ELM pipeline currently focuses on the data layer. It packages the SQL schema and helper scripts under `elm-sql` so they can be consumed by downstream database deployment jobs.
 
 ### Triggers
 - Branch: `main`
 - Paths: `practx-elm/**` and the pipeline definition itself
 
 ### Jobs
-1. **API** – Restores the solution, builds with the selected configuration, executes `dotnet test`, and produces a publish-ready output under `$(Build.ArtifactStagingDirectory)/api`.
-2. **UX** – Installs Node.js, runs `npm ci`, executes the ESLint gate, builds the production bundle, and stages the `dist/` directory as an artifact.
+1. **Data** – Copies the SQL schema, helper scripts, and README into the artifact staging directory for publishing.
 
 ### Required configuration
 Link (or create) a variable group named **`Practx-ELM`** if you need to override the defaults baked into the YAML. The pipeline will run without any secrets, but the following optional variables are available for customization:
 
 | Variable | Default | Description |
 | --- | --- | --- |
-| `BUILD_CONFIGURATION` | `Release` | .NET build configuration used for the API. |
-| `DOTNET_VERSION` | `8.0.x` | SDK version installed via `UseDotNet@2`. |
-| `NODE_VERSION` | `18.x` | Node.js runtime installed for the UX build. |
-| `API_SOLUTION` | `practx-elm/elm-api/Practx.ELM.sln` | Path to the solution restored and built during the API job. |
-| `UX_WORKING_DIR` | `practx-elm/elm-ux` | Directory that hosts the Vite project. |
-| `API_ARTIFACT_NAME` | `practx-elm-api` | Name of the API build artifact that is published. |
-| `UX_ARTIFACT_NAME` | `practx-elm-ux` | Name of the UX build artifact that is published. |
+| `DATA_WORKING_DIR` | `practx-elm/elm-sql` | Directory that contains the SQL schema and scripts. |
+| `DATA_ARTIFACT_NAME` | `practx-elm-sql` | Name of the artifact that is published. |
 
 ### Artifact output
-- `practx-elm-api` – contents of the `dotnet publish` output suitable for deployment to App Service or Azure Container Apps.
-- `practx-elm-ux` – bundled frontend assets from `npm run build` ready to host via Static Web Apps or another static host.
+- `practx-elm-sql` – staged schema, scripts, and README ready for SQL deployment automation.
 
 ## Running the pipelines
 1. Import each YAML file into Azure DevOps as a new pipeline, pointing to the corresponding path in this repository.
