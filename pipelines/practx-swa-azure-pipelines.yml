@@ -1,46 +1,96 @@
-# Azure DevOps pipeline to build and deploy the Practx Static Web App
+# Azure DevOps pipeline to build and deploy the Practx Static Web App across DEV, QA1, and PROD
 # Required variables (variable group `Practx-SWA` recommended):
-#   AZURE_STATIC_WEB_APPS_API_TOKEN - deployment token from the Static Web App
-#   APP_LOCATION - optional override for frontend path (defaults to practx-swa/frontend)
-#   API_LOCATION - optional override for API path (defaults to practx-swa/api)
+#   AZURE_STATIC_WEB_APPS_API_TOKEN_DEV  - deployment token for the DEV Static Web App
+#   AZURE_STATIC_WEB_APPS_API_TOKEN_QA1  - deployment token for the QA1 Static Web App
+#   AZURE_STATIC_WEB_APPS_API_TOKEN_PROD - deployment token for the PROD Static Web App
+#   APP_LOCATION                          - optional override for frontend path (defaults to practx-swa/frontend)
+#   API_LOCATION                          - optional override for API path (defaults to practx-swa/api)
+#   PRODUCTION_BRANCH                     - optional override for the branch connected to the SWA (defaults to main)
 
-# trigger:
-#   branches:
-#     include:
-#       - main
-#   paths:
-#     include:
-#       - practx-swa/*
-#       - pipelines/practx-swa-azure-pipelines.yml
+trigger:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - practx-swa/*
+      - pipelines/practx-swa-azure-pipelines.yml
 
-# variables:
-#   - group: Practx-SWA
-#   - name: APP_LOCATION
-#     value: 'practx-swa/frontend'
-#   - name: API_LOCATION
-#     value: 'practx-swa/api'
+variables:
+  - group: Practx-SWA
+  - name: APP_LOCATION
+    value: 'practx-swa/frontend'
+  - name: API_LOCATION
+    value: 'practx-swa/api'
+  - name: PRODUCTION_BRANCH
+    value: 'main'
 
-# stages:
-#   - stage: BuildAndDeploy
-#     displayName: Build and deploy Static Web App
-#     jobs:
-#       - job: DeploySWA
-#         displayName: Deploy Practx Static Web App
-#         pool:
-#           vmImage: 'ubuntu-latest'
-#         steps:
-#           - checkout: self
-#             clean: true
-#           - task: NodeTool@0
-#             displayName: Use Node.js 18.x
-#             inputs:
-#               versionSpec: '18.x'
-#           - script: npm install --prefix $(API_LOCATION)
-#             displayName: Install API dependencies
-#           - task: AzureStaticWebApp@0
-#             displayName: Deploy to Azure Static Web Apps
-#             inputs:
-#               app_location: $(APP_LOCATION)
-#               api_location: $(API_LOCATION)
-#               skip_app_build: true
-#               azure_static_web_apps_api_token: $(AZURE_STATIC_WEB_APPS_API_TOKEN)
+stages:
+  - stage: BuildAndDeploy
+    displayName: Build and deploy Static Web App
+    jobs:
+      - job: Deploy_DEV
+        displayName: Deploy Practx Static Web App (DEV)
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - checkout: self
+            clean: true
+          - task: NodeTool@0
+            displayName: Use Node.js 18.x
+            inputs:
+              versionSpec: '18.x'
+          - script: npm install --prefix $(API_LOCATION)
+            displayName: Install API dependencies
+          - task: AzureStaticWebApp@0
+            displayName: Deploy to DEV
+            inputs:
+              app_location: $(APP_LOCATION)
+              api_location: $(API_LOCATION)
+              skip_app_build: true
+              production_branch: $(PRODUCTION_BRANCH)
+              azure_static_web_apps_api_token: $(AZURE_STATIC_WEB_APPS_API_TOKEN_DEV)
+
+      - job: Deploy_QA1
+        displayName: Deploy Practx Static Web App (QA1)
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - checkout: self
+            clean: true
+          - task: NodeTool@0
+            displayName: Use Node.js 18.x
+            inputs:
+              versionSpec: '18.x'
+          - script: npm install --prefix $(API_LOCATION)
+            displayName: Install API dependencies
+          - task: AzureStaticWebApp@0
+            displayName: Deploy to QA1
+            inputs:
+              app_location: $(APP_LOCATION)
+              api_location: $(API_LOCATION)
+              skip_app_build: true
+              production_branch: $(PRODUCTION_BRANCH)
+              azure_static_web_apps_api_token: $(AZURE_STATIC_WEB_APPS_API_TOKEN_QA1)
+
+      - job: Deploy_PROD
+        displayName: Deploy Practx Static Web App (PROD)
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - checkout: self
+            clean: true
+          - task: NodeTool@0
+            displayName: Use Node.js 18.x
+            inputs:
+              versionSpec: '18.x'
+          - script: npm install --prefix $(API_LOCATION)
+            displayName: Install API dependencies
+          - task: AzureStaticWebApp@0
+            displayName: Deploy to PROD
+            inputs:
+              app_location: $(APP_LOCATION)
+              api_location: $(API_LOCATION)
+              skip_app_build: true
+              production_branch: $(PRODUCTION_BRANCH)
+              azure_static_web_apps_api_token: $(AZURE_STATIC_WEB_APPS_API_TOKEN_PROD)
