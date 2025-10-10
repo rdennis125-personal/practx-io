@@ -116,6 +116,9 @@ The response should include a `checkoutUrl` as defined in the API project.【F:P
 
 - **Validate Bicep templates** – GitHub Action that runs on pushes and pull requests touching `*.bicep`, installing the Bicep CLI and building only changed files.【F:.github/workflows/bicep-validate.yml†L1-L69】
 - **Sync Dev Center catalog** – GitHub Action triggered by `Environments/**` changes on `main` (or manually) that logs in via OIDC and calls `az devcenter admin catalog sync`. Ensure the variables listed in the prerequisites are set so the workflow can authenticate.【F:.github/workflows/devcenter-catalog-sync.yml†L1-L49】
+- **Practx ELM CI** – GitHub Action that restores the Practx ELM solution, runs `dotnet test`, lint/builds the Vite UX, and uploads publishable artifacts on every push/PR touching `practx-elm/**`. No additional secrets are required; the workflow relies on the hosted runners and repository contents only.【F:.github/workflows/practx-elm-ci.yml†L1-L64】
+
+To mirror the same validation inside Azure DevOps, import `pipelines/practx-elm-azure-pipelines.yml` and link the optional `Practx-ELM` variable group described in [Azure DevOps Pipelines for Practx](docs/azure-devops-pipelines.md#practx-elm-pipeline-pipelinespractx-elm-azure-pipelinesyml). The YAML publishes API and UX artifacts ready for downstream release stages without requiring service connections.
 
 ### Variables & Secrets Reference
 

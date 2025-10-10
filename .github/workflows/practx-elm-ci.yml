@@ -1,0 +1,68 @@
+name: Practx ELM CI
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'practx-elm/**'
+      - '.github/workflows/practx-elm-ci.yml'
+  pull_request:
+    paths:
+      - 'practx-elm/**'
+      - '.github/workflows/practx-elm-ci.yml'
+
+jobs:
+  api:
+    name: Build and test API
+    runs-on: ubuntu-latest
+    env:
+      DOTNET_NOLOGO: 1
+      DOTNET_CLI_TELEMETRY_OPTOUT: 1
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Restore
+        run: dotnet restore practx-elm/elm-api/Practx.ELM.sln
+      - name: Build
+        run: dotnet build practx-elm/elm-api/Practx.ELM.sln --configuration Release --no-restore
+      - name: Test
+        run: dotnet test practx-elm/elm-api/Practx.ELM.sln --configuration Release --no-build --logger trx
+      - name: Publish API
+        run: dotnet publish src/Practx.ELM.Api/Practx.ELM.Api.csproj --configuration Release --no-build --output publish
+        working-directory: practx-elm/elm-api
+      - name: Upload API artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: practx-elm-api
+          path: practx-elm/elm-api/publish
+
+  ux:
+    name: Build and lint UX
+    runs-on: ubuntu-latest
+    needs: api
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+          cache: 'npm'
+          cache-dependency-path: practx-elm/elm-ux/package-lock.json
+      - name: Install dependencies
+        run: npm ci
+        working-directory: practx-elm/elm-ux
+      - name: Lint
+        run: npm run lint
+        working-directory: practx-elm/elm-ux
+      - name: Build
+        run: npm run build
+        working-directory: practx-elm/elm-ux
+      - name: Upload UX artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: practx-elm-ux
+          path: practx-elm/elm-ux/dist

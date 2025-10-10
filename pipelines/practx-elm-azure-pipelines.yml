@@ -1,0 +1,111 @@
+# Azure DevOps pipeline to build, test, and package the Practx ELM API and UX
+# Optional variable group `Practx-ELM` can override the defaults below:
+#   BUILD_CONFIGURATION - build configuration for the .NET solution (Release by default)
+#   DOTNET_VERSION      - SDK version used for the API build (8.0.x by default)
+#   NODE_VERSION        - Node.js runtime used for the UX build (18.x by default)
+#   API_SOLUTION        - path to the Practx ELM solution file
+#   UX_WORKING_DIR      - path to the Practx ELM UX project directory
+#   API_ARTIFACT_NAME   - name of the published API artifact
+#   UX_ARTIFACT_NAME    - name of the published UX artifact
+
+trigger:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - practx-elm/*
+      - pipelines/practx-elm-azure-pipelines.yml
+
+variables:
+  - group: Practx-ELM
+  - name: BUILD_CONFIGURATION
+    value: 'Release'
+  - name: DOTNET_VERSION
+    value: '8.0.x'
+  - name: NODE_VERSION
+    value: '18.x'
+  - name: API_SOLUTION
+    value: 'practx-elm/elm-api/Practx.ELM.sln'
+  - name: UX_WORKING_DIR
+    value: 'practx-elm/elm-ux'
+  - name: API_ARTIFACT_NAME
+    value: 'practx-elm-api'
+  - name: UX_ARTIFACT_NAME
+    value: 'practx-elm-ux'
+
+stages:
+  - stage: BuildAndTest
+    displayName: Build and test Practx ELM
+    jobs:
+      - job: Api
+        displayName: Build and test API
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - checkout: self
+            clean: true
+          - task: UseDotNet@2
+            displayName: Use .NET SDK $(DOTNET_VERSION)
+            inputs:
+              packageType: 'sdk'
+              version: '$(DOTNET_VERSION)'
+          - script: |
+              set -euo pipefail
+              dotnet restore $(API_SOLUTION)
+            displayName: Restore API dependencies
+          - script: |
+              set -euo pipefail
+              dotnet build $(API_SOLUTION) --configuration $(BUILD_CONFIGURATION) --no-restore
+            displayName: Build API
+          - script: |
+              set -euo pipefail
+              dotnet test $(API_SOLUTION) --configuration $(BUILD_CONFIGURATION) --no-build --logger trx
+            displayName: Test API
+          - script: |
+              set -euo pipefail
+              dotnet publish practx-elm/elm-api/src/Practx.ELM.Api/Practx.ELM.Api.csproj \
+                --configuration $(BUILD_CONFIGURATION) \
+                --no-build \
+                --output $(Build.ArtifactStagingDirectory)/api
+            displayName: Publish API artifact
+          - publish: $(Build.ArtifactStagingDirectory)/api
+            displayName: Upload API artifact
+            artifact: $(API_ARTIFACT_NAME)
+
+      - job: Ux
+        displayName: Build and lint UX
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - checkout: self
+            clean: true
+          - task: NodeTool@0
+            displayName: Use Node.js $(NODE_VERSION)
+            inputs:
+              versionSpec: '$(NODE_VERSION)'
+          - script: |
+              set -euo pipefail
+              npm ci
+            displayName: Install UX dependencies
+            workingDirectory: $(UX_WORKING_DIR)
+          - script: |
+              set -euo pipefail
+              npm run lint
+            displayName: Lint UX
+            workingDirectory: $(UX_WORKING_DIR)
+          - script: |
+              set -euo pipefail
+              npm run build
+            displayName: Build UX
+            workingDirectory: $(UX_WORKING_DIR)
+          - script: |
+              set -euo pipefail
+              mkdir -p $(Build.ArtifactStagingDirectory)/ux
+              cp -R dist/. $(Build.ArtifactStagingDirectory)/ux/
+            displayName: Stage UX artifact
+            workingDirectory: $(UX_WORKING_DIR)
+          - publish: $(Build.ArtifactStagingDirectory)/ux
+            displayName: Upload UX artifact
+            artifact: $(UX_ARTIFACT_NAME)
+

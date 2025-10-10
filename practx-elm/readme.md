@@ -31,6 +31,11 @@ SERVTYPE_REPAIR_ID = eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee
 WDEF_12MO_STD_ID   = ffffffff-ffff-ffff-ffff-ffffffffffff
 WCONTRACT_CHAIR_01 = 12121212-1212-1212-1212-121212121212
 
+## CI/CD quick start
+
+- **GitHub** – The repository ships with `.github/workflows/practx-elm-ci.yml`, which restores the .NET API, runs `dotnet test`, lint/builds the Vite UX, and uploads both build outputs as artifacts. No additional secrets are necessary; enabling GitHub Actions for the repository is sufficient.
+- **Azure DevOps** – Import `pipelines/practx-elm-azure-pipelines.yml` into a new pipeline and (optionally) attach a variable group named `Practx-ELM` to override defaults such as `BUILD_CONFIGURATION`, `DOTNET_VERSION`, `NODE_VERSION`, or the artifact names. The pipeline does not require service connections because it only produces build artifacts.
+
 
 OpenAPI v1 (authoritative; both API & UX must conform)
 
