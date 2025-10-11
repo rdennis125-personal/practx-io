@@ -161,12 +161,12 @@ main {
 }
 
 .button.danger {
-  background: #d32f2f;
+  background: #2e7d32;
 }
 
 .button.danger:hover,
 .button.danger:focus {
-  background: #b71c1c;
+  background: #1b5e20;
 }
 
 .button:disabled {
