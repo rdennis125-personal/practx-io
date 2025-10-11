@@ -1,0 +1,9 @@
+{
+  "routes": [
+    { "route": "/practice/*",  "allowedRoles": ["anonymous"] },
+    { "route": "/patient/*",   "allowedRoles": ["anonymous"] },
+    { "route": "/equipment/*", "allowedRoles": ["anonymous"] },
+    { "route": "/service/*",   "allowedRoles": ["anonymous"] }
+  ],
+  "navigationFallback": { "rewrite": "/index.html" }
+}
