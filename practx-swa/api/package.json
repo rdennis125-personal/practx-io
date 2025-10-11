@@ -9,6 +9,10 @@
   },
   "dependencies": {
     "@azure/data-tables": "^13.2.3",
+    "@azure/storage-blob": "^12.28.0",
     "nanoid": "^4.0.2"
+  },
+  "engines": {
+    "node": "20.x"
   }
 }
