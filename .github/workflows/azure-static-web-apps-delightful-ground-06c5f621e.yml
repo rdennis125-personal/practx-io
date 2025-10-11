@@ -4,10 +4,16 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'Practx/**'
+      - '.github/workflows/azure-static-web-apps-delightful-ground-06c5f621e.yml'
   pull_request:
     types: [opened, synchronize, reopened, closed]
     branches:
       - main
+    paths:
+      - 'Practx/**'
+      - '.github/workflows/azure-static-web-apps-delightful-ground-06c5f621e.yml'
 
 jobs:
   build_and_deploy_job:
