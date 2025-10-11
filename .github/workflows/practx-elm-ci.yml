@@ -1,0 +1,32 @@
+name: Practx ELM CI
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'practx-elm/**'
+      - '.github/workflows/practx-elm-ci.yml'
+  pull_request:
+    paths:
+      - 'practx-elm/**'
+      - '.github/workflows/practx-elm-ci.yml'
+
+jobs:
+  data:
+    name: Package data layer
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Stage data layer files
+        run: |
+          set -euo pipefail
+          mkdir -p artifact
+          cp -R practx-elm/elm-sql/schema artifact/
+          cp -R practx-elm/elm-sql/scripts artifact/
+          cp practx-elm/elm-sql/readme.md artifact/
+      - name: Upload data artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: practx-elm-sql
+          path: artifact

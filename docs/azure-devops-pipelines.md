@@ -50,6 +50,28 @@ Create a variable group named **`Practx-SWA`** (or define the variables directly
 - The Static Web App task runs in “skip build” mode because the frontend is plain HTML/CSS/JS. Adjust the task inputs if you later introduce a build step.
 - The pipeline installs API dependencies with `npm install` so that runtime packages are validated before deployment.
 
+## Practx ELM pipeline (`pipelines/practx-elm-azure-pipelines.yml`)
+
+The Practx ELM pipeline currently focuses on the data layer. It packages the SQL schema and helper scripts under `elm-sql` so they can be consumed by downstream database deployment jobs.
+
+### Triggers
+- Branch: `main`
+- Paths: `practx-elm/**` and the pipeline definition itself
+
+### Jobs
+1. **Data** – Copies the SQL schema, helper scripts, and README into the artifact staging directory for publishing.
+
+### Required configuration
+Link (or create) a variable group named **`Practx-ELM`** if you need to override the defaults baked into the YAML. The pipeline will run without any secrets, but the following optional variables are available for customization:
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `DATA_WORKING_DIR` | `practx-elm/elm-sql` | Directory that contains the SQL schema and scripts. |
+| `DATA_ARTIFACT_NAME` | `practx-elm-sql` | Name of the artifact that is published. |
+
+### Artifact output
+- `practx-elm-sql` – staged schema, scripts, and README ready for SQL deployment automation.
+
 ## Running the pipelines
 1. Import each YAML file into Azure DevOps as a new pipeline, pointing to the corresponding path in this repository.
 2. Link the appropriate variable group under **Pipeline settings → Variables**.

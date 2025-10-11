@@ -1,13 +1,23 @@
 name: Azure Static Web Apps CI/CD
 
+env:
+  PRACTX_ELM_WEB_APP_LOCATION: Practx/apps/web
+  PRACTX_ELM_WEB_BUILD_OUTPUT: .next
+
 on:
   push:
     branches:
       - main
+    paths:
+      - 'Practx/**'
+      - '.github/workflows/azure-static-web-apps-delightful-ground-06c5f621e.yml'
   pull_request:
     types: [opened, synchronize, reopened, closed]
     branches:
       - main
+    paths:
+      - 'Practx/**'
+      - '.github/workflows/azure-static-web-apps-delightful-ground-06c5f621e.yml'
 
 jobs:
   build_and_deploy_job:
@@ -28,9 +38,9 @@ jobs:
           action: "upload"
           ###### Repository/Build Configurations - These values can be configured to match your app requirements. ######
           # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
-          app_location: "./Practx" # App source code path
+          app_location: ${{ env.PRACTX_ELM_WEB_APP_LOCATION }} # App source code path
           api_location: "" # Api source code path - optional
-          output_location: "build" # Built app content directory - optional
+          output_location: ${{ env.PRACTX_ELM_WEB_BUILD_OUTPUT }} # Built app content directory - optional
           ###### End of Repository/Build Configurations ######
 
   close_pull_request_job:

@@ -1,0 +1,42 @@
+# Azure DevOps pipeline to package the Practx ELM data layer
+# Optional variable group `Practx-ELM` can override the defaults below:
+#   DATA_WORKING_DIR   - path to the Practx ELM SQL assets
+#   DATA_ARTIFACT_NAME - name of the published data artifact
+
+trigger:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - practx-elm/*
+      - pipelines/practx-elm-azure-pipelines.yml
+
+variables:
+  - group: Practx-ELM
+  - name: DATA_WORKING_DIR
+    value: 'practx-elm/elm-sql'
+  - name: DATA_ARTIFACT_NAME
+    value: 'practx-elm-sql'
+
+stages:
+  - stage: PackageData
+    displayName: Package Practx ELM data layer
+    jobs:
+      - job: Data
+        displayName: Stage data artifacts
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - checkout: self
+            clean: true
+          - script: |
+              set -euo pipefail
+              mkdir -p $(Build.ArtifactStagingDirectory)/elm-sql
+              cp -R $(DATA_WORKING_DIR)/schema $(Build.ArtifactStagingDirectory)/elm-sql/
+              cp -R $(DATA_WORKING_DIR)/scripts $(Build.ArtifactStagingDirectory)/elm-sql/
+              cp $(DATA_WORKING_DIR)/readme.md $(Build.ArtifactStagingDirectory)/elm-sql/
+            displayName: Stage schema and scripts
+          - publish: $(Build.ArtifactStagingDirectory)/elm-sql
+            displayName: Upload data artifact
+            artifact: $(DATA_ARTIFACT_NAME)
