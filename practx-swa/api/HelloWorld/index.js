@@ -2,11 +2,11 @@ const { BlobServiceClient } = require('@azure/storage-blob');
 const crypto = require('crypto');
 
 const STORAGE_CONTAINERS = {
-  landing: process.env.CONTAINER_LANDING || 'landing',
-  practice: process.env.CONTAINER_PRACTICE || 'practice',
-  patient: process.env.CONTAINER_PATIENT || 'patient',
-  equipment: process.env.CONTAINER_EQUIPMENT || 'equipment',
-  service: process.env.CONTAINER_SERVICE || 'service',
+  landing: process.env.PRACTX_BLOB_CONTAINER_LANDING || 'landing',
+  practice: process.env.PRACTX_BLOB_CONTAINER_PRACTICE || 'practice',
+  patient: process.env.PRACTX_BLOB_CONTAINER_PATIENT || 'patient',
+  equipment: process.env.PRACTX_BLOB_CONTAINER_EQUIPMENT || 'equipment',
+  service: process.env.PRACTX_BLOB_CONTAINER_SERVICE || 'service',
 };
 
 function resolveStorageConnection() {
