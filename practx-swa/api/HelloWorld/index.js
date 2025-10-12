@@ -1,7 +1,13 @@
 const { BlobServiceClient } = require('@azure/storage-blob');
 const crypto = require('crypto');
 
-const DEFAULT_CONTAINER = process.env.CONTAINER_LANDING || 'landing';
+const STORAGE_CONTAINERS = {
+  landing: process.env.CONTAINER_LANDING || 'landing',
+  practice: process.env.CONTAINER_PRACTICE || 'practice',
+  patient: process.env.CONTAINER_PATIENT || 'patient',
+  equipment: process.env.CONTAINER_EQUIPMENT || 'equipment',
+  service: process.env.CONTAINER_SERVICE || 'service',
+};
 
 function resolveStorageConnection() {
   const directSetting = process.env.BLOB_CONNECTION;
@@ -32,6 +38,20 @@ function sanitizePathSegment(value, fallback = 'general') {
     .replace(/^-+|-+$/g, '');
 
   return cleaned || fallback;
+}
+
+function resolveContainerName(value) {
+  if (!value) {
+    return STORAGE_CONTAINERS.landing;
+  }
+
+  const normalized = sanitizePathSegment(value, '').split('-')[0];
+
+  if (normalized && STORAGE_CONTAINERS[normalized]) {
+    return STORAGE_CONTAINERS[normalized];
+  }
+
+  return STORAGE_CONTAINERS.landing;
 }
 
 function createBlobPayload(message, containerName, folderName, metadata) {
@@ -72,8 +92,6 @@ module.exports = async function (context, req) {
     return;
   }
 
-  const containerName = DEFAULT_CONTAINER;
-
   const interestInput =
     req.body?.interest ||
     req.query?.interest ||
@@ -83,6 +101,7 @@ module.exports = async function (context, req) {
     'general';
 
   const folderName = sanitizePathSegment(interestInput);
+  const containerName = resolveContainerName(interestInput);
 
   const messageInput =
     typeof req.body?.message === 'string' && req.body.message.trim()

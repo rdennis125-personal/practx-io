@@ -26,7 +26,8 @@ Production-ready starter for the Practx marketing site running on Azure Static W
    npm install --prefix api
    ```
 
-2. Create `api/local.settings.json` (not committed) to provide a storage connection string when running locally:
+2. Create `api/local.settings.json` (not committed) to provide a storage connection string when running locally. You can also
+   override the blob container names here if your storage account uses non-default names:
 
    ```json
    {
@@ -34,7 +35,12 @@ Production-ready starter for the Practx marketing site running on Azure Static W
      "Values": {
        "AzureWebJobsStorage": "UseDevelopmentStorage=true",
        "FUNCTIONS_WORKER_RUNTIME": "node",
-       "STORAGE_TABLE_NAME": "Leads"
+       "STORAGE_TABLE_NAME": "Leads",
+       "CONTAINER_LANDING": "landing",
+       "CONTAINER_PRACTICE": "practice",
+       "CONTAINER_PATIENT": "patient",
+       "CONTAINER_EQUIPMENT": "equipment",
+       "CONTAINER_SERVICE": "service"
      }
    }
    ```
@@ -135,6 +141,11 @@ Set the following application settings in Azure Static Web Apps (Environment var
 
 - `AzureWebJobsStorage` – connection string for the Storage account used by the API
 - `STORAGE_TABLE_NAME` – defaults to `Leads` if not specified
+- `CONTAINER_LANDING` – blob container name used for general landing requests (defaults to `landing`)
+- `CONTAINER_PRACTICE` – optional override for practice-specific blobs (defaults to `practice`)
+- `CONTAINER_PATIENT` – optional override for patient-specific blobs (defaults to `patient`)
+- `CONTAINER_EQUIPMENT` – optional override for equipment-specific blobs (defaults to `equipment`)
+- `CONTAINER_SERVICE` – optional override for service-specific blobs (defaults to `service`)
 - `ALLOWED_ORIGIN` – optional comma-separated list (e.g., `https://practx.io,https://www.practx.io`)
 
 ## Lead Storage
