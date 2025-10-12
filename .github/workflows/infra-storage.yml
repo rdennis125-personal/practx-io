@@ -26,57 +26,12 @@ jobs:
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.CICD_CLIENT_ID }}
-
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Deploy storage accounts and containers
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          # Normalize storage account base: lower, strip dashes (SA names cannot contain '-')
-          SA_BASE="$(echo "${SA_PREFIX}" | tr '[:upper:]' '[:lower:]' | tr -d '-')"
-
-          # Compose per-env names (<=24 chars enforced)
-          SA_DEV="${SA_BASE}dev"
-          # Truncate to 24 chars if needed
-          SA_DEV="${SA_DEV:0:24}"
-
-          declare -A STORAGE_NAMES=(
-            [dev]="$SA_DEV"
-          )
-
-          # Containers to ensure in each account
-          CONTAINERS=(landing practice patient equipment service)
-
-          echo "==> Ensuring storage accounts exist (via Bicep) ..."
-          for ENV in dev qa1 prod; do
-            SA_NAME="${STORAGE_NAMES[$ENV]}"
-            echo " -> Deploying/validating $SA_NAME in RG: $RG"
-
-            az deployment group create \
-              --resource-group "$RG" \
-              --template-file infra/modules/storage.bicep \
-              --parameters location="$LOCATION" storageAccountName="$SA_NAME" \
-              --query properties.outputs >/dev/null
-          done
-
-          echo "==> Ensuring required blob containers exist ..."
-          for ENV in dev qa1 prod; do
-            SA_NAME="${STORAGE_NAMES[$ENV]}"
-            echo " -> Account: $SA_NAME"
-
-            # Create containers with RBAC (no account key); requires your principal to have 'Storage Blob Data Contributor' (or higher) on the account
-            for C in "${CONTAINERS[@]}"; do
-              echo "    - container: $C"
-              az storage container create \
-                --name "$C" \
-                --account-name "$SA_NAME" \
-                --auth-mode login \
-                --public-access off \
-                --output none
-            done
-          done
-
-          echo "Done."
+      - name: Deploy Storage Account
+        uses: azure/arm-deploy@v1
+        with:
+          resourceGroupName: ${{ vars.CICD_RG }}
+          template: ./azuredeploy.json
+          parameters: 'storageAccountName=stodevpractx${{ github.run_number }}'
