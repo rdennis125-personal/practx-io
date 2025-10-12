@@ -18,7 +18,7 @@ jobs:
     env:
       RG: your-resource-group
       LOCATION: westus2
-      SA_PREFIX: prx # used to build unique storage names
+      SA_PREFIX: sto-practx # base used for all storage account names
     steps:
       - uses: actions/checkout@v4
 
@@ -30,21 +30,40 @@ jobs:
       - name: Loop SWAs and deploy storage + app settings
         shell: bash
         run: |
-          IFS=',' read -ra SWAS <<< "${{ github.event.inputs.swa_csv }}"
-          for SWA in "${SWAS[@]}"; do
-            SWA_TRIM=$(echo "$SWA" | xargs)
-            # Build a globally-unique storage account name: <prefix><swa><rand> (<=24, lowercase)
-            RAND=$(tr -dc a-z0-9 </dev/urandom | head -c 5)
-            BASENAME=$(echo "${SWA_TRIM//-/}" | tr '[:upper:]' '[:lower:]' | cut -c -12)
-            SA_NAME="${SA_PREFIX}${BASENAME}${RAND}"
+          set -euo pipefail
 
-            echo "==> Deploying storage for SWA: $SWA_TRIM  as SA: $SA_NAME"
+          declare -A STORAGE_NAMES=(
+            [dev]="${SA_PREFIX}-dev"
+            [qa1]="${SA_PREFIX}-qa1"
+            [prod]="${SA_PREFIX}"
+          )
 
+          echo "==> Ensuring storage accounts exist"
+          for ENV in dev qa1 prod; do
+            SA_NAME="${STORAGE_NAMES[$ENV]}"
+            echo " -> Deploying storage account ${SA_NAME}"
             az deployment group create \
               --resource-group "$RG" \
               --template-file infra/modules/storage.bicep \
               --parameters location="$LOCATION" storageAccountName="$SA_NAME" \
-              --query properties.outputs
+              --query properties.outputs >/dev/null
+          done
+
+          IFS=',' read -ra SWAS <<< "${{ github.event.inputs.swa_csv }}"
+          for SWA in "${SWAS[@]}"; do
+            SWA_TRIM=$(echo "$SWA" | xargs)
+
+            # Determine environment suffix based on SWA name
+            ENVIRONMENT="prod"
+            if [[ "$SWA_TRIM" == *"dev"* ]]; then
+              ENVIRONMENT="dev"
+            elif [[ "$SWA_TRIM" == *"qa1"* ]]; then
+              ENVIRONMENT="qa1"
+            fi
+
+            SA_NAME="${STORAGE_NAMES[$ENVIRONMENT]}"
+
+            echo "==> Configuring SWA: $SWA_TRIM with storage account: $SA_NAME"
 
             # Fetch connection string & blob endpoint
             CONN=$(az storage account show-connection-string -g "$RG" -n "$SA_NAME" --query connectionString -o tsv)
@@ -60,5 +79,5 @@ jobs:
               CONTAINER_EQUIPMENT="equipment" \
               CONTAINER_SERVICE="service"
 
-            echo "Configured app settings for $SWA_TRIM"
+            echo "Configured app settings for $SWA_TRIM ($ENVIRONMENT)"
           done
