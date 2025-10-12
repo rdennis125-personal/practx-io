@@ -31,11 +31,13 @@ resource sa 'Microsoft.Storage/storageAccounts@2023-05-01' = {
 }
 
 resource blob 'Microsoft.Storage/storageAccounts/blobServices@2023-05-01' = {
-  name: '${sa.name}/default'
+  parent: '${sa.name}'
+  name: 'default'
 }
 
 @batchSize(5)
 resource containerResources 'Microsoft.Storage/storageAccounts/blobServices/containers@2023-05-01' = [for c in containers: {
+  parent: '${sa.name}'
   name: '${sa.name}/default/${c}'
   properties: { publicAccess: 'None' }
 }]
