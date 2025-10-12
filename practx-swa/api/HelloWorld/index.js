@@ -17,12 +17,6 @@ function resolveStorageConnection() {
   return null;
 }
 
-function buildBlobUrl(endpoint, containerName, blobName) {
-  if (!endpoint) return null;
-  const trimmed = endpoint.endsWith('/') ? endpoint : `${endpoint}/`;
-  return `${trimmed}${containerName}/${blobName}`;
-}
-
 function sanitizePathSegment(value, fallback = 'general') {
   if (!value) return fallback;
 
@@ -117,7 +111,7 @@ module.exports = async function (context, req) {
       },
     });
 
-    const blobUrl = buildBlobUrl(process.env.BLOB_ENDPOINT, containerName, blobName);
+    const blobUrl = blockBlob.url;
 
     context.res = {
       status: 200,
