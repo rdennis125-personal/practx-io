@@ -33,5 +33,5 @@ jobs:
         uses: azure/arm-deploy@v1
         with:
           resourceGroupName: ${{ vars.CICD_RG }}
-          template: ./azuredeploy.json
+          template: ./infra/modules/storage.bicep
           parameters: 'storageAccountName=stodevpractx${{ github.run_number }}'
