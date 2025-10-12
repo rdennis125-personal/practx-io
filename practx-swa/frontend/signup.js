@@ -155,7 +155,10 @@
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ trigger: 'hero-button' })
+        body: JSON.stringify({
+          trigger: 'hero-button',
+          subject: 'hello-world-demo'
+        })
       });
 
       if (!response.ok) {

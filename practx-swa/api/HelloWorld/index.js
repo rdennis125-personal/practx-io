@@ -1,18 +1,7 @@
 const { BlobServiceClient } = require('@azure/storage-blob');
 const crypto = require('crypto');
 
-const CONTAINER_MAP = {
-  landing: process.env.CONTAINER_LANDING || 'landing',
-  practice: process.env.CONTAINER_PRACTICE || 'practice',
-  patient: process.env.CONTAINER_PATIENT || 'patient',
-  equipment: process.env.CONTAINER_EQUIPMENT || 'equipment',
-  service: process.env.CONTAINER_SERVICE || 'service',
-};
-
-function normalizeContainerKey(input) {
-  if (!input) return null;
-  return String(input).trim().toLowerCase();
-}
+const DEFAULT_CONTAINER = process.env.CONTAINER_LANDING || 'landing';
 
 function buildBlobUrl(endpoint, containerName, blobName) {
   if (!endpoint) return null;
@@ -20,10 +9,31 @@ function buildBlobUrl(endpoint, containerName, blobName) {
   return `${trimmed}${containerName}/${blobName}`;
 }
 
-function createBlobPayload(message, containerName) {
+function sanitizePathSegment(value, fallback = 'general') {
+  if (!value) return fallback;
+
+  const text = String(value)
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '') // strip diacritics
+    .trim()
+    .toLowerCase();
+
+  const cleaned = text
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/[\s_-]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+
+  return cleaned || fallback;
+}
+
+function createBlobPayload(message, containerName, folderName, metadata) {
   return {
     message,
     container: containerName,
+    folder: folderName,
+    interest: metadata.interest || null,
+    subject: metadata.subject || null,
+    trigger: metadata.trigger || null,
     createdAt: new Date().toISOString(),
   };
 }
@@ -52,35 +62,37 @@ module.exports = async function (context, req) {
     return;
   }
 
-  const containerKey =
-    normalizeContainerKey(req.query?.container) ||
-    normalizeContainerKey(req.body?.container) ||
-    'landing';
+  const containerName = DEFAULT_CONTAINER;
 
-  const containerName = CONTAINER_MAP[containerKey];
-  if (!containerName) {
-    context.log.warn('Invalid container requested', { containerKey });
-    context.res = {
-      status: 400,
-      headers,
-      body: JSON.stringify({ ok: false, error: 'Unknown container requested.' }),
-    };
-    return;
-  }
+  const interestInput =
+    req.body?.interest ||
+    req.query?.interest ||
+    req.body?.subject ||
+    req.query?.subject ||
+    req.body?.trigger ||
+    'general';
+
+  const folderName = sanitizePathSegment(interestInput);
 
   const messageInput =
     typeof req.body?.message === 'string' && req.body.message.trim()
       ? req.body.message.trim()
       : 'Hello from Practx API!';
 
+  const metadata = {
+    interest: req.body?.interest || req.query?.interest || null,
+    subject: req.body?.subject || req.query?.subject || null,
+    trigger: req.body?.trigger || null,
+  };
+
   try {
     const blobService = BlobServiceClient.fromConnectionString(process.env.BLOB_CONNECTION);
     const containerClient = blobService.getContainerClient(containerName);
     await containerClient.createIfNotExists();
 
-    const blobPayload = createBlobPayload(messageInput, containerName);
+    const blobPayload = createBlobPayload(messageInput, containerName, folderName, metadata);
     const blobContent = JSON.stringify(blobPayload, null, 2);
-    const blobName = `hello-${Date.now()}-${crypto.randomBytes(4).toString('hex')}.json`;
+    const blobName = `${folderName}/hello-${Date.now()}-${crypto.randomBytes(4).toString('hex')}.json`;
     const blockBlob = containerClient.getBlockBlobClient(blobName);
 
     await blockBlob.upload(blobContent, Buffer.byteLength(blobContent), {
@@ -97,6 +109,7 @@ module.exports = async function (context, req) {
       body: JSON.stringify({
         ok: true,
         container: containerName,
+        folder: folderName,
         blobName,
         blobUrl,
         message: blobPayload.message,
@@ -104,8 +117,8 @@ module.exports = async function (context, req) {
     };
   } catch (error) {
     context.log.error('Failed to write blob', {
-      containerKey,
       containerName,
+      folderName,
       error: error.message,
     });
 
