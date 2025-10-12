@@ -3,6 +3,20 @@ const crypto = require('crypto');
 
 const DEFAULT_CONTAINER = process.env.CONTAINER_LANDING || 'landing';
 
+function resolveStorageConnection() {
+  const directSetting = process.env.BLOB_CONNECTION;
+  if (directSetting && directSetting.trim()) {
+    return directSetting.trim();
+  }
+
+  const legacySetting = process.env.AzureWebJobsStorage || process.env.AZURE_STORAGE_CONNECTION_STRING;
+  if (legacySetting && legacySetting.trim()) {
+    return legacySetting.trim();
+  }
+
+  return null;
+}
+
 function buildBlobUrl(endpoint, containerName, blobName) {
   if (!endpoint) return null;
   const trimmed = endpoint.endsWith('/') ? endpoint : `${endpoint}/`;
@@ -52,8 +66,10 @@ module.exports = async function (context, req) {
     return;
   }
 
-  if (!process.env.BLOB_CONNECTION) {
-    context.log.error('Missing BLOB_CONNECTION setting.');
+  const connectionString = resolveStorageConnection();
+
+  if (!connectionString) {
+    context.log.error('Missing storage connection setting.');
     context.res = {
       status: 500,
       headers,
@@ -86,7 +102,7 @@ module.exports = async function (context, req) {
   };
 
   try {
-    const blobService = BlobServiceClient.fromConnectionString(process.env.BLOB_CONNECTION);
+    const blobService = BlobServiceClient.fromConnectionString(connectionString);
     const containerClient = blobService.getContainerClient(containerName);
     await containerClient.createIfNotExists();
 
