@@ -1,47 +1,66 @@
 name: infra-storage
+
 on:
-  workflow_dispatch:
-    inputs:
-      swa_csv:
-        description: "Comma-separated SWA resource names (e.g., practx-swa)"
-        required: true
-        default: "practx-swa"
   push:
     branches: [ main ]
     paths:
       - 'infra/modules/storage.bicep'
       - '.github/workflows/infra-storage.yml'
 
+permissions:
+  id-token: write   # required for azure/login OIDC
+  contents: read
+
 jobs:
   deploy:
+    environment: PROD
     runs-on: ubuntu-latest
     env:
-      RG: your-resource-group
+      RG: ${{ vars.CICD_RG }}
       LOCATION: westus2
-      SA_PREFIX: sto-practx # base used for all storage account names
+      SA_PREFIX: sto-practx   # will be normalized (dashes removed) in the script
     steps:
       - uses: actions/checkout@v4
 
-      - name: Azure Login
+      - name: Azure Login (OIDC)
         uses: azure/login@v2
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Loop SWAs and deploy storage + app settings
+      - name: Deploy storage accounts and containers
         shell: bash
         run: |
           set -euo pipefail
 
+          # Normalize storage account base: lower, strip dashes (SA names cannot contain '-')
+          SA_BASE="$(echo "${SA_PREFIX}" | tr '[:upper:]' '[:lower:]' | tr -d '-')"
+
+          # Compose per-env names (<=24 chars enforced)
+          SA_DEV="${SA_BASE}dev"
+          SA_QA1="${SA_BASE}qa1"
+          SA_PROD="${SA_BASE}"
+
+          # Truncate to 24 chars if needed
+          SA_DEV="${SA_DEV:0:24}"
+          SA_QA1="${SA_QA1:0:24}"
+          SA_PROD="${SA_PROD:0:24}"
+
           declare -A STORAGE_NAMES=(
-            [dev]="${SA_PREFIX}-dev"
-            [qa1]="${SA_PREFIX}-qa1"
-            [prod]="${SA_PREFIX}"
+            [dev]="$SA_DEV"
+            [qa1]="$SA_QA1"
+            [prod]="$SA_PROD"
           )
 
-          echo "==> Ensuring storage accounts exist"
+          # Containers to ensure in each account
+          CONTAINERS=(landing practice patient equipment service)
+
+          echo "==> Ensuring storage accounts exist (via Bicep) ..."
           for ENV in dev qa1 prod; do
             SA_NAME="${STORAGE_NAMES[$ENV]}"
-            echo " -> Deploying storage account ${SA_NAME}"
+            echo " -> Deploying/validating $SA_NAME in RG: $RG"
+
             az deployment group create \
               --resource-group "$RG" \
               --template-file infra/modules/storage.bicep \
@@ -49,35 +68,21 @@ jobs:
               --query properties.outputs >/dev/null
           done
 
-          IFS=',' read -ra SWAS <<< "${{ github.event.inputs.swa_csv }}"
-          for SWA in "${SWAS[@]}"; do
-            SWA_TRIM=$(echo "$SWA" | xargs)
+          echo "==> Ensuring required blob containers exist ..."
+          for ENV in dev qa1 prod; do
+            SA_NAME="${STORAGE_NAMES[$ENV]}"
+            echo " -> Account: $SA_NAME"
 
-            # Determine environment suffix based on SWA name
-            ENVIRONMENT="prod"
-            if [[ "$SWA_TRIM" == *"dev"* ]]; then
-              ENVIRONMENT="dev"
-            elif [[ "$SWA_TRIM" == *"qa1"* ]]; then
-              ENVIRONMENT="qa1"
-            fi
-
-            SA_NAME="${STORAGE_NAMES[$ENVIRONMENT]}"
-
-            echo "==> Configuring SWA: $SWA_TRIM with storage account: $SA_NAME"
-
-            # Fetch connection string & blob endpoint
-            CONN=$(az storage account show-connection-string -g "$RG" -n "$SA_NAME" --query connectionString -o tsv)
-            ENDPOINT=$(az storage account show -g "$RG" -n "$SA_NAME" --query "primaryEndpoints.blob" -o tsv)
-
-            # Set SWA app settings (creates/updates)
-            az staticwebapp appsettings set -g "$RG" -n "$SWA_TRIM" --setting-names \
-              BLOB_CONNECTION="$CONN" \
-              BLOB_ENDPOINT="$ENDPOINT" \
-              CONTAINER_LANDING="landing" \
-              CONTAINER_PRACTICE="practice" \
-              CONTAINER_PATIENT="patient" \
-              CONTAINER_EQUIPMENT="equipment" \
-              CONTAINER_SERVICE="service"
-
-            echo "Configured app settings for $SWA_TRIM ($ENVIRONMENT)"
+            # Create containers with RBAC (no account key); requires your principal to have 'Storage Blob Data Contributor' (or higher) on the account
+            for C in "${CONTAINERS[@]}"; do
+              echo "    - container: $C"
+              az storage container create \
+                --name "$C" \
+                --account-name "$SA_NAME" \
+                --auth-mode login \
+                --public-access off \
+                --output none
+            done
           done
+
+          echo "Done."
