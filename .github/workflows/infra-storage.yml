@@ -34,4 +34,4 @@ jobs:
         with:
           resourceGroupName: ${{ vars.CICD_RG }}
           template: ./infra/modules/storage.bicep
-          parameters: 'storageAccountName=stodevpractx${{ github.run_number }}'
+          parameters: 'location=westus2 storageAccountName=stodevpractx'
