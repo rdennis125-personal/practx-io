@@ -90,8 +90,8 @@ module.exports = async function (context, req) {
     return;
   }
 
-  if (!process.env.AzureWebJobsStorage) {
-    context.log.error('Missing AzureWebJobsStorage configuration');
+  if (!process.env.PRACTX_WEBJOB_STORAGE && !process.env.AZURE_STORAGE_CONNECTION_STRING) {
+    context.log.error('Missing PRACTX_WEBJOB_STORAGE configuration');
     context.res = {
       status: 500,
       headers: corsHeaders,
@@ -150,7 +150,10 @@ module.exports = async function (context, req) {
 
   const tableName = process.env.STORAGE_TABLE_NAME || 'Leads';
 
-  const tableClient = TableClient.fromConnectionString(process.env.AzureWebJobsStorage, tableName);
+  const connectionString =
+    process.env.PRACTX_WEBJOB_STORAGE || process.env.AZURE_STORAGE_CONNECTION_STRING;
+
+  const tableClient = TableClient.fromConnectionString(connectionString, tableName);
 
   try {
     await tableClient.createTable();

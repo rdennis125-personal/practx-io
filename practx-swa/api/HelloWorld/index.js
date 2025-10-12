@@ -15,7 +15,7 @@ function resolveStorageConnection() {
     return directSetting.trim();
   }
 
-  const legacySetting = process.env.AzureWebJobsStorage || process.env.AZURE_STORAGE_CONNECTION_STRING;
+  const legacySetting = process.env.PRACTX_WEBJOB_STORAGE || process.env.AZURE_STORAGE_CONNECTION_STRING;
   if (legacySetting && legacySetting.trim()) {
     return legacySetting.trim();
   }

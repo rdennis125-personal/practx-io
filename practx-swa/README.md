@@ -33,7 +33,7 @@ Production-ready starter for the Practx marketing site running on Azure Static W
    {
      "IsEncrypted": false,
      "Values": {
-       "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+      "PRACTX_WEBJOB_STORAGE": "UseDevelopmentStorage=true",
        "FUNCTIONS_WORKER_RUNTIME": "node",
        "STORAGE_TABLE_NAME": "Leads",
       "PRACTX_BLOB_CONTAINER_LANDING": "landing",
@@ -97,7 +97,7 @@ az staticwebapp create \
   --output-location ""
 
 # After creation, set Function app settings (in SWA > Environment variables)
-# AzureWebJobsStorage = <connection string to a Storage account>
+# PRACTX_WEBJOB_STORAGE = <connection string to a Storage account>
 # STORAGE_TABLE_NAME = Leads
 ```
 
@@ -139,7 +139,7 @@ practx-swa/
 
 Set the following application settings in Azure Static Web Apps (Environment variables tab) for the production environment:
 
-- `AzureWebJobsStorage` – connection string for the Storage account used by the API
+- `PRACTX_WEBJOB_STORAGE` – connection string for the Storage account used by the API
 - `STORAGE_TABLE_NAME` – defaults to `Leads` if not specified
 - `PRACTX_BLOB_CONTAINER_LANDING` – blob container name used for general landing requests (defaults to `landing`)
 - `PRACTX_BLOB_CONTAINER_PRACTICE` – optional override for practice-specific blobs (defaults to `practice`)
