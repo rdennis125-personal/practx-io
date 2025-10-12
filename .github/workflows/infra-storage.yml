@@ -26,6 +26,7 @@ jobs:
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.GITHUB_TOKEN }}
+
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
@@ -39,7 +40,6 @@ jobs:
 
           # Compose per-env names (<=24 chars enforced)
           SA_DEV="${SA_BASE}dev"
-
           # Truncate to 24 chars if needed
           SA_DEV="${SA_DEV:0:24}"
 
