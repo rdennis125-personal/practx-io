@@ -37,7 +37,7 @@ resource blob 'Microsoft.Storage/storageAccounts/blobServices@2023-05-01' = {
 
 @batchSize(5)
 resource containerResources 'Microsoft.Storage/storageAccounts/blobServices/containers@2023-05-01' = [for c in containers: {
-  parent: sa
+  parent: blob
   name: '${c}'
   properties: { publicAccess: 'None' }
 }]
