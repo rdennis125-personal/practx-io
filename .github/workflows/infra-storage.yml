@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   deploy:
-    environment: PROD
+    environment: DEV
     runs-on: ubuntu-latest
     env:
       RG: ${{ vars.CICD_RG }}
