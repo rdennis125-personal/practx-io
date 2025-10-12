@@ -2,7 +2,7 @@ name: infra-storage
 
 on:
   push:
-    branches: [ main ]
+    branches-ignore: [ main ]
     paths:
       - 'infra/modules/storage.bicep'
       - '.github/workflows/infra-storage.yml'
@@ -25,7 +25,7 @@ jobs:
       - name: Azure Login (OIDC)
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          client-id: ${{ secrets.GITHUB_TOKEN }}
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
@@ -39,18 +39,12 @@ jobs:
 
           # Compose per-env names (<=24 chars enforced)
           SA_DEV="${SA_BASE}dev"
-          SA_QA1="${SA_BASE}qa1"
-          SA_PROD="${SA_BASE}"
 
           # Truncate to 24 chars if needed
           SA_DEV="${SA_DEV:0:24}"
-          SA_QA1="${SA_QA1:0:24}"
-          SA_PROD="${SA_PROD:0:24}"
 
           declare -A STORAGE_NAMES=(
             [dev]="$SA_DEV"
-            [qa1]="$SA_QA1"
-            [prod]="$SA_PROD"
           )
 
           # Containers to ensure in each account

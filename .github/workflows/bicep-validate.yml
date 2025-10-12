@@ -2,12 +2,12 @@ name: Validate Bicep templates
 
 on:
   pull_request:
-    branches:
+    branches-ignore:
       - main
     paths:
       - '**/*.bicep'
   push:
-    branches:
+    branches-ignore:
       - main
     paths:
       - '**/*.bicep'
