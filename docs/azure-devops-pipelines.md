@@ -25,6 +25,8 @@ Create a variable group named **`Practx-Infra`** (or define equivalent pipeline 
 | `NAME_PREFIX` | Prefix applied to deployed resource names (for example `practx`). |
 | `TENANT_ID` | Azure AD tenant ID used when creating Key Vault access policies. |
 | `FUNCTION_SKU` | *(Optional)* Azure Functions plan SKU. Defaults to `Y1` if omitted. |
+| `SQL_ADMIN_LOGIN` | Administrator login for the Azure SQL logical server created by the Bicep deployment. |
+| `SQL_ADMIN_PASSWORD` | Secret corresponding to `SQL_ADMIN_LOGIN`; mark as a secret variable in the pipeline. |
 
 ## Static Web App pipeline (`pipelines/practx-swa-azure-pipelines.yml`)
 

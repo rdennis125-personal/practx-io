@@ -21,7 +21,7 @@ param sqlAdminPassword string
 
 var namePrefix = toLower('${baseName}-${environmentType}')
 
-module sql '../../../Practx/infra/modules/sql.bicep' = {
+module sql '../../../infra/modules/sql.bicep' = {
   name: '${namePrefix}-sql'
   params: {
     namePrefix: namePrefix

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Build Include="Scripts/ELM_CORE.sql" />
+  </ItemGroup>
+  <PropertyGroup>
+    <DSP>Microsoft.Data.Tools.Schema.Sql.SqlAzureV12DatabaseSchemaProvider</DSP>
+    <ModelCollation>1033,CI</ModelCollation>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <SqlServerVersion>SqlAzureV12</SqlServerVersion>
+    <Name>ElmDatabase</Name>
+  </PropertyGroup>
+</Project>
