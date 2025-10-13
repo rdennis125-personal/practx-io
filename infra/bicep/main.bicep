@@ -6,6 +6,8 @@ param location string = 'westus2'
 param tags object = {}
 param functionSku string = 'Y1'
 param tenantId string
+@description('Optional raw XML policy applied at the API Management global scope.')
+param apimPolicyContent string = ''
 
 module insights 'modules/appInsights.bicep' = {
   name: 'appInsights'
@@ -22,6 +24,16 @@ module serviceBus 'modules/serviceBus.bicep' = {
     name: '${namePrefix}-sb'
     location: location
     tags: tags
+  }
+}
+
+module apiManagement '../modules/apim.bicep' = {
+  name: 'apiManagement'
+  params: {
+    namePrefix: namePrefix
+    location: location
+    tags: tags
+    policyContent: apimPolicyContent
   }
 }
 
@@ -51,3 +63,6 @@ output functionAppName string = functionApp.outputs.name
 output serviceBusNamespace string = serviceBus.outputs.namespaceName
 output keyVaultName string = keyVault.outputs.name
 output appInsightsName string = insights.outputs.name
+output apiManagementName string = apiManagement.outputs.apimName
+output apiManagementGatewayUrl string = apiManagement.outputs.gatewayUrl
+output apiManagementDeveloperPortalUrl string = apiManagement.outputs.developerPortalUrl

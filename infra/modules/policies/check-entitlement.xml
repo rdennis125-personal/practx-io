@@ -1,0 +1,31 @@
+<policies>
+  <inbound>
+    <base />
+    <!-- Enforce that callers present an entitlement token issued by the Practx platform. -->
+    <choose>
+      <when condition="@(!context.Request.Headers.ContainsKey(\"x-practx-entitlement\"))">
+        <return-response>
+          <set-status code="401" reason="Missing entitlement" />
+          <set-header name="Content-Type" exists-action="override">
+            <value>application/json</value>
+          </set-header>
+          <set-body>{
+  &quot;error&quot;: {
+    &quot;code&quot;: &quot;MissingEntitlement&quot;,
+    &quot;message&quot;: &quot;The x-practx-entitlement header is required.&quot;
+  }
+}</set-body>
+        </return-response>
+      </when>
+    </choose>
+  </inbound>
+  <backend>
+    <base />
+  </backend>
+  <outbound>
+    <base />
+  </outbound>
+  <on-error>
+    <base />
+  </on-error>
+</policies>

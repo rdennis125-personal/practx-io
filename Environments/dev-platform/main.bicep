@@ -135,6 +135,8 @@ module apim '../EnvironmentDefinitions/practx-apim/main.bicep' = {
 }
 
 output apiManagementName string = apim.outputs.apiManagementName
+output apiManagementGatewayUrl string = apim.outputs.apiManagementGatewayUrl
+output apiManagementDeveloperPortalUrl string = apim.outputs.apiManagementDeveloperPortalUrl
 output applicationInsightsName string = applicationInsights.outputs.applicationInsightsName
 output applicationInsightsConnectionString string = applicationInsights.outputs.connectionString
 output keyVaultName string = keyvault.outputs.keyVaultName
