@@ -87,3 +87,13 @@ This document catalogs every variable defined across the infrastructure Bicep te
 | `containers` | parameter | List of blob containers to create (`landing`, `practice`, `patient`, `equipment`, `service` by default). |
 | `tags` | parameter | Optional tags applied to the storage account. |
 
+### `infra/modules/sql.bicep`
+
+| Variable | Type | Description |
+| --- | --- | --- |
+| `namePrefix` | parameter | Prefix used to derive the SQL server and database names. |
+| `location` | parameter | Azure region where the logical server and database are deployed. |
+| `adminLogin` | parameter | Administrator login applied to the logical SQL server. |
+| `adminPassword` | secure parameter | Administrator password for the SQL server. |
+| `tags` | parameter | Optional tags applied to the SQL resources. |
+
