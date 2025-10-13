@@ -1,0 +1,50 @@
+name: infra-apim
+
+on:
+  push:
+    branches-ignore: [ main ]
+    paths:
+      - 'infra/modules/apim.bicep'
+      - 'infra/modules/policies/**'
+      - '.github/workflows/infra-apim.yml'
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    environment: DEV
+    runs-on: ubuntu-latest
+    env:
+      RG: ${{ vars.CICD_RG }}
+      LOCATION: ${{ vars.AZURE_LOCATION || 'westus2' }}
+      NAME_PREFIX: ${{ vars.NAME_PREFIX }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Ensure required variables
+        run: |
+          set -euo pipefail
+          if [ -z "${NAME_PREFIX}" ]; then
+            echo '::error title=Missing NAME_PREFIX::Define the NAME_PREFIX repository variable before running this workflow.'
+            exit 1
+          fi
+
+      - name: Azure Login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.CICD_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy API Management
+        uses: azure/arm-deploy@v1
+        with:
+          resourceGroupName: ${{ env.RG }}
+          template: ./infra/modules/apim.bicep
+          parameters: |
+            location=${{ env.LOCATION }}
+            namePrefix=${{ env.NAME_PREFIX }}
+            policyContent=@infra/modules/policies/check-entitlement.xml
