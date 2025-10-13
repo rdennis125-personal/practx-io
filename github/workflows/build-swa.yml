@@ -1,0 +1,32 @@
+name: Build Static Web App
+
+on:
+  push:
+    paths:
+      - 'practx-swa/**'
+      - 'github/workflows/build-swa.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install API dependencies
+        run: npm install --prefix practx-swa/api
+      - name: Package frontend
+        run: |
+          cd practx-swa/frontend
+          zip -r ../../swa-frontend.zip .
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: practx-swa-build
+          path: |
+            practx-swa/routes.json
+            practx-swa/env/
+            swa-frontend.zip

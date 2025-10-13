@@ -1,0 +1,69 @@
+name: Deploy Service API
+
+on:
+  workflow_dispatch:
+    inputs:
+      app_name:
+        description: App Service name
+        required: true
+      env:
+        description: Environment short name (e.g., dev, qa, prod)
+        required: true
+      resource_group:
+        description: Target resource group
+        required: true
+      location:
+        description: Azure location
+        required: true
+      kv_name:
+        description: Key Vault containing app settings
+        required: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ env.AZURE_CLIENT_ID }}
+          tenant-id: ${{ env.AZURE_TENANT_ID }}
+          subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
+      - name: Bicep build validation
+        run: az bicep build --file infra/modules/service-api/api.bicep
+      - name: Deploy infrastructure
+        run: |
+          az deployment group create \
+            --resource-group ${{ inputs.resource_group }} \
+            --template-file infra/modules/service-api/api.bicep \
+            --parameters appName=${{ inputs.app_name }} env=${{ inputs.env }} kvName=${{ inputs.kv_name }} location=${{ inputs.location }}
+      - name: Publish API
+        run: dotnet publish practx-service-api/src/Practx.Service.Api/Practx.Service.Api.csproj --configuration Release --output publish
+      - name: Package artifact
+        run: |
+          cd publish
+          zip -r ../service-api.zip .
+      - name: Deploy Web App
+        run: |
+          az webapp deploy \
+            --name ${{ inputs.app_name }} \
+            --resource-group ${{ inputs.resource_group }} \
+            --src-path service-api.zip \
+            --type zip
+      - name: Smoke test
+        run: |
+          STATUS=$(curl -s -o response.json -w "%{http_code}" https://${{ inputs.app_name }}.azurewebsites.net/healthz)
+          cat response.json || true
+          if [ "$STATUS" != "200" ]; then
+            echo "Health check failed with status $STATUS"
+            exit 1
+          fi

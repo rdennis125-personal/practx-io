@@ -1,0 +1,62 @@
+name: Deploy Static Web App
+
+on:
+  workflow_dispatch:
+    inputs:
+      swa_name:
+        description: Static Web App name
+        required: true
+      env:
+        description: Environment short name
+        required: true
+      resource_group:
+        description: Target resource group
+        required: true
+      location:
+        description: Azure location
+        required: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ env.AZURE_CLIENT_ID }}
+          tenant-id: ${{ env.AZURE_TENANT_ID }}
+          subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
+      - name: Bicep build validation
+        run: az bicep build --file infra/modules/swa/swa.bicep
+      - name: Deploy infrastructure
+        run: |
+          az deployment group create \
+            --resource-group ${{ inputs.resource_group }} \
+            --template-file infra/modules/swa/swa.bicep \
+            --parameters swaName=${{ inputs.swa_name }} env=${{ inputs.env }} location=${{ inputs.location }}
+      - name: Install API dependencies
+        run: npm install --prefix practx-swa/api
+      - name: Deploy Static Web App
+        run: |
+          az staticwebapp upload \
+            --name ${{ inputs.swa_name }} \
+            --resource-group ${{ inputs.resource_group }} \
+            --env production \
+            --app-location practx-swa/frontend \
+            --api-location practx-swa/api
+      - name: Smoke test
+        run: |
+          STATUS=$(curl -s -o response.html -w "%{http_code}" https://${{ inputs.swa_name }}.azurestaticapps.net)
+          if [ "$STATUS" != "200" ]; then
+            echo "Static site health check failed with status $STATUS"
+            exit 1
+          fi

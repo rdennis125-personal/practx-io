@@ -318,3 +318,93 @@ An equivalent Azure Pipelines definition is available at
 4. Place a test order using **Bill my dealer account** to exercise the dealer timeout → Resolve fallback path.
 
 Refer to `docs/sequence.md` for sequence diagrams and `docs/local-debug.md` for curl/httpie test plans.
+
+---
+
+## 2025 Repository Restructure Overview
+
+To support the move from a monolithic solution to per-component ownership, the repository now includes standalone directories for each Practx capability with matching infrastructure modules and GitHub Actions workflows.
+
+### Component layout
+
+```
+/practx-swa/                # Marketing Static Web App
+/practx-equipment-api/      # Equipment lifecycle API (formerly ELM)
+/practx-practice-api/       # Practice management API scaffold
+/practx-patients-api/       # Patient engagement API scaffold
+/practx-service-api/        # Field service API scaffold
+/practx-access-api/         # Identity and access API scaffold
+/practx-contracts/          # OpenAPI contracts, policies, ODCS placeholders
+/practx-apim/               # APIM import automation
+/practx-sql/                # SQL schema projects (placeholder)
+/practx-shared-dotnet/      # Shared .NET library
+/practx-shared-js/          # Shared JavaScript workspace
+/infra/modules/             # Independent Bicep modules per component
+/github/workflows/          # GitHub Actions workflows per component
+```
+
+### Building locally
+
+| Component | Commands |
+| --- | --- |
+| Static Web App | `npm install --prefix practx-swa/api`<br>`npx @azure/static-web-apps-cli start practx-swa/frontend --api-location practx-swa/api` |
+| Equipment API | `dotnet restore practx-equipment-api/src/Practx.Equipment.Api`<br>`dotnet test practx-equipment-api/tests/Practx.Equipment.Api.Tests` |
+| Practice API | `dotnet restore practx-practice-api/src/Practx.Practice.Api`<br>`dotnet test practx-practice-api/tests/Practx.Practice.Api.Tests` |
+| Patients API | `dotnet restore practx-patients-api/src/Practx.Patients.Api`<br>`dotnet test practx-patients-api/tests/Practx.Patients.Api.Tests` |
+| Service API | `dotnet restore practx-service-api/src/Practx.Service.Api`<br>`dotnet test practx-service-api/tests/Practx.Service.Api.Tests` |
+| Access API | `dotnet restore practx-access-api/src/Practx.Access.Api`<br>`dotnet test practx-access-api/tests/Practx.Access.Api.Tests` |
+| Shared .NET library | `dotnet restore practx-shared-dotnet/src/Practx.Shared`<br>`dotnet test practx-shared-dotnet/tests/Practx.Shared.Tests` |
+| Shared JS workspace | `npm install --prefix practx-shared-js`<br>`npm run build --prefix practx-shared-js` |
+
+### CI/CD workflows
+
+Each component has a dedicated build and deploy workflow under `github/workflows/`:
+
+| Component | Build workflow | Deploy workflow |
+| --- | --- | --- |
+| Static Web App | `build-swa.yml` | `deploy-swa.yml` |
+| Equipment API | `build-equipment-api.yml` | `deploy-equipment-api.yml` |
+| Practice API | `build-practice-api.yml` | `deploy-practice-api.yml` |
+| Patients API | `build-patients-api.yml` | `deploy-patients-api.yml` |
+| Service API | `build-service-api.yml` | `deploy-service-api.yml` |
+| Access API | `build-access-api.yml` | `deploy-access-api.yml` |
+| Contracts | `build-contracts.yml` | `deploy-apim.yml` (APIM and contract import) |
+| Shared .NET | `build-shared-dotnet.yml` | `publish-shared-dotnet.yml` |
+| Shared JS | `build-shared-js.yml` | `publish-shared-js.yml` |
+
+Build workflows restore dependencies, compile/test, and export OpenAPI or package artifacts. Deploy workflows authenticate with Azure via OIDC, validate the component Bicep module, deploy infrastructure, push application artifacts, and run a `/healthz` smoke test.
+
+### Required GitHub variables and secrets
+
+Configure repository **Variables**:
+
+- `AZURE_TENANT_ID`
+- `AZURE_SUBSCRIPTION_ID`
+
+Configure repository **Secrets**:
+
+- `AZURE_CLIENT_ID` – Client ID of the Entra application with federated credentials for GitHub Actions.
+
+Optional publishing secrets:
+
+- `NUGET_API_KEY` (if publishing outside GitHub Packages).
+- `NPM_TOKEN` (if publishing to npmjs.org instead of GitHub Packages).
+
+### Azure OIDC setup
+
+Create an Entra application and add a federated credential per deployment branch using the subject `repo:<org>/<repo>:ref:refs/heads/main` (adjust branch as needed) and audience `api://AzureADTokenExchange`. Grant the app the necessary Azure RBAC roles on the target subscription/resource groups. Store the client ID as `AZURE_CLIENT_ID` and the tenant/subscription IDs as repository variables listed above.
+
+### Adding a new API component
+
+1. Create a directory `practx-<name>-api/` with `src/`, `tests/`, and `OpenAPI/` folders mirroring the existing scaffolds.
+2. Reference `practx-shared-dotnet` for telemetry and middleware defaults.
+3. Add an `infra/modules/<name>-api/api.bicep` module accepting `appName`, `env`, `location`, and `kvName`.
+4. Duplicate a build and deploy workflow, updating path filters and resource parameters.
+5. Export the OpenAPI document to `practx-contracts/openapi/<name>/v1/openapi.yaml` and update Spectral rules if new endpoints require different validation.
+
+### Outstanding follow-ups
+
+- Configure Azure credentials and Key Vault secrets for production deployments.
+- Update `practx-apim/import.sh` to point to real backend URLs once APIs expose functional endpoints.
+- Provide SQL schema projects under `practx-sql/` as domain models mature.
+

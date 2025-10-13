@@ -1,0 +1,39 @@
+name: Build Practice API
+
+on:
+  push:
+    paths:
+      - 'practx-practice-api/**'
+      - 'practx-shared-dotnet/**'
+      - 'infra/modules/practice-api/**'
+      - 'github/workflows/build-practice-api.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Restore
+        run: dotnet restore practx-practice-api/src/Practx.Practice.Api/Practx.Practice.Api.csproj
+      - name: Build
+        run: dotnet build practx-practice-api/src/Practx.Practice.Api/Practx.Practice.Api.csproj --configuration Release --no-restore
+      - name: Test
+        run: dotnet test practx-practice-api/tests/Practx.Practice.Api.Tests/Practx.Practice.Api.Tests.csproj --configuration Release --no-build
+      - name: Install Swashbuckle CLI
+        run: dotnet tool install --global Swashbuckle.AspNetCore.Cli --version 6.5.0
+      - name: Export OpenAPI
+        run: |
+          ~/.dotnet/tools/dotnet-swagger tofile \
+            --output practx-practice-api/OpenAPI/openapi.yaml \
+            practx-practice-api/src/Practx.Practice.Api/bin/Release/net8.0/Practx.Practice.Api.dll \
+            v1
+      - name: Upload OpenAPI artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: practice-api-openapi
+          path: practx-practice-api/OpenAPI/openapi.yaml

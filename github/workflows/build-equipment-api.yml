@@ -1,0 +1,39 @@
+name: Build Equipment API
+
+on:
+  push:
+    paths:
+      - 'practx-equipment-api/**'
+      - 'practx-shared-dotnet/**'
+      - 'infra/modules/equipment-api/**'
+      - 'github/workflows/build-equipment-api.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Restore
+        run: dotnet restore practx-equipment-api/src/Practx.Equipment.Api/Practx.Equipment.Api.csproj
+      - name: Build
+        run: dotnet build practx-equipment-api/src/Practx.Equipment.Api/Practx.Equipment.Api.csproj --configuration Release --no-restore
+      - name: Test
+        run: dotnet test practx-equipment-api/tests/Practx.Equipment.Api.Tests/Practx.Equipment.Api.Tests.csproj --configuration Release --no-build
+      - name: Install Swashbuckle CLI
+        run: dotnet tool install --global Swashbuckle.AspNetCore.Cli --version 6.5.0
+      - name: Export OpenAPI
+        run: |
+          ~/.dotnet/tools/dotnet-swagger tofile \
+            --output practx-equipment-api/OpenAPI/openapi.yaml \
+            practx-equipment-api/src/Practx.Equipment.Api/bin/Release/net8.0/Practx.Equipment.Api.dll \
+            v1
+      - name: Upload OpenAPI artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: equipment-api-openapi
+          path: practx-equipment-api/OpenAPI/openapi.yaml
