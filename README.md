@@ -8,6 +8,7 @@ Hosted in Git, there is CICD integration with Azure Dev Center, if it works.
 
 - **GitHub + Azure Dev Center** – the original workflow that syncs the `Environments/` catalog and lets developers self-serve environments from the Developer Portal.
 - **GitHub only (no Dev Center)** – run the Bicep templates directly with the Azure CLI and keep shipping the Static Web App through GitHub Actions. See [Using GitHub Without Azure Dev Center](docs/github-without-devcenter.md).
+- **GitHub Actions infrastructure (modular)** – trigger the individual workflows under `.github/workflows/infra-*.yml` (storage, API Management, SQL) to practice deploying each resource type from GitHub Actions.
 - **Azure DevOps pipelines** – reuse the YAML definitions under `pipelines/` to validate and deploy infrastructure or publish the Static Web App from Azure DevOps. Details live in [Azure DevOps Pipelines for Practx](docs/azure-devops-pipelines.md).
 
 ## Table of Contents
