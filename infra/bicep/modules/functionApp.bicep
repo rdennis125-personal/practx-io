@@ -50,7 +50,7 @@ resource functionApp 'Microsoft.Web/sites@2022-03-01' = {
       linuxFxVersion: 'DOTNET-ISOLATED|8.0'
       appSettings: [
         {
-          name: 'AzureWebJobsStorage'
+          name: 'PRACTX_WEBJOB_STORAGE'
           value: storage.listKeys().keys[0].value
         }
         {

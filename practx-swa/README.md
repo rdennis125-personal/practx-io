@@ -26,15 +26,21 @@ Production-ready starter for the Practx marketing site running on Azure Static W
    npm install --prefix api
    ```
 
-2. Create `api/local.settings.json` (not committed) to provide a storage connection string when running locally:
+2. Create `api/local.settings.json` (not committed) to provide a storage connection string when running locally. You can also
+   override the blob container names here if your storage account uses non-default names:
 
    ```json
    {
      "IsEncrypted": false,
      "Values": {
-       "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+      "PRACTX_WEBJOB_STORAGE": "UseDevelopmentStorage=true",
        "FUNCTIONS_WORKER_RUNTIME": "node",
-       "STORAGE_TABLE_NAME": "Leads"
+       "STORAGE_TABLE_NAME": "Leads",
+      "PRACTX_BLOB_CONTAINER_LANDING": "landing",
+      "PRACTX_BLOB_CONTAINER_PRACTICE": "practice",
+      "PRACTX_BLOB_CONTAINER_PATIENT": "patient",
+      "PRACTX_BLOB_CONTAINER_EQUIPMENT": "equipment",
+      "PRACTX_BLOB_CONTAINER_SERVICE": "service"
      }
    }
    ```
@@ -91,7 +97,7 @@ az staticwebapp create \
   --output-location ""
 
 # After creation, set Function app settings (in SWA > Environment variables)
-# AzureWebJobsStorage = <connection string to a Storage account>
+# PRACTX_WEBJOB_STORAGE = <connection string to a Storage account>
 # STORAGE_TABLE_NAME = Leads
 ```
 
@@ -133,8 +139,13 @@ practx-swa/
 
 Set the following application settings in Azure Static Web Apps (Environment variables tab) for the production environment:
 
-- `AzureWebJobsStorage` – connection string for the Storage account used by the API
+- `PRACTX_WEBJOB_STORAGE` – connection string for the Storage account used by the API
 - `STORAGE_TABLE_NAME` – defaults to `Leads` if not specified
+- `PRACTX_BLOB_CONTAINER_LANDING` – blob container name used for general landing requests (defaults to `landing`)
+- `PRACTX_BLOB_CONTAINER_PRACTICE` – optional override for practice-specific blobs (defaults to `practice`)
+- `PRACTX_BLOB_CONTAINER_PATIENT` – optional override for patient-specific blobs (defaults to `patient`)
+- `PRACTX_BLOB_CONTAINER_EQUIPMENT` – optional override for equipment-specific blobs (defaults to `equipment`)
+- `PRACTX_BLOB_CONTAINER_SERVICE` – optional override for service-specific blobs (defaults to `service`)
 - `ALLOWED_ORIGIN` – optional comma-separated list (e.g., `https://practx.io,https://www.practx.io`)
 
 ## Lead Storage
