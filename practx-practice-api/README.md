@@ -15,7 +15,7 @@ infrastructure provisioning.
 | Setting | Description |
 | --- | --- |
 | `ASPNETCORE_ENVIRONMENT` | Deployment environment (`Development`, `Qa`, `Production`). |
-| `PRACTX_APIM_BASE_URL` | Base URL for downstream services via APIM. |
+| `APIM_BASE_URL` | Base URL for downstream services via APIM. |
 | `APPLICATIONINSIGHTS_CONNECTION_STRING` | Key Vault reference to the Application Insights instance. |
 | `APPINSIGHTS_INSTRUMENTATIONKEY` | Legacy instrumentation key support. |
 

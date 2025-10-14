@@ -146,6 +146,7 @@ Set the following application settings in Azure Static Web Apps (Environment var
 - `PRACTX_BLOB_CONTAINER_PATIENT` – optional override for patient-specific blobs (defaults to `patient`)
 - `PRACTX_BLOB_CONTAINER_EQUIPMENT` – optional override for equipment-specific blobs (defaults to `equipment`)
 - `PRACTX_BLOB_CONTAINER_SERVICE` – optional override for service-specific blobs (defaults to `service`)
+- `APIM_BASE_URL` – base URL for the Practx APIM gateway used by edge rewrites
 - `ALLOWED_ORIGIN` – optional comma-separated list (e.g., `https://practx.io,https://www.practx.io`)
 
 ## Lead Storage
