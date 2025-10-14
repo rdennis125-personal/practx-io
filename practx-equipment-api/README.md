@@ -30,7 +30,7 @@ Available endpoints:
 | `APPLICATIONINSIGHTS_CONNECTION_STRING` | Injected via Key Vault reference in production. |
 | `APPINSIGHTS_INSTRUMENTATIONKEY` | Legacy instrumentation key support. |
 | `ASPNETCORE_ENVIRONMENT` | Deployment environment (`Development`, `Qa`, `Production`). |
-| `PRACTX_APIM_BASE_URL` | Base URL for downstream API Management calls. |
+| `APIM_BASE_URL` | Base URL for downstream API Management calls. |
 
 ## Deployment inputs
 

@@ -14,7 +14,7 @@ CI/CD, infrastructure, and contracts model is in place before feature delivery b
 | Setting | Description |
 | --- | --- |
 | `ASPNETCORE_ENVIRONMENT` | Deployment environment (`Development`, `Qa`, `Production`). |
-| `PRACTX_APIM_BASE_URL` | Base URL for APIM downstream calls. |
+| `APIM_BASE_URL` | Base URL for APIM downstream calls. |
 | `APPLICATIONINSIGHTS_CONNECTION_STRING` | Key Vault reference to Application Insights. |
 | `APPINSIGHTS_INSTRUMENTATIONKEY` | Legacy instrumentation key support. |
 

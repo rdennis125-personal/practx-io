@@ -4,7 +4,7 @@ param location string = resourceGroup().location
 param kvName string
 
 var planName = '${appName}-plan'
-var apimSecretName = 'PRACTX-APIM-BASE-URL-${toLower(env)}'
+var apimSecretName = 'APIM-BASE-URL-${toLower(env)}'
 var insightsSecretName = 'APPINSIGHTS-CONNECTION-STRING-${toLower(env)}'
 
 resource appPlan 'Microsoft.Web/serverfarms@2022-03-01' = {
@@ -40,7 +40,7 @@ resource webApp 'Microsoft.Web/sites@2022-03-01' = {
           value: toUpper(env)
         }
         {
-          name: 'PRACTX_APIM_BASE_URL'
+          name: 'APIM_BASE_URL'
           value: '@Microsoft.KeyVault(SecretUri=https://${kvName}.vault.azure.net/secrets/${apimSecretName}/)'
         }
         {

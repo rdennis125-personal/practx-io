@@ -14,7 +14,7 @@ patient engagement features.
 | Setting | Description |
 | --- | --- |
 | `ASPNETCORE_ENVIRONMENT` | Deployment environment (`Development`, `Qa`, `Production`). |
-| `PRACTX_APIM_BASE_URL` | Base URL for dependent services via APIM. |
+| `APIM_BASE_URL` | Base URL for dependent services via APIM. |
 | `APPLICATIONINSIGHTS_CONNECTION_STRING` | Key Vault reference to Application Insights. |
 | `APPINSIGHTS_INSTRUMENTATIONKEY` | Legacy instrumentation key support. |
 

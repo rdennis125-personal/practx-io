@@ -14,7 +14,7 @@ integrations.
 | Setting | Description |
 | --- | --- |
 | `ASPNETCORE_ENVIRONMENT` | Deployment environment (`Development`, `Qa`, `Production`). |
-| `PRACTX_APIM_BASE_URL` | Downstream APIM base URL. |
+| `APIM_BASE_URL` | Downstream APIM base URL. |
 | `APPLICATIONINSIGHTS_CONNECTION_STRING` | Key Vault reference for telemetry. |
 | `APPINSIGHTS_INSTRUMENTATIONKEY` | Legacy instrumentation key support. |
 
