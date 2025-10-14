@@ -1,5 +1,0 @@
-node_modules
-.git*
-.vscode
-local.settings.json
-__azurite_db*__

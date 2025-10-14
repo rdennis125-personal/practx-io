@@ -44,16 +44,16 @@ You can leave the `Environments/` catalog intact. Nothing in the steps below dep
 
 The Static Web App does not rely on Dev Center. The workflow at `.github/workflows/azure-static-web-apps.yml` builds the frontend and API and uploads them when you push to `main` as long as the `AZURE_STATIC_WEB_APPS_API_TOKEN_MANGO_HILL_0CB59961E` secret is present.【F:.github/workflows/azure-static-web-apps.yml†L1-L40】
 
-1. In the Azure portal, open the Static Web App you created manually (or via the CLI bootstrap script in `practx-swa/README.md`). Generate a deployment token and store it as the `AZURE_STATIC_WEB_APPS_API_TOKEN_MANGO_HILL_0CB59961E` repository secret.
+1. In the Azure portal, open the Static Web App you created manually (or via the CLI bootstrap script in `apps/marketing-swa/README.md`). Generate a deployment token and store it as the `AZURE_STATIC_WEB_APPS_API_TOKEN_MANGO_HILL_0CB59961E` repository secret.
 2. Commit changes to `main` to publish. Pull requests continue to generate preview environments without additional configuration.【F:.github/workflows/azure-static-web-apps.yml†L9-L40】
 
-If you prefer to deploy the Static Web App from your local machine instead of GitHub Actions, run the bootstrap script documented in the SWA README to create/update the resource and then push local builds with `az staticwebapp upload`. The script already targets the `frontend` and `api` folders in this repository.【F:practx-swa/README.md†L42-L84】
+If you prefer to deploy the Static Web App from your local machine instead of GitHub Actions, run the bootstrap script documented in the SWA README to create/update the resource and then push local builds with `az staticwebapp upload`. The script already targets the `frontend` folder in this repository.【F:apps/marketing-swa/README.md†L42-L84】
 
 ## What about Dev Center assets?
 
 - Leave the `devcenter-catalog-sync` workflow disabled (or remove its secrets) while you operate in GitHub-only mode. Nothing else in the repo requires those credentials.【F:.github/workflows/devcenter-catalog-sync.yml†L1-L49】
 - You can resume Dev Center later by re-enabling the secrets and syncing the catalog. The infrastructure templates and environment definitions remain valid, so no migration work is required.
-- Azure DevOps pipelines remain available if you decide to manage deployments there instead of GitHub; they do not conflict with the GitHub-only flow.【F:pipelines/practx-infra-azure-pipelines.yml†L1-L80】【F:pipelines/practx-swa-azure-pipelines.yml†L1-L46】
+- Azure DevOps pipelines remain available if you decide to manage deployments there instead of GitHub; they do not conflict with the GitHub-only flow.【F:pipelines/practx-infra-azure-pipelines.yml†L1-L80】【F:pipelines/marketing-swa-azure-pipelines.yml†L1-L46】
 
 With these steps you can keep the repository on GitHub, deploy infrastructure with a straightforward CLI invocation, and continue publishing the Static Web App without involving Azure Dev Center.
 =======
@@ -61,7 +61,7 @@ With these steps you can keep the repository on GitHub, deploy infrastructure wi
 
 ## Deploy the Static Web App from GitHub
 
-If you prefer to provision or update the Static Web App resource directly instead of relying on GitHub Actions, you can run the Azure CLI commands below (see the [bootstrap script in `practx-swa/README.md`](../practx-swa/README.md) for full context and explanation).
+If you prefer to provision or update the Static Web App resource directly instead of relying on GitHub Actions, you can run the Azure CLI commands below (see the [bootstrap script in `apps/marketing-swa/README.md`](../apps/marketing-swa/README.md) for full context and explanation).
 
 ### Bash
 
@@ -84,8 +84,8 @@ az staticwebapp create \
   --login-with-github \
   --location $LOCATION \
   --sku Free \
-  --app-location "frontend" \
-  --api-location "api" \
+  --app-location "apps/marketing-swa/frontend" \
+  --api-location "" \
   --output-location ""
 ```
 
@@ -110,7 +110,7 @@ az staticwebapp create `
   --login-with-github `
   --location $LOCATION `
   --sku Free `
-  --app-location "frontend" `
-  --api-location "api" `
+  --app-location "apps/marketing-swa/frontend" `
+  --api-location "" `
   --output-location ""
 ```

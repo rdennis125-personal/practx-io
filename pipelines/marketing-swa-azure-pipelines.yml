@@ -1,0 +1,41 @@
+# Azure DevOps pipeline to build and deploy the Practx marketing Static Web App
+# Required variables (variable group `Practx-Marketing-SWA` recommended):
+#   PRACTX_MARKETING_SWA__DEPLOYMENT_TOKEN - deployment token from the Static Web App
+#   PRACTX_MARKETING_SWA__APP_LOCATION - optional override for frontend path (defaults to apps/marketing-swa/frontend)
+
+# trigger:
+#   branches:
+#     include:
+#       - main
+#   paths:
+#     include:
+#       - apps/marketing-swa/*
+#       - pipelines/marketing-swa-azure-pipelines.yml
+
+# variables:
+#   - group: Practx-Marketing-SWA
+#   - name: PRACTX_MARKETING_SWA__APP_LOCATION
+#     value: 'apps/marketing-swa/frontend'
+
+# stages:
+#   - stage: BuildAndDeploy
+#     displayName: Build and deploy Static Web App
+#     jobs:
+#       - job: DeploySWA
+#         displayName: Deploy Practx Marketing Static Web App
+#         pool:
+#           vmImage: 'ubuntu-latest'
+#         steps:
+#           - checkout: self
+#             clean: true
+#           - task: NodeTool@0
+#             displayName: Use Node.js 18.x
+#             inputs:
+#               versionSpec: '18.x'
+#           - task: AzureStaticWebApp@0
+#             displayName: Deploy to Azure Static Web Apps
+#             inputs:
+#               app_location: $(PRACTX_MARKETING_SWA__APP_LOCATION)
+#               api_location: ''  # API traffic is served by API Management
+#               skip_app_build: true
+#               azure_static_web_apps_api_token: $(PRACTX_MARKETING_SWA__DEPLOYMENT_TOKEN)

@@ -28,29 +28,30 @@ Create a variable group named **`Practx-Infra`** (or define equivalent pipeline 
 | `SQL_ADMIN_LOGIN` | Administrator login for the Azure SQL logical server created by the Bicep deployment. |
 | `SQL_ADMIN_PASSWORD` | Secret corresponding to `SQL_ADMIN_LOGIN`; mark as a secret variable in the pipeline. |
 
-## Static Web App pipeline (`pipelines/practx-swa-azure-pipelines.yml`)
+## Static Web App pipeline (`pipelines/marketing-swa-azure-pipelines.yml`)
 
-This pipeline deploys the contents of `practx-swa/` to Azure Static Web Apps using the official Azure DevOps task. It installs API dependencies and then uploads the frontend and Azure Functions API.
+This pipeline deploys the contents of `apps/marketing-swa/` to Azure Static Web Apps using the official Azure DevOps task. It publishes the static frontend and relies on the built-in route rewrite to reach API Management.
 
 ### Triggers
 - Branch: `main`
-- Paths: `practx-swa/**` and the pipeline definition itself
+- Paths: `apps/marketing-swa/**` and the pipeline definition itself
 
 ### Stage
-- **BuildAndDeploy** – Installs Node.js, restores the API packages, and calls `AzureStaticWebApp@0` to publish the site.
+- **BuildAndDeploy** – Installs Node.js and calls `AzureStaticWebApp@0` to publish the site.
 
 ### Required configuration
-Create a variable group named **`Practx-SWA`** (or define the variables directly on the pipeline) with the following entries:
+Create a variable group named **`Practx-Marketing-SWA`** (or define the variables directly on the pipeline) with the following entries:
 
 | Variable | Description |
 | --- | --- |
-| `AZURE_STATIC_WEB_APPS_API_TOKEN` | Deployment token for the target Static Web App environment. |
-| `APP_LOCATION` | *(Optional)* Path to the frontend source relative to the repo root. Defaults to `practx-swa/frontend`. |
-| `API_LOCATION` | *(Optional)* Path to the Azure Functions API relative to the repo root. Defaults to `practx-swa/api`. |
+| `PRACTX_MARKETING_SWA__DEPLOYMENT_TOKEN` | Deployment token for the target Static Web App environment. |
+| `PRACTX_MARKETING_SWA__APP_LOCATION` | *(Optional)* Path to the frontend source relative to the repo root. Defaults to `apps/marketing-swa/frontend`. |
+
+See [`apps/marketing-swa/VARIABLES.md`](../apps/marketing-swa/VARIABLES.md) for the canonical variable names shared with other deployment guides.
 
 ### Notes
 - The Static Web App task runs in “skip build” mode because the frontend is plain HTML/CSS/JS. Adjust the task inputs if you later introduce a build step.
-- The pipeline installs API dependencies with `npm install` so that runtime packages are validated before deployment.
+- API Management hosts the backend, so `api_location` can remain empty unless you reintroduce Azure Functions in the future.
 
 ## Running the pipelines
 1. Import each YAML file into Azure DevOps as a new pipeline, pointing to the corresponding path in this repository.

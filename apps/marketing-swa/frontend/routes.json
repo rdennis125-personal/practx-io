@@ -1,0 +1,20 @@
+{
+  "routes": [
+    {
+      "route": "/api/{*rest}",
+      "allowedRoles": [
+        "anonymous"
+      ],
+      "rewrite": "https://practx-prod-apim.azure-api.net/practx/{rest}"
+    }
+  ],
+  "navigationFallback": {
+    "rewrite": "/index.html",
+    "exclude": [
+      "/api/*",
+      "/assets/*",
+      "/robots.txt",
+      "/sitemap.xml"
+    ]
+  }
+}
