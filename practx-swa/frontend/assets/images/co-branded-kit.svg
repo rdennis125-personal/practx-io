@@ -1,0 +1,22 @@
+<svg width="480" height="360" viewBox="0 0 480 360" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Practx co-branded hygiene kit illustration</title>
+  <desc id="desc">An illustrated hygiene kit box featuring Practx and practice branding.</desc>
+  <rect width="480" height="360" rx="32" fill="#f5f7fb" />
+  <rect x="60" y="86" width="360" height="188" rx="24" fill="#ffffff" stroke="#d6deef" stroke-width="2" />
+  <rect x="80" y="108" width="180" height="52" rx="12" fill="#2e5aac" opacity="0.12" />
+  <path d="M100 140h92" stroke="#2e5aac" stroke-width="4" stroke-linecap="round" opacity="0.35" />
+  <path d="M100 122h56" stroke="#2e5aac" stroke-width="4" stroke-linecap="round" />
+  <rect x="280" y="108" width="120" height="52" rx="12" fill="#f4a261" opacity="0.18" />
+  <path d="M300 138h80" stroke="#f4a261" stroke-width="4" stroke-linecap="round" opacity="0.6" />
+  <path d="M300 120h68" stroke="#f4a261" stroke-width="4" stroke-linecap="round" />
+  <rect x="80" y="176" width="140" height="76" rx="16" fill="#ffffff" stroke="#d6deef" stroke-width="2" />
+  <rect x="92" y="190" width="116" height="22" rx="11" fill="#2e5aac" opacity="0.12" />
+  <path d="M104 215h92" stroke="#2e5aac" stroke-width="3" stroke-linecap="round" opacity="0.35" />
+  <rect x="242" y="176" width="180" height="76" rx="16" fill="#ffffff" stroke="#d6deef" stroke-width="2" />
+  <rect x="256" y="190" width="70" height="70" rx="12" fill="#2e5aac" opacity="0.12" />
+  <rect x="340" y="190" width="70" height="24" rx="12" fill="#f4a261" opacity="0.25" />
+  <path d="M366 204h18" stroke="#2e5aac" stroke-width="3" stroke-linecap="round" opacity="0.6" />
+  <path d="M256 240h150" stroke="#2e5aac" stroke-width="3" stroke-linecap="round" opacity="0.2" />
+  <rect x="140" y="260" width="200" height="44" rx="22" fill="#2e5aac" />
+  <text x="240" y="289" text-anchor="middle" font-family="Inter, 'Segoe UI', sans-serif" font-size="18" fill="#ffffff">Practx + Your Practice</text>
+</svg>
