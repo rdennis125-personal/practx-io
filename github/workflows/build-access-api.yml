@@ -1,0 +1,39 @@
+name: Build Access API
+
+on:
+  push:
+    paths:
+      - 'practx-access-api/**'
+      - 'practx-shared-dotnet/**'
+      - 'infra/modules/access-api/**'
+      - 'github/workflows/build-access-api.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Restore
+        run: dotnet restore practx-access-api/src/Practx.Access.Api/Practx.Access.Api.csproj
+      - name: Build
+        run: dotnet build practx-access-api/src/Practx.Access.Api/Practx.Access.Api.csproj --configuration Release --no-restore
+      - name: Test
+        run: dotnet test practx-access-api/tests/Practx.Access.Api.Tests/Practx.Access.Api.Tests.csproj --configuration Release --no-build
+      - name: Install Swashbuckle CLI
+        run: dotnet tool install --global Swashbuckle.AspNetCore.Cli --version 6.5.0
+      - name: Export OpenAPI
+        run: |
+          ~/.dotnet/tools/dotnet-swagger tofile \
+            --output practx-access-api/OpenAPI/openapi.yaml \
+            practx-access-api/src/Practx.Access.Api/bin/Release/net8.0/Practx.Access.Api.dll \
+            v1
+      - name: Upload OpenAPI artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: access-api-openapi
+          path: practx-access-api/OpenAPI/openapi.yaml

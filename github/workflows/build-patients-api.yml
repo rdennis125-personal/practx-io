@@ -1,0 +1,39 @@
+name: Build Patients API
+
+on:
+  push:
+    paths:
+      - 'practx-patients-api/**'
+      - 'practx-shared-dotnet/**'
+      - 'infra/modules/patients-api/**'
+      - 'github/workflows/build-patients-api.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Restore
+        run: dotnet restore practx-patients-api/src/Practx.Patients.Api/Practx.Patients.Api.csproj
+      - name: Build
+        run: dotnet build practx-patients-api/src/Practx.Patients.Api/Practx.Patients.Api.csproj --configuration Release --no-restore
+      - name: Test
+        run: dotnet test practx-patients-api/tests/Practx.Patients.Api.Tests/Practx.Patients.Api.Tests.csproj --configuration Release --no-build
+      - name: Install Swashbuckle CLI
+        run: dotnet tool install --global Swashbuckle.AspNetCore.Cli --version 6.5.0
+      - name: Export OpenAPI
+        run: |
+          ~/.dotnet/tools/dotnet-swagger tofile \
+            --output practx-patients-api/OpenAPI/openapi.yaml \
+            practx-patients-api/src/Practx.Patients.Api/bin/Release/net8.0/Practx.Patients.Api.dll \
+            v1
+      - name: Upload OpenAPI artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: patients-api-openapi
+          path: practx-patients-api/OpenAPI/openapi.yaml

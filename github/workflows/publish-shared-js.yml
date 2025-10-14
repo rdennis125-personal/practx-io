@@ -1,0 +1,41 @@
+name: Publish Shared JS Packages
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: npm dist-tag (e.g., latest, next)
+        required: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install dependencies
+        run: npm install --prefix practx-shared-js
+      - name: Build workspace
+        run: npm run build --prefix practx-shared-js
+      - name: Configure npm registry
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          npm config set @practx:registry https://npm.pkg.github.com/
+          echo "//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}" >> ~/.npmrc
+      - name: Publish packages
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          for package in practx-shared-js/packages/*; do
+            if [ -f "$package/package.json" ]; then
+              if [ -n "${{ inputs.tag }}" ]; then
+                npm publish "$package" --access public --tag ${{ inputs.tag }}
+              else
+                npm publish "$package" --access public
+              fi
+            fi
+          done

@@ -1,0 +1,36 @@
+name: Publish Shared .NET Library
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_suffix:
+        description: Optional prerelease suffix (e.g., beta1)
+        required: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      PACKAGE_SOURCE: https://nuget.pkg.github.com/practx/index.json
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Restore
+        run: dotnet restore practx-shared-dotnet/src/Practx.Shared/Practx.Shared.csproj
+      - name: Pack
+        run: |
+          if [ -n "${{ inputs.version_suffix }}" ]; then
+            dotnet pack practx-shared-dotnet/src/Practx.Shared/Practx.Shared.csproj --configuration Release --output dist --version-suffix ${{ inputs.version_suffix }}
+          else
+            dotnet pack practx-shared-dotnet/src/Practx.Shared/Practx.Shared.csproj --configuration Release --output dist
+          fi
+      - name: Publish package
+        env:
+          NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          for package in dist/*.nupkg; do
+            dotnet nuget push "$package" --source $PACKAGE_SOURCE --api-key $NUGET_AUTH_TOKEN --skip-duplicate
+          done

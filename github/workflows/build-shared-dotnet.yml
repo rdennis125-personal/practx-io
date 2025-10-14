@@ -1,0 +1,29 @@
+name: Build Shared .NET Library
+
+on:
+  push:
+    paths:
+      - 'practx-shared-dotnet/**'
+      - 'github/workflows/build-shared-dotnet.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Restore
+        run: dotnet restore practx-shared-dotnet/src/Practx.Shared/Practx.Shared.csproj
+      - name: Test
+        run: dotnet test practx-shared-dotnet/tests/Practx.Shared.Tests/Practx.Shared.Tests.csproj --configuration Release
+      - name: Pack
+        run: dotnet pack practx-shared-dotnet/src/Practx.Shared/Practx.Shared.csproj --configuration Release --output dist
+      - name: Upload package
+        uses: actions/upload-artifact@v4
+        with:
+          name: practx-shared-dotnet
+          path: dist/*.nupkg

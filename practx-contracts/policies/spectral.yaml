@@ -1,0 +1,20 @@
+extends: ["spectral:oas"]
+
+rules:
+  practx-version-required:
+    description: OpenAPI documents must declare a semantic version.
+    message: "info.version must follow semantic versioning"
+    severity: error
+    given: $.info.version
+    then:
+      function: pattern
+      functionOptions:
+        match: "^\\d+\\.\\d+\\.\\d+$"
+  practx-healthz-exists:
+    description: APIs must expose a /healthz endpoint.
+    message: "A GET /healthz operation is required"
+    severity: error
+    given: $.paths
+    then:
+      function: truthy
+      field: /healthz/get

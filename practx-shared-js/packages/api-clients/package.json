@@ -1,0 +1,17 @@
+{
+  "name": "@practx/api-clients",
+  "version": "0.0.1",
+  "description": "Placeholder package for generated API clients",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc --emitDeclarationOnly",
+    "lint": "echo 'TODO: add linting'"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  }
+}
