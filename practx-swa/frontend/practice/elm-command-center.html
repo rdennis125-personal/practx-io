@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ELM Command Center | Practx</title>
+  <meta name="description" content="Mock ELM command center dashboard for practice operators." />
+  <meta property="og:title" content="ELM Command Center | Practx" />
+  <meta property="og:description" content="Preview the command center experience a practice will see after signing in." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://practx.io/practice/elm-command-center.html" />
+  <meta property="og:image" content="https://practx.io/assets/logo.png" />
+  <meta name="twitter:card" content="summary" />
+  <link rel="icon" href="/assets/logo.png" type="image/png" />
+  <link rel="stylesheet" href="/assets/styles.css" />
+</head>
+<body class="command-center">
+  <header>
+    <nav>
+      <a class="logo" href="/index.html">
+        <img src="/assets/logo.png" alt="Practx logo" height="60" />
+      </a>
+      <div class="nav-links">
+        <ul>
+          <li><a href="/practice-management.html">Manage Practices</a></li>
+          <li><a href="/equipment-management.html">Manage Equipment</a></li>
+          <li><a href="/patient-outreach.html">Connect to Patients</a></li>
+          <li><a href="/smile-spa-franchise.html">Expand Access</a></li>
+          <li><a href="/practx-service-franchise.html">Ensure Uptime</a></li>
+        </ul>
+        <a class="button nav-auth-button" href="/logout-complete/">Logout</a>
+      </div>
+    </nav>
+  </header>
+  <main>
+    <section class="command-center-hero">
+      <div class="command-center-hero__content">
+        <span class="eyebrow">Equipment Lifecycle Management</span>
+        <h1>Summit Dental Care</h1>
+        <p>Monitor every asset, anticipate downtime, and orchestrate service with the Practx ELM command center.</p>
+        <div class="hero-metrics" role="list">
+          <div class="hero-metric" role="listitem">
+            <span class="metric-label">Registered assets</span>
+            <strong class="metric-value">68</strong>
+            <span class="metric-subtext">Across 5 locations</span>
+          </div>
+          <div class="hero-metric" role="listitem">
+            <span class="metric-label">Average asset age</span>
+            <strong class="metric-value">5.2 yrs</strong>
+            <span class="metric-subtext">18 units under warranty</span>
+          </div>
+          <div class="hero-metric" role="listitem">
+            <span class="metric-label">Fleet uptime</span>
+            <strong class="metric-value">99.6%</strong>
+            <span class="metric-subtext">Past 30 days</span>
+          </div>
+          <div class="hero-metric" role="listitem">
+            <span class="metric-label">Work orders open</span>
+            <strong class="metric-value">4</strong>
+            <span class="metric-subtext">2 waiting on parts</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="dashboard-section">
+      <h2>Fleet overview</h2>
+      <div class="dashboard-grid">
+        <article class="dashboard-card card">
+          <h3>Inventory coverage</h3>
+          <p class="dashboard-card__metric">68 assets tracked</p>
+          <ul class="dashboard-list">
+            <li>Operatory: 34 chairs, 12 delivery units, 8 imaging devices</li>
+            <li>Support: 6 sterilizers, 4 compressors, 4 vacuums</li>
+            <li>8 assets tagged for end-of-life planning</li>
+          </ul>
+        </article>
+        <article class="dashboard-card card">
+          <h3>Service cadence</h3>
+          <p class="dashboard-card__metric">21 visits scheduled</p>
+          <ul class="dashboard-list">
+            <li>Preventive maintenance window every Tuesday &amp; Thursday</li>
+            <li>Technician SLA: 6 hours for critical outages</li>
+            <li>All sterilization assets compliant this quarter</li>
+          </ul>
+        </article>
+        <article class="dashboard-card card">
+          <h3>Lifecycle posture</h3>
+          <p class="dashboard-card__metric">12 upgrades planned</p>
+          <ul class="dashboard-list">
+            <li>Three hygiene chairs entering refresh cycle in Q3</li>
+            <li>Digital sensors refresh program underway</li>
+            <li>Financing approved for cone beam replacement</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="dashboard-section">
+      <div class="section-heading">
+        <h2>Equipment register</h2>
+        <p>Flag assets approaching service intervals, end-of-life thresholds, or downtime risk.</p>
+      </div>
+      <div class="card table-card">
+        <div class="table-wrapper" role="region" aria-live="polite">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th scope="col">Asset</th>
+                <th scope="col">Type</th>
+                <th scope="col">Location</th>
+                <th scope="col">Age</th>
+                <th scope="col">Status</th>
+                <th scope="col">Next service</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>CH-204</td>
+                <td>Treatment chair</td>
+                <td>Operatory 2</td>
+                <td>4.1 yrs</td>
+                <td><span class="status-pill status-pill--ok">Online</span></td>
+                <td>Jun 14 &bull; Preventive PM</td>
+              </tr>
+              <tr>
+                <td>PX-119</td>
+                <td>Panoramic X-ray</td>
+                <td>Imaging suite</td>
+                <td>6.7 yrs</td>
+                <td><span class="status-pill status-pill--scheduled">Scheduled</span></td>
+                <td>Apr 18 &bull; Annual calibration</td>
+              </tr>
+              <tr>
+                <td>ST-305</td>
+                <td>Sterilizer</td>
+                <td>Sterile core</td>
+                <td>9.3 yrs</td>
+                <td><span class="status-pill status-pill--attention">Watch</span></td>
+                <td>Apr 21 &bull; Replace door gasket</td>
+              </tr>
+              <tr>
+                <td>VC-412</td>
+                <td>Wet vacuum</td>
+                <td>Mechanical room</td>
+                <td>11.8 yrs</td>
+                <td><span class="status-pill status-pill--risk">At risk</span></td>
+                <td>Pending capital review</td>
+              </tr>
+              <tr>
+                <td>HL-044</td>
+                <td>Hygiene light</td>
+                <td>Operatory 5</td>
+                <td>2.3 yrs</td>
+                <td><span class="status-pill status-pill--ok">Online</span></td>
+                <td>Aug 30 &bull; Bulb replacement kit</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="dashboard-section">
+      <div class="dashboard-grid dashboard-grid--two">
+        <article class="dashboard-card card">
+          <h2>Upcoming service</h2>
+          <ul class="status-list">
+            <li>
+              <div class="status-list__details">
+                <span class="status-title">Panoramic X-ray PX-119</span>
+                <span class="status-meta">Apr 18 &bull; Annual calibration &bull; Practx Service Franchise</span>
+              </div>
+              <span class="status-pill status-pill--scheduled">Scheduled</span>
+            </li>
+            <li>
+              <div class="status-list__details">
+                <span class="status-title">Compressor CP-207</span>
+                <span class="status-meta">Apr 20 &bull; Oil-free kit replacement &bull; Technician: Rivera</span>
+              </div>
+              <span class="status-pill status-pill--attention">Prep</span>
+            </li>
+            <li>
+              <div class="status-list__details">
+                <span class="status-title">Sterilizer ST-305</span>
+                <span class="status-meta">Apr 21 &bull; Gasket swap &bull; Spare unit staged</span>
+              </div>
+              <span class="status-pill status-pill--attention">Watch</span>
+            </li>
+            <li>
+              <div class="status-list__details">
+                <span class="status-title">CBCT CB-088</span>
+                <span class="status-meta">Apr 27 &bull; Firmware update &bull; Remote session</span>
+              </div>
+              <span class="status-pill status-pill--scheduled">Scheduled</span>
+            </li>
+          </ul>
+        </article>
+        <article class="dashboard-card card">
+          <h2>Outstanding work orders</h2>
+          <ul class="status-list">
+            <li>
+              <div class="status-list__details">
+                <span class="status-title">Delivery unit DU-311</span>
+                <span class="status-meta">Opened Apr 10 &bull; Actuator failure &bull; Operatory 7</span>
+              </div>
+              <span class="status-pill status-pill--risk">Waiting on parts</span>
+            </li>
+            <li>
+              <div class="status-list__details">
+                <span class="status-title">Vacuum VC-412</span>
+                <span class="status-meta">Opened Apr 12 &bull; Bearing noise &bull; Rental standby approved</span>
+              </div>
+              <span class="status-pill status-pill--risk">Critical</span>
+            </li>
+            <li>
+              <div class="status-list__details">
+                <span class="status-title">Hygiene chair CH-228</span>
+                <span class="status-meta">Opened Apr 15 &bull; Armrest repair &bull; Technician ETA 2 hrs</span>
+              </div>
+              <span class="status-pill status-pill--scheduled">En route</span>
+            </li>
+            <li>
+              <div class="status-list__details">
+                <span class="status-title">Compressor CP-207</span>
+                <span class="status-meta">Opened Apr 16 &bull; Pressure spike alert &bull; Remote diagnostics running</span>
+              </div>
+              <span class="status-pill status-pill--attention">Monitoring</span>
+            </li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="dashboard-section">
+      <h2>Maintenance spend &amp; forecast</h2>
+      <div class="spend-grid">
+        <article class="card spend-card">
+          <div class="spend-metric">
+            <span class="spend-label">FY24 maintenance spend</span>
+            <strong class="spend-value">$182,400</strong>
+            <span class="spend-subtext">YTD 92% of plan</span>
+          </div>
+          <ul class="dashboard-list">
+            <li>$14,600 processed in April to date</li>
+            <li>Warranty recovery offsets $3,200 this quarter</li>
+            <li>Capital reserve balance: $48,000</li>
+          </ul>
+        </article>
+        <article class="card spend-card">
+          <div class="spend-metric">
+            <span class="spend-label">90-day forecast</span>
+            <strong class="spend-value">$61,750</strong>
+            <span class="spend-subtext">Includes high-priority replacements</span>
+          </div>
+          <ul class="dashboard-list">
+            <li>Approve cone beam procurement by May 15</li>
+            <li>Bundle hygiene chair upgrades for Q3 install</li>
+            <li>Lock parts allocation for compressor retrofit</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <div class="footer-content">
+      <div class="footer-top">
+        <div class="footer-copy">&copy; <span id="year"></span> Practx. Access above all.</div>
+        <nav class="footer-links" aria-label="Practx company">
+          <a href="/about.html">About Us</a>
+          <a href="/contact.html">Contact</a>
+          <a href="/leadership.html">Leadership</a>
+          <a href="/careers.html">Careers</a>
+        </nav>
+      </div>
+      <div class="footer-bottom">
+        <small><a href="mailto:hello@practx.io">hello@practx.io</a> • <a href="/sitemap.xml">Sitemap</a></small>
+      </div>
+    </div>
+  </footer>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
