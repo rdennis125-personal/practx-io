@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>SWA Auth Debug</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 840px; margin: 2rem auto; padding: 0 1rem; }
+    pre { background:#f6f8fa; padding:1rem; overflow:auto; border-radius:8px; }
+    .bar { display:flex; gap:.75rem; align-items:center; margin-bottom:1rem; }
+    a.btn, button.btn { padding:.5rem .75rem; border:1px solid #ccc; border-radius:8px; text-decoration:none; background:#fff; cursor:pointer; }
+  </style>
+</head>
+<body>
+  <h1>Auth Debug (/debug/auth-debug.html)</h1>
+  <p>Shows what Azure Static Web Apps sees at <code>/.auth/me</code>. Use this to confirm <code>userRoles</code> includes <code>APP_ROLE_SWA_ELM</code>.</p>
+
+  <div class="bar">
+    <a class="btn" href="/.auth/login/aad">Sign in</a>
+    <a class="btn" href="/.auth/logout">Sign out</a>
+    <a class="btn" href="/debug/token-debug.html">View ID Token Claims</a>
+  </div>
+
+  <pre id="out">Loading…</pre>
+
+  <script>
+  (async () => {
+    try {
+      const res = await fetch('/.auth/me', { credentials: 'include' });
+      const data = res.ok ? await res.json() : { error: res.status, statusText: res.statusText };
+      document.getElementById('out').textContent = JSON.stringify(data, null, 2);
+    } catch (e) {
+      document.getElementById('out').textContent = String(e);
+    }
+  })();
+  </script>
+</body>
+</html>

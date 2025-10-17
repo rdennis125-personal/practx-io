@@ -3,6 +3,10 @@
     {
       "route": "/equipment/*",
       "allowedRoles": ["APP_ROLE_SWA_ELM"]
+    },
+    {
+      "route": "/debug/token-debug.html",
+      "allowedRoles": ["authenticated"]
     }
   ],
   "responseOverrides": {
@@ -17,7 +21,8 @@
       "/.auth/*",
       "/equipment/*",
       "/forbidden.html",
-      "/logout-complete/*"
+      "/logout-complete/*",
+      "/debug/*"
     ]
   }
 }
