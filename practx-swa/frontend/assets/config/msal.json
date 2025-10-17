@@ -1,0 +1,5 @@
+{
+  "clientId": "__MSAL_SWA_CLIENT_ID__",
+  "authority": "__MSAL_AUTHORITY__",
+  "redirectUri": "__MSAL_REDIRECT_URI__"
+}

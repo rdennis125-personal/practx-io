@@ -45,6 +45,27 @@ jobs:
             --parameters swaName=${{ inputs.swa_name }} env=${{ inputs.env }} location=${{ inputs.location }}
       - name: Install API dependencies
         run: npm install --prefix practx-swa/api
+      - name: Render MSAL config
+        env:
+          MSAL_SWA_CLIENT_ID: ${{ vars.MSAL_SWA_CLIENT_ID }}
+          MSAL_AUTHORITY: ${{ vars.MSAL_AUTHORITY }}
+          MSAL_REDIRECT_URI: ${{ vars.MSAL_REDIRECT_URI }}
+        run: |
+          set -euo pipefail
+          for var in MSAL_SWA_CLIENT_ID MSAL_AUTHORITY MSAL_REDIRECT_URI; do
+            if [ -z "${!var}" ]; then
+              echo "Missing required variable: $var"
+              exit 1
+            fi
+          done
+          mkdir -p practx-swa/frontend/assets/config
+          cat > practx-swa/frontend/assets/config/msal.json <<EOF
+          {
+            "clientId": "${MSAL_SWA_CLIENT_ID}",
+            "authority": "${MSAL_AUTHORITY}",
+            "redirectUri": "${MSAL_REDIRECT_URI}"
+          }
+          EOF
       - name: Deploy Static Web App
         run: |
           az staticwebapp upload \
