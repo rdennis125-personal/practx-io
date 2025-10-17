@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>ID Token Debug</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 840px; margin: 2rem auto; padding: 0 1rem; }
+    pre { background:#f6f8fa; padding:1rem; overflow:auto; border-radius:8px; }
+    .bar { display:flex; gap:.75rem; align-items:center; margin-bottom:1rem; }
+    a.btn, button.btn { padding:.5rem .75rem; border:1px solid #ccc; border-radius:8px; text-decoration:none; background:#fff; cursor:pointer; }
+  </style>
+</head>
+<body>
+  <h1>ID Token Debug (/debug/token-debug.html)</h1>
+  <p>Shows <code>idTokenClaims</code> from msal-browser. Confirms <code>aud</code> matches our client ID and whether <code>roles</code>/<code>groups</code> are present.</p>
+
+  <div class="bar">
+    <a class="btn" href="/.auth/logout">Sign out</a>
+    <a class="btn" href="/debug/auth-debug.html">Back to Auth Debug</a>
+  </div>
+
+  <pre id="out">Loading…</pre>
+
+  <script type="module">
+    import { PublicClientApplication } from "https://cdn.jsdelivr.net/npm/@azure/msal-browser@2.39.0/lib/msal-browser.min.js";
+
+    const cfg = {
+      clientId: "${{ vars.MSAL_SWA_CLIENT_ID }}",
+      authority: "${{ vars.MSAL_AUTHORITY }}",
+      redirectUri: "${{ vars.MSAL_REDIRECT_URI }}"
+    };
+
+    const msal = new PublicClientApplication({
+      auth: cfg,
+      cache: { cacheLocation: "sessionStorage" }
+    });
+
+    await msal.handleRedirectPromise().catch(console.warn);
+
+    let acct = msal.getActiveAccount() ?? msal.getAllAccounts()[0];
+    if (!acct) {
+      await msal.loginRedirect({ scopes: [] });
+    } else {
+      msal.setActiveAccount(acct);
+    }
+
+    acct = msal.getActiveAccount() ?? msal.getAllAccounts()[0];
+    const claims = acct?.idTokenClaims || { error: "No idTokenClaims" };
+
+    document.getElementById('out').textContent = JSON.stringify(claims, null, 2);
+  </script>
+</body>
+</html>
