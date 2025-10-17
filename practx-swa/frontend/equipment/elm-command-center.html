@@ -262,6 +262,24 @@
       </div>
     </section>
   </main>
+  <script>
+    (async () => {
+      try {
+        const res = await fetch('/.auth/me', { credentials: 'include' });
+        if (res.status === 401) { window.location = '/.auth/login/aad'; return; }
+        const data = await res.json();
+        const roles = (data?.clientPrincipal?.userRoles) || [];
+        if (!roles.includes('APP_ROLE_SWA_ELM')) {
+          window.location = '/forbidden.html';
+          return;
+        }
+        console.debug('ELM access granted', roles);
+      } catch (err) {
+        console.error(err);
+        window.location = '/.auth/login/aad';
+      }
+    })();
+  </script>
   <footer>
     <div class="footer-content">
       <div class="footer-top">

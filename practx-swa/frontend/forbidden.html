@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Access denied | Practx</title>
+  <link rel="icon" href="/assets/logo.png" type="image/png" />
+  <link rel="stylesheet" href="/assets/styles.css" />
+  <style>
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      background: #f7f7f8;
+      color: #1b1b1d;
+      padding: 2rem;
+      gap: 1.5rem;
+    }
+    .actions {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .actions a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.75rem 1.5rem;
+      border-radius: 999px;
+      border: 1px solid #1b1b1d;
+      text-decoration: none;
+      font-weight: 600;
+      color: #1b1b1d;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+    .actions a:hover,
+    .actions a:focus {
+      background: #1b1b1d;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Access denied</h1>
+    <p>You don’t have access to Equipment Lifecycle Management.</p>
+    <div class="actions">
+      <a href="/">Home</a>
+      <a href="/.auth/logout">Logout</a>
+    </div>
+  </main>
+</body>
+</html>

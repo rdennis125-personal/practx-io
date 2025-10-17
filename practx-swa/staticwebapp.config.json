@@ -1,9 +1,23 @@
 {
   "routes": [
-    { "route": "/practice/*",  "allowedRoles": ["anonymous"] },
-    { "route": "/patient/*",   "allowedRoles": ["anonymous"] },
-    { "route": "/equipment/*", "allowedRoles": ["anonymous"] },
-    { "route": "/service/*",   "allowedRoles": ["anonymous"] }
+    {
+      "route": "/equipment/*",
+      "allowedRoles": ["APP_ROLE_SWA_ELM"]
+    }
   ],
-  "navigationFallback": { "rewrite": "/index.html" }
+  "responseOverrides": {
+    "401": { "statusCode": 302, "redirect": "/.auth/login/aad" },
+    "403": { "statusCode": 302, "redirect": "/forbidden.html" }
+  },
+  "navigationFallback": {
+    "rewrite": "/index.html",
+    "exclude": [
+      "/assets/*",
+      "/images/*",
+      "/.auth/*",
+      "/equipment/*",
+      "/forbidden.html",
+      "/logout-complete/*"
+    ]
+  }
 }
