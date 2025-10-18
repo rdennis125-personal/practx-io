@@ -13,6 +13,7 @@
   <meta name="twitter:card" content="summary" />
   <link rel="icon" href="/assets/logo.png" type="image/png" />
   <link rel="stylesheet" href="/assets/styles.css" />
+  <script defer src="/assets/js/entity-forms.js"></script>
 </head>
 <body class="command-center">
   <header>
@@ -341,7 +342,13 @@
         <article class="card entity-form-card">
           <h3>Provision user identity</h3>
           <p class="entity-form-card__intro">Capture core user attributes, security controls, and organization alignment before activating access.</p>
-          <form class="entity-form" aria-label="Provision user identity" novalidate>
+          <form
+            class="entity-form"
+            aria-label="Provision user identity"
+            novalidate
+            data-entity-type="identity"
+            data-destination="/practice/practice-command-center.html"
+          >
             <div class="form-row form-row--split">
               <label for="user-name">Full name
                 <input id="user-name" name="user-name" type="text" placeholder="Jordan Price" required />
@@ -403,7 +410,13 @@
         <article class="card entity-form-card">
           <h3>Onboard organization</h3>
           <p class="entity-form-card__intro">Outline practice relationships, compliance status, and integrations needed before go-live.</p>
-          <form class="entity-form" aria-label="Onboard organization" novalidate>
+          <form
+            class="entity-form"
+            aria-label="Onboard organization"
+            novalidate
+            data-entity-type="organization"
+            data-destination="/practice/practice-command-center.html"
+          >
             <div class="form-row form-row--split">
               <label for="org-name">Organization name
                 <input id="org-name" name="org-name" type="text" placeholder="Bright Horizon Dental" />
@@ -464,7 +477,13 @@
         <article class="card entity-form-card">
           <h3>Register equipment</h3>
           <p class="entity-form-card__intro">Track device lifecycle data, installation details, and monitoring preferences.</p>
-          <form class="entity-form" aria-label="Register equipment" novalidate>
+          <form
+            class="entity-form"
+            aria-label="Register equipment"
+            novalidate
+            data-entity-type="equipment"
+            data-destination="/equipment/elm-command-center.html"
+          >
             <div class="form-row form-row--split">
               <label for="equip-id">Asset ID
                 <input id="equip-id" name="equip-id" type="text" placeholder="TRIOS-4421" />
@@ -520,7 +539,13 @@
         <article class="card entity-form-card">
           <h3>Coordinate appointment</h3>
           <p class="entity-form-card__intro">Preview how scheduling captures patient needs, practice availability, and outreach follow-up.</p>
-          <form class="entity-form" aria-label="Coordinate appointment" novalidate>
+          <form
+            class="entity-form"
+            aria-label="Coordinate appointment"
+            novalidate
+            data-entity-type="appointment"
+            data-destination="/patient/outreach-command-center.html"
+          >
             <div class="form-row form-row--split">
               <label for="appt-patient">Patient name
                 <input id="appt-patient" name="appt-patient" type="text" placeholder="Avery Chen" />
