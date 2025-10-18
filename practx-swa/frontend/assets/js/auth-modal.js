@@ -8,6 +8,115 @@
     '[tabindex]:not([tabindex="-1"])'
   ].join(',');
 
+  const ROLE_GROUPS = [
+    {
+      area: 'practice',
+      label: 'Practice Management',
+      roles: [
+        { value: 'practice-manager', label: 'Practice Manager' },
+        { value: 'regional-operations-director', label: 'Regional Operations Director' },
+        { value: 'clinical-coordinator', label: 'Clinical Coordinator' }
+      ]
+    },
+    {
+      area: 'equipment',
+      label: 'Equipment Management',
+      roles: [
+        { value: 'equipment-coordinator', label: 'Equipment Coordinator' },
+        { value: 'procurement-specialist', label: 'Procurement Specialist' },
+        { value: 'biomedical-engineer', label: 'Biomedical Engineer' }
+      ]
+    },
+    {
+      area: 'patient',
+      label: 'Patient Outreach',
+      roles: [
+        { value: 'patient-outreach-specialist', label: 'Patient Outreach Specialist' },
+        { value: 'marketing-manager', label: 'Marketing Manager' },
+        { value: 'community-liaison', label: 'Community Liaison' }
+      ]
+    },
+    {
+      area: 'service',
+      label: 'Service Operations',
+      roles: [
+        { value: 'service-manager', label: 'Service Manager' },
+        { value: 'field-technician-lead', label: 'Field Technician Lead' },
+        { value: 'dispatch-coordinator', label: 'Dispatch Coordinator' }
+      ]
+    },
+    {
+      area: 'smile-spa',
+      label: 'Smile Spa',
+      roles: [
+        { value: 'smile-spa-lead', label: 'Smile Spa Lead' },
+        { value: 'studio-manager', label: 'Studio Manager' },
+        { value: 'guest-experience-director', label: 'Guest Experience Director' }
+      ]
+    }
+  ];
+
+  function populateRoleSelect(select) {
+    if (!select || select.dataset.populated === 'true') {
+      return;
+    }
+
+    const fragment = document.createDocumentFragment();
+    const placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.textContent = 'Select your role';
+    placeholder.disabled = true;
+    placeholder.selected = true;
+    fragment.appendChild(placeholder);
+
+    ROLE_GROUPS.forEach((group) => {
+      const optgroup = document.createElement('optgroup');
+      optgroup.label = group.label;
+      group.roles.forEach((role) => {
+        const option = document.createElement('option');
+        option.value = role.value;
+        option.textContent = role.label;
+        option.dataset.area = group.area;
+        optgroup.appendChild(option);
+      });
+      fragment.appendChild(optgroup);
+    });
+
+    select.textContent = '';
+    select.appendChild(fragment);
+    select.dataset.populated = 'true';
+  }
+
+  function filterRoleOptions(select, area) {
+    if (!select) {
+      return;
+    }
+
+    let hasVisibleSelection = false;
+
+    Array.from(select.options).forEach((option) => {
+      if (!option.dataset.area) {
+        return;
+      }
+
+      const matches = !area || option.dataset.area === area;
+      option.hidden = !matches;
+      option.disabled = !matches;
+
+      if (matches && option.selected) {
+        hasVisibleSelection = true;
+      }
+    });
+
+    if (!hasVisibleSelection) {
+      select.value = '';
+      const placeholderOption = select.querySelector('option[value=""]');
+      if (placeholderOption) {
+        placeholderOption.selected = true;
+      }
+    }
+  }
+
   function createModal() {
     const wrapper = document.createElement('div');
     wrapper.innerHTML = `
@@ -31,12 +140,6 @@
             <label for="auth-role">Role</label>
             <select id="auth-role" name="role" autocomplete="organization-title" required>
               <option value="" disabled selected>Select your role</option>
-              <option value="practice-manager">Practice Manager</option>
-              <option value="operations-director">Operations Director</option>
-              <option value="equipment-coordinator">Equipment Coordinator</option>
-              <option value="patient-outreach-specialist">Patient Outreach Specialist</option>
-              <option value="service-manager">Service Manager</option>
-              <option value="smile-spa-lead">Smile Spa Lead</option>
             </select>
 
             <label for="auth-area">Primary command center</label>
@@ -155,10 +258,33 @@
 
     const overlay = modal.querySelector('[data-close]');
     const form = modal.querySelector('#auth-form');
+    const roleSelect = modal.querySelector('#auth-role');
+    const areaSelect = modal.querySelector('#auth-area');
+
+    populateRoleSelect(roleSelect);
+    filterRoleOptions(roleSelect, areaSelect ? areaSelect.value : '');
 
     function handleOpen(event) {
       event.preventDefault();
       const previouslyFocused = document.activeElement;
+
+      if (form) {
+        form.reset();
+      }
+
+      if (roleSelect) {
+        roleSelect.value = '';
+        const placeholderOption = roleSelect.querySelector('option[value=""]');
+        if (placeholderOption) {
+          placeholderOption.selected = true;
+        }
+      }
+
+      if (areaSelect) {
+        areaSelect.value = '';
+      }
+
+      filterRoleOptions(roleSelect, areaSelect ? areaSelect.value : '');
       openModal(modal, previouslyFocused);
     }
 
@@ -177,6 +303,32 @@
         closeModal(modal);
       });
     });
+
+    if (areaSelect && roleSelect) {
+      areaSelect.addEventListener('change', function () {
+        if (!areaSelect.value) {
+          roleSelect.value = '';
+          const placeholderOption = roleSelect.querySelector('option[value=""]');
+          if (placeholderOption) {
+            placeholderOption.selected = true;
+          }
+        }
+        filterRoleOptions(roleSelect, areaSelect.value);
+      });
+
+      roleSelect.addEventListener('change', function () {
+        const selectedOption = roleSelect.selectedOptions[0];
+        if (!selectedOption || !selectedOption.dataset.area) {
+          return;
+        }
+
+        if (areaSelect.value !== selectedOption.dataset.area) {
+          areaSelect.value = selectedOption.dataset.area;
+        }
+
+        filterRoleOptions(roleSelect, areaSelect.value);
+      });
+    }
 
     document.addEventListener('keydown', function (event) {
       if (modal.classList.contains('is-open')) {
