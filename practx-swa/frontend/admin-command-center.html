@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin Command Center | Practx</title>
+  <meta name="description" content="Mock Practx admin operations cockpit showcasing user, organization, and equipment governance features." />
+  <meta property="og:title" content="Admin Command Center | Practx" />
+  <meta property="og:description" content="Preview how Practx centralizes identity, onboarding, and platform health oversight for administrators." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://www.practx.io/admin-command-center.html" />
+  <meta property="og:image" content="https://practx.io/assets/logo.png" />
+  <meta name="twitter:card" content="summary" />
+  <link rel="icon" href="/assets/logo.png" type="image/png" />
+  <link rel="stylesheet" href="/assets/styles.css" />
+</head>
+<body class="command-center">
+  <header>
+    <nav>
+      <a class="logo" href="/index.html">
+        <img src="/assets/logo.png" alt="Practx logo" height="60" />
+      </a>
+      <div class="nav-links">
+        <ul>
+          <li><a href="/practice-management.html">Manage Practices</a></li>
+          <li><a href="/equipment-management.html">Manage Equipment</a></li>
+          <li><a href="/patient-outreach.html">Connect to Patients</a></li>
+          <li><a href="/smile-spa-franchise.html">Expand Access</a></li>
+          <li><a href="/practx-service-franchise.html">Ensure Uptime</a></li>
+        </ul>
+        <a class="button nav-auth-button" href="/logout-complete/">Logout</a>
+      </div>
+    </nav>
+  </header>
+  <main>
+    <section class="command-center-hero">
+      <div class="command-center-hero__content">
+        <span class="eyebrow">Practx Platform Administration</span>
+        <h1>Admin Command Center</h1>
+        <p>Oversee every user, organization, and equipment integration with live telemetry, lifecycle workflows, and safety controls.</p>
+        <div class="hero-metrics" role="list">
+          <div class="hero-metric" role="listitem">
+            <span class="metric-label">Active identities</span>
+            <strong class="metric-value">1,482</strong>
+            <span class="metric-subtext">91 pending approvals</span>
+          </div>
+          <div class="hero-metric" role="listitem">
+            <span class="metric-label">Organizations managed</span>
+            <strong class="metric-value">86</strong>
+            <span class="metric-subtext">7 onboarding this month</span>
+          </div>
+          <div class="hero-metric" role="listitem">
+            <span class="metric-label">Equipment uptime</span>
+            <strong class="metric-value">99.2%</strong>
+            <span class="metric-subtext">4 devices in maintenance</span>
+          </div>
+          <div class="hero-metric" role="listitem">
+            <span class="metric-label">Automation coverage</span>
+            <strong class="metric-value">68%</strong>
+            <span class="metric-subtext">+12% YoY expansion</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="dashboard-section">
+      <h2>Platform health</h2>
+      <div class="dashboard-grid">
+        <article class="dashboard-card card">
+          <h3>User directory</h3>
+          <p class="dashboard-card__metric">1,213 verified</p>
+          <ul class="dashboard-list">
+            <li>38 MFA resets queued for concierge team</li>
+            <li>14 access elevation requests awaiting compliance review</li>
+            <li>SSO drift detection paused 3 inactive tenants</li>
+          </ul>
+        </article>
+        <article class="dashboard-card card">
+          <h3>Organization readiness</h3>
+          <p class="dashboard-card__metric">92% compliant</p>
+          <ul class="dashboard-list">
+            <li>7 DSOs reconciling BAAs &amp; insurance credentials</li>
+            <li>Quarterly attestations complete for 68 practices</li>
+            <li>Automated reminders sent to 12 overdue entities</li>
+          </ul>
+        </article>
+        <article class="dashboard-card card">
+          <h3>Equipment connectivity</h3>
+          <p class="dashboard-card__metric">312 devices reporting</p>
+          <ul class="dashboard-list">
+            <li>99 IoT gateways online • 2 failover routes engaged</li>
+            <li>Predictive maintenance triggered 5 service tickets</li>
+            <li>Firmware 2.9 rollout staged for 28 sterilizers</li>
+          </ul>
+        </article>
+        <article class="dashboard-card card">
+          <h3>Incident queue</h3>
+          <p class="dashboard-card__metric">6 active</p>
+          <ul class="dashboard-list">
+            <li>2 priority-1 login disruptions isolated to sandbox</li>
+            <li>4 provisioning delays with automated root-cause notes</li>
+            <li>Average response 11m • SLA 15m</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="dashboard-section">
+      <div class="section-heading">
+        <h2>Live system status</h2>
+        <p>Track the operational heartbeat across user, organization, and equipment services.</p>
+      </div>
+      <div class="card table-card">
+        <div class="table-wrapper" role="region" aria-live="polite">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th scope="col">Service</th>
+                <th scope="col">Domain</th>
+                <th scope="col">Last update</th>
+                <th scope="col">Impact</th>
+                <th scope="col">Status</th>
+                <th scope="col">Owner</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Identity sync</td>
+                <td>Users</td>
+                <td>1 min ago</td>
+                <td>Auto-provisioning to HRIS &amp; payroll</td>
+                <td><span class="status-pill status-pill--ok">Healthy</span></td>
+                <td>Security Ops</td>
+              </tr>
+              <tr>
+                <td>Org relationship graph</td>
+                <td>Organizations</td>
+                <td>4 min ago</td>
+                <td>DSO hierarchy &amp; practice mappings</td>
+                <td><span class="status-pill status-pill--scheduled">Re-indexing</span></td>
+                <td>Data Platform</td>
+              </tr>
+              <tr>
+                <td>Equipment telemetry</td>
+                <td>Equipment</td>
+                <td>7 min ago</td>
+                <td>Realtime sterilizer &amp; imaging feeds</td>
+                <td><span class="status-pill status-pill--attention">Degraded</span></td>
+                <td>Reliability</td>
+              </tr>
+              <tr>
+                <td>Access policy engine</td>
+                <td>Cross-domain</td>
+                <td>45 sec ago</td>
+                <td>RBAC, impersonation, break-glass controls</td>
+                <td><span class="status-pill status-pill--ok">Green</span></td>
+                <td>Platform</td>
+              </tr>
+              <tr>
+                <td>Lifecycle automation</td>
+                <td>Users &amp; orgs</td>
+                <td>2 min ago</td>
+                <td>Orchestrates onboarding/offboarding playbooks</td>
+                <td><span class="status-pill status-pill--scheduled">Running</span></td>
+                <td>Ops Engineering</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="dashboard-section">
+      <div class="dashboard-grid dashboard-grid--two">
+        <article class="dashboard-card card">
+          <h2>Lifecycle orchestration</h2>
+          <ul class="status-list">
+            <li>
+              <div class="status-list__details">
+                <span class="status-title">New DSO onboarding</span>
+                <span class="status-meta">Workflow 19 of 24 steps &bull; EHR sync scheduled Apr 26</span>
+              </div>
+              <span class="status-pill status-pill--scheduled">On track</span>
+            </li>
+            <li>
+              <div class="status-list__details">
+                <span class="status-title">Practice acquisition playbook</span>
+                <span class="status-meta">Document migration complete &bull; Credential audit pending</span>
+              </div>
+              <span class="status-pill status-pill--attention">Attention</span>
+            </li>
+            <li>
+              <div class="status-list__details">
+                <span class="status-title">Provider offboarding</span>
+                <span class="status-meta">5 users in grace period &bull; Deactivate devices May 1</span>
+              </div>
+              <span class="status-pill status-pill--scheduled">Scheduled</span>
+            </li>
+            <li>
+              <div class="status-list__details">
+                <span class="status-title">Equipment refresh kit</span>
+                <span class="status-meta">12 sterilizers shipping &bull; Loaner tracking enabled</span>
+              </div>
+              <span class="status-pill status-pill--ok">Green</span>
+            </li>
+          </ul>
+        </article>
+        <article class="dashboard-card card">
+          <h2>Impersonation &amp; escalations</h2>
+          <ul class="status-list">
+            <li>
+              <div class="status-list__details">
+                <span class="status-title">Break-glass sessions</span>
+                <span class="status-meta">2 active (Finance &amp; Clinical Ops) &bull; Auto-expire 30 min</span>
+              </div>
+              <span class="status-pill status-pill--attention">Review</span>
+            </li>
+            <li>
+              <div class="status-list__details">
+                <span class="status-title">Delegated admin requests</span>
+                <span class="status-meta">11 pending approvals &bull; Dual-control required</span>
+              </div>
+              <span class="status-pill status-pill--scheduled">In review</span>
+            </li>
+            <li>
+              <div class="status-list__details">
+                <span class="status-title">Support escalations</span>
+                <span class="status-meta">Average triage 8m &bull; 3 awaiting vendor response</span>
+              </div>
+              <span class="status-pill status-pill--attention">High</span>
+            </li>
+            <li>
+              <div class="status-list__details">
+                <span class="status-title">Audit trails</span>
+                <span class="status-meta">Last export delivered to compliance Apr 22</span>
+              </div>
+              <span class="status-pill status-pill--ok">Current</span>
+            </li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="dashboard-section">
+      <div class="section-heading">
+        <h2>Relationship management snapshot</h2>
+        <p>Understand how people, practices, and equipment connect across the Practx network.</p>
+      </div>
+      <div class="card table-card">
+        <div class="table-wrapper" role="region">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th scope="col">Primary entity</th>
+                <th scope="col">Linked object</th>
+                <th scope="col">Relationship</th>
+                <th scope="col">Steward</th>
+                <th scope="col">Last activity</th>
+                <th scope="col">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Riverbend Dental (Org)</td>
+                <td>Trios Scanner 4421</td>
+                <td>Assigned equipment</td>
+                <td>Equipment Ops</td>
+                <td>Apr 21 &bull; Auto-calibration</td>
+                <td><span class="status-pill status-pill--ok">Active</span></td>
+              </tr>
+              <tr>
+                <td>Jordan Price (User)</td>
+                <td>Summit Dental Collective</td>
+                <td>Delegated admin</td>
+                <td>Identity</td>
+                <td>Apr 23 &bull; Access renewal</td>
+                <td><span class="status-pill status-pill--scheduled">Renewing</span></td>
+              </tr>
+              <tr>
+                <td>Midtown Smile (Org)</td>
+                <td>Sterilizer Fleet</td>
+                <td>Maintenance bundle</td>
+                <td>Reliability</td>
+                <td>Apr 20 &bull; Cycle variance alert</td>
+                <td><span class="status-pill status-pill--attention">Investigate</span></td>
+              </tr>
+              <tr>
+                <td>Liz Bennett (User)</td>
+                <td>Harbor Pointe Ortho</td>
+                <td>Provider roster</td>
+                <td>HRIS</td>
+                <td>Apr 18 &bull; Offboarding started</td>
+                <td><span class="status-pill status-pill--risk">Critical</span></td>
+              </tr>
+              <tr>
+                <td>North Coast DSO (Org)</td>
+                <td>45 users</td>
+                <td>Organization membership</td>
+                <td>Customer Success</td>
+                <td>Apr 24 &bull; Bulk invite upload</td>
+                <td><span class="status-pill status-pill--ok">Stable</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="dashboard-section">
+      <h2>Upcoming workflow checkpoints</h2>
+      <ul class="timeline card">
+        <li>
+          <span class="timeline-label">Apr 25 &bull; Org onboarding</span>
+          <span class="timeline-detail">Enable insurance enrollment sync for Bright Horizon Dental (step 14/18)</span>
+        </li>
+        <li>
+          <span class="timeline-label">Apr 26 &bull; Equipment go-live</span>
+          <span class="timeline-detail">Push firmware 2.9 to sterilizers with auto rollback window</span>
+        </li>
+        <li>
+          <span class="timeline-label">Apr 27 &bull; User offboarding</span>
+          <span class="timeline-detail">Finalize data retention plan for departing oral surgeon cohort</span>
+        </li>
+        <li>
+          <span class="timeline-label">Apr 28 &bull; Impersonation audit</span>
+          <span class="timeline-detail">Review 30-day delegated admin history with compliance</span>
+        </li>
+        <li>
+          <span class="timeline-label">Apr 30 &bull; Executive briefing</span>
+          <span class="timeline-detail">Publish cross-domain health summary to leadership workspace</span>
+        </li>
+      </ul>
+    </section>
+
+    <section class="dashboard-section">
+      <div class="card">
+        <h2>Need deeper controls?</h2>
+        <p>Launch the real Practx admin experience to configure policies, run provisioning scripts, and open vendor service requests.</p>
+        <div class="hero-actions">
+          <a class="button" href="mailto:hello@practx.io?subject=Practx%20Admin%20Command%20Center">Request access</a>
+          <a class="button secondary" href="/admin.html">Explore admin services</a>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <div class="footer-content">
+      <div class="footer-top">
+        <div class="footer-copy">&copy; <span id="year"></span> Practx. Access above all.</div>
+        <nav class="footer-links" aria-label="Practx company">
+          <a href="/about.html">About Us</a>
+          <a href="/contact.html">Contact</a>
+          <a href="/leadership.html">Leadership</a>
+          <a href="/careers.html">Careers</a>
+        </nav>
+      </div>
+      <div class="footer-bottom">
+        <small><a href="mailto:hello@practx.io">hello@practx.io</a> • <a href="/sitemap.xml">Sitemap</a></small>
+      </div>
+    </div>
+  </footer>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
