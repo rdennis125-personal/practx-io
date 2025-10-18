@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Service Command Center | Practx</title>
+  <meta name="description" content="Mock service franchise command center for dispatch leaders." />
+  <meta property="og:title" content="Service Command Center | Practx" />
+  <meta property="og:description" content="See how Practx orchestrates field service coverage, SLAs, and technician readiness." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://practx.io/service/service-command-center.html" />
+  <meta property="og:image" content="https://practx.io/assets/logo.png" />
+  <meta name="twitter:card" content="summary" />
+  <link rel="icon" href="/assets/logo.png" type="image/png" />
+  <link rel="stylesheet" href="/assets/styles.css" />
+</head>
+<body class="command-center">
+  <header>
+    <nav>
+      <a class="logo" href="/index.html">
+        <img src="/assets/logo.png" alt="Practx logo" height="60" />
+      </a>
+      <div class="nav-links">
+        <ul>
+          <li><a href="/practice-management.html">Manage Practices</a></li>
+          <li><a href="/equipment-management.html">Manage Equipment</a></li>
+          <li><a href="/patient-outreach.html">Connect to Patients</a></li>
+          <li><a href="/smile-spa-franchise.html">Expand Access</a></li>
+          <li><a href="/practx-service-franchise.html">Ensure Uptime</a></li>
+        </ul>
+        <a class="button nav-auth-button" href="/logout-complete/">Logout</a>
+      </div>
+    </nav>
+  </header>
+  <main>
+    <section class="command-center-hero">
+      <div class="command-center-hero__content">
+        <span class="eyebrow">Practx Service Franchise</span>
+        <h1>Regional Command Hub</h1>
+        <p>Dispatch technicians, monitor SLAs, and coordinate replacement logistics from one mission control.</p>
+        <div class="hero-metrics" role="list">
+          <div class="hero-metric" role="listitem">
+            <span class="metric-label">Active dispatches</span>
+            <strong class="metric-value">27</strong>
+            <span class="metric-subtext">8 critical, 19 routine</span>
+          </div>
+          <div class="hero-metric" role="listitem">
+            <span class="metric-label">Technicians on duty</span>
+            <strong class="metric-value">42</strong>
+            <span class="metric-subtext">4 apprentices shadowing</span>
+          </div>
+          <div class="hero-metric" role="listitem">
+            <span class="metric-label">SLA compliance</span>
+            <strong class="metric-value">98.2%</strong>
+            <span class="metric-subtext">Rolling 30 days</span>
+          </div>
+          <div class="hero-metric" role="listitem">
+            <span class="metric-label">Spares staged</span>
+            <strong class="metric-value">116</strong>
+            <span class="metric-subtext">Across 5 depots</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="dashboard-section">
+      <h2>Field operations</h2>
+      <div class="dashboard-grid">
+        <article class="dashboard-card card">
+          <h3>Dispatch queue</h3>
+          <p class="dashboard-card__metric">12 awaiting assignment</p>
+          <ul class="dashboard-list">
+            <li>Auto-triage flagged 3 remote resolution candidates</li>
+            <li>6 jobs require Smile Spa coordination</li>
+            <li>Average travel time holding at 38 minutes</li>
+          </ul>
+        </article>
+        <article class="dashboard-card card">
+          <h3>Technician readiness</h3>
+          <p class="dashboard-card__metric">91% certified</p>
+          <ul class="dashboard-list">
+            <li>8 recertifications due within 45 days</li>
+            <li>New compressor module training live</li>
+            <li>3 senior techs coaching apprentices</li>
+          </ul>
+        </article>
+        <article class="dashboard-card card">
+          <h3>Parts &amp; logistics</h3>
+          <p class="dashboard-card__metric">95% fill rate</p>
+          <ul class="dashboard-list">
+            <li>Next-day replenishment triggered for sterilizer kits</li>
+            <li>Loaner inventory: 6 chairs, 2 compressors, 3 vacuums</li>
+            <li>Fleet maintenance: 2 vans scheduled for service</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="dashboard-section">
+      <div class="section-heading">
+        <h2>Live incidents</h2>
+        <p>Every work order carries context from equipment history, practice priorities, and outreach triggers.</p>
+      </div>
+      <div class="card table-card">
+        <div class="table-wrapper" role="region" aria-live="polite">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th scope="col">WO</th>
+                <th scope="col">Practice</th>
+                <th scope="col">Asset</th>
+                <th scope="col">Opened</th>
+                <th scope="col">SLA</th>
+                <th scope="col">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>WO-4432</td>
+                <td>Summit North</td>
+                <td>Compressor CP-207</td>
+                <td>Apr 16 08:14</td>
+                <td>4 hr critical</td>
+                <td><span class="status-pill status-pill--risk">Tech en route</span></td>
+              </tr>
+              <tr>
+                <td>WO-4439</td>
+                <td>Valley Creek</td>
+                <td>Delivery unit DU-311</td>
+                <td>Apr 16 09:02</td>
+                <td>Next day</td>
+                <td><span class="status-pill status-pill--scheduled">Scheduled</span></td>
+              </tr>
+              <tr>
+                <td>WO-4441</td>
+                <td>Midtown Smile</td>
+                <td>Sterilizer ST-305</td>
+                <td>Apr 16 09:27</td>
+                <td>Same day</td>
+                <td><span class="status-pill status-pill--attention">Awaiting parts</span></td>
+              </tr>
+              <tr>
+                <td>WO-4444</td>
+                <td>Harbor Pointe</td>
+                <td>Chair CH-228</td>
+                <td>Apr 16 10:11</td>
+                <td>48 hr</td>
+                <td><span class="status-pill status-pill--scheduled">Spare staged</span></td>
+              </tr>
+              <tr>
+                <td>WO-4450</td>
+                <td>Skyline Ortho</td>
+                <td>CBCT CB-088</td>
+                <td>Apr 16 11:42</td>
+                <td>Remote</td>
+                <td><span class="status-pill status-pill--ok">Resolved</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="dashboard-section">
+      <div class="dashboard-grid dashboard-grid--two">
+        <article class="dashboard-card card">
+          <h2>Upcoming deployments</h2>
+          <ul class="status-list">
+            <li>
+              <div class="status-list__details">
+                <span class="status-title">Smile Spa Studio build</span>
+                <span class="status-meta">Apr 18 &bull; Final inspections &bull; Owner: Project Ops</span>
+              </div>
+              <span class="status-pill status-pill--scheduled">On track</span>
+            </li>
+            <li>
+              <div class="status-list__details">
+                <span class="status-title">Preventive blitz</span>
+                <span class="status-meta">Apr 20-22 &bull; 18 practices &bull; Owner: Scheduler</span>
+              </div>
+              <span class="status-pill status-pill--scheduled">Routing</span>
+            </li>
+            <li>
+              <div class="status-list__details">
+                <span class="status-title">Loaner swap program</span>
+                <span class="status-meta">Apr 23 &bull; Compressors &bull; Owner: Logistics</span>
+              </div>
+              <span class="status-pill status-pill--attention">Prep</span>
+            </li>
+            <li>
+              <div class="status-list__details">
+                <span class="status-title">Technician summit</span>
+                <span class="status-meta">May 4 &bull; Training &bull; Owner: Field Ops</span>
+              </div>
+              <span class="status-pill status-pill--ok">Ready</span>
+            </li>
+          </ul>
+        </article>
+        <article class="dashboard-card card">
+          <h2>Performance signals</h2>
+          <ul class="status-list">
+            <li>
+              <div class="status-list__details">
+                <span class="status-title">First-time fix</span>
+                <span class="status-meta">88% &bull; +4 pts week-over-week</span>
+              </div>
+              <span class="status-pill status-pill--ok">Rising</span>
+            </li>
+            <li>
+              <div class="status-list__details">
+                <span class="status-title">Service margin</span>
+                <span class="status-meta">32% &bull; Target 30%</span>
+              </div>
+              <span class="status-pill status-pill--ok">Ahead</span>
+            </li>
+            <li>
+              <div class="status-list__details">
+                <span class="status-title">Escalations</span>
+                <span class="status-meta">3 active &bull; 1 Smile Spa, 2 Practice</span>
+              </div>
+              <span class="status-pill status-pill--attention">Monitor</span>
+            </li>
+            <li>
+              <div class="status-list__details">
+                <span class="status-title">Technician utilization</span>
+                <span class="status-meta">76% &bull; Balanced load</span>
+              </div>
+              <span class="status-pill status-pill--scheduled">Healthy</span>
+            </li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="dashboard-section">
+      <h2>Business outlook</h2>
+      <div class="spend-grid">
+        <article class="card spend-card">
+          <div class="spend-metric">
+            <span class="spend-label">Service revenue YTD</span>
+            <strong class="spend-value">$3.6M</strong>
+            <span class="spend-subtext">105% of plan</span>
+          </div>
+          <ul class="dashboard-list">
+            <li>Preventive contracts renewals pacing at 96%</li>
+            <li>Time &amp; materials revenue up 18% YoY</li>
+            <li>Warranty recovery added $142K</li>
+          </ul>
+        </article>
+        <article class="card spend-card">
+          <div class="spend-metric">
+            <span class="spend-label">Capital &amp; staffing</span>
+            <strong class="spend-value">$480K</strong>
+            <span class="spend-subtext">Next 90 day investments</span>
+          </div>
+          <ul class="dashboard-list">
+            <li>Deploy 5 new mobile service vans</li>
+            <li>Expand Smile Spa install crew to 3 teams</li>
+            <li>Reserve $90K for technician incentives</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+  </main>
+  <script>
+    (async () => {
+      try {
+        const res = await fetch('/.auth/me', { credentials: 'include' });
+        if (res.status === 401) { window.location = '/.auth/login/aad'; return; }
+        const data = await res.json();
+        const roles = (data?.clientPrincipal?.userRoles) || [];
+        if (!roles.includes('APP_ROLE_SWA_SERVICE')) {
+          window.location = '/forbidden.html';
+          return;
+        }
+        console.debug('Service access granted', roles);
+      } catch (err) {
+        console.error(err);
+        window.location = '/.auth/login/aad';
+      }
+    })();
+  </script>
+  <footer>
+    <div class="footer-content">
+      <div class="footer-top">
+        <div class="footer-copy">&copy; <span id="year"></span> Practx. Access above all.</div>
+        <nav class="footer-links" aria-label="Practx company">
+          <a href="/about.html">About Us</a>
+          <a href="/contact.html">Contact</a>
+          <a href="/leadership.html">Leadership</a>
+          <a href="/careers.html">Careers</a>
+        </nav>
+      </div>
+      <div class="footer-bottom">
+        <small><a href="mailto:hello@practx.io">hello@practx.io</a> • <a href="/sitemap.xml">Sitemap</a></small>
+      </div>
+    </div>
+  </footer>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
