@@ -332,6 +332,247 @@
       </ul>
     </section>
 
+    <section class="dashboard-section entity-management">
+      <div class="section-heading">
+        <h2>Entity management workbench</h2>
+        <p>Mock the flows administrators use to add identities, link practices, register devices, and coordinate appointments.</p>
+      </div>
+      <div class="entity-forms-grid">
+        <article class="card entity-form-card">
+          <h3>Provision user identity</h3>
+          <p class="entity-form-card__intro">Capture core user attributes, security controls, and organization alignment before activating access.</p>
+          <form class="entity-form" aria-label="Provision user identity" novalidate>
+            <div class="form-row form-row--split">
+              <label for="user-name">Full name
+                <input id="user-name" name="user-name" type="text" placeholder="Jordan Price" required />
+              </label>
+              <label for="user-email">Work email
+                <input id="user-email" name="user-email" type="email" placeholder="jordan.price@practx.io" required />
+              </label>
+            </div>
+            <div class="form-row form-row--split">
+              <label for="user-role">Role
+                <select id="user-role" name="user-role">
+                  <option value="">Select role</option>
+                  <option value="admin">Platform administrator</option>
+                  <option value="provider">Provider</option>
+                  <option value="operations">Operations</option>
+                  <option value="support">Support</option>
+                </select>
+              </label>
+              <label for="user-org">Primary organization
+                <select id="user-org" name="user-org">
+                  <option value="">Select organization</option>
+                  <option value="riverbend">Riverbend Dental</option>
+                  <option value="north-coast">North Coast DSO</option>
+                  <option value="summit">Summit Dental Collective</option>
+                </select>
+              </label>
+            </div>
+            <div class="form-row form-row--split">
+              <label for="user-start">Start date
+                <input id="user-start" name="user-start" type="date" />
+              </label>
+              <label for="user-status">Status
+                <select id="user-status" name="user-status">
+                  <option value="active">Active</option>
+                  <option value="pending">Pending approval</option>
+                  <option value="suspended">Suspended</option>
+                </select>
+              </label>
+            </div>
+            <fieldset class="form-row form-row--stack">
+              <legend>Security requirements</legend>
+              <label class="checkbox">
+                <input type="checkbox" name="user-mfa" /> Enforce MFA enrollment on first login
+              </label>
+              <label class="checkbox">
+                <input type="checkbox" name="user-hipaa" /> Require HIPAA compliance acknowledgement
+              </label>
+              <label class="checkbox">
+                <input type="checkbox" name="user-breakglass" /> Grant temporary break-glass access (30 minutes)
+              </label>
+            </fieldset>
+            <div class="form-actions">
+              <button type="submit" class="button">Save mock user</button>
+              <button type="reset" class="button secondary">Clear</button>
+            </div>
+          </form>
+        </article>
+
+        <article class="card entity-form-card">
+          <h3>Onboard organization</h3>
+          <p class="entity-form-card__intro">Outline practice relationships, compliance status, and integrations needed before go-live.</p>
+          <form class="entity-form" aria-label="Onboard organization" novalidate>
+            <div class="form-row form-row--split">
+              <label for="org-name">Organization name
+                <input id="org-name" name="org-name" type="text" placeholder="Bright Horizon Dental" />
+              </label>
+              <label for="org-type">Type
+                <select id="org-type" name="org-type">
+                  <option value="">Select type</option>
+                  <option value="dso">DSO</option>
+                  <option value="practice">Single practice</option>
+                  <option value="franchise">Franchise</option>
+                </select>
+              </label>
+            </div>
+            <div class="form-row form-row--split">
+              <label for="org-region">Primary region
+                <select id="org-region" name="org-region">
+                  <option value="">Select region</option>
+                  <option value="west">West</option>
+                  <option value="central">Central</option>
+                  <option value="south">South</option>
+                  <option value="northeast">Northeast</option>
+                </select>
+              </label>
+              <label for="org-stage">Onboarding stage
+                <select id="org-stage" name="org-stage">
+                  <option value="intake">Intake</option>
+                  <option value="security">Security review</option>
+                  <option value="integration">Integration setup</option>
+                  <option value="training">Team training</option>
+                  <option value="live">Live</option>
+                </select>
+              </label>
+            </div>
+            <div class="form-row form-row--stack">
+              <label for="org-systems">Connected systems
+                <textarea id="org-systems" name="org-systems" rows="3" placeholder="PMS: Dentrix, HRIS: Workday, Billing: Rectangle Health"></textarea>
+              </label>
+            </div>
+            <fieldset class="form-row form-row--stack">
+              <legend>Compliance checklist</legend>
+              <label class="checkbox">
+                <input type="checkbox" name="org-baa" /> Business Associate Agreement signed
+              </label>
+              <label class="checkbox">
+                <input type="checkbox" name="org-insurance" /> Insurance credentials verified
+              </label>
+              <label class="checkbox">
+                <input type="checkbox" name="org-training" /> Team completed security training
+              </label>
+            </fieldset>
+            <div class="form-actions">
+              <button type="submit" class="button">Record mock organization</button>
+              <button type="reset" class="button secondary">Clear</button>
+            </div>
+          </form>
+        </article>
+
+        <article class="card entity-form-card">
+          <h3>Register equipment</h3>
+          <p class="entity-form-card__intro">Track device lifecycle data, installation details, and monitoring preferences.</p>
+          <form class="entity-form" aria-label="Register equipment" novalidate>
+            <div class="form-row form-row--split">
+              <label for="equip-id">Asset ID
+                <input id="equip-id" name="equip-id" type="text" placeholder="TRIOS-4421" />
+              </label>
+              <label for="equip-model">Model
+                <input id="equip-model" name="equip-model" type="text" placeholder="3Shape Trios 5" />
+              </label>
+            </div>
+            <div class="form-row form-row--split">
+              <label for="equip-practice">Assigned practice
+                <select id="equip-practice" name="equip-practice">
+                  <option value="">Select practice</option>
+                  <option value="riverbend">Riverbend Dental</option>
+                  <option value="midtown">Midtown Smile</option>
+                  <option value="harbor">Harbor Pointe Ortho</option>
+                </select>
+              </label>
+              <label for="equip-installed">Install date
+                <input id="equip-installed" name="equip-installed" type="date" />
+              </label>
+            </div>
+            <div class="form-row form-row--split">
+              <label for="equip-status">Status
+                <select id="equip-status" name="equip-status">
+                  <option value="active">Active</option>
+                  <option value="maintenance">Maintenance</option>
+                  <option value="retired">Retired</option>
+                </select>
+              </label>
+              <label for="equip-service">Last service date
+                <input id="equip-service" name="equip-service" type="date" />
+              </label>
+            </div>
+            <fieldset class="form-row form-row--stack">
+              <legend>Monitoring preferences</legend>
+              <label class="checkbox">
+                <input type="checkbox" name="equip-telemetry" /> Enable realtime telemetry stream
+              </label>
+              <label class="checkbox">
+                <input type="checkbox" name="equip-maint" /> Auto-create maintenance tickets for anomalies
+              </label>
+              <label class="checkbox">
+                <input type="checkbox" name="equip-safety" /> Notify reliability team on sterilization variance
+              </label>
+            </fieldset>
+            <div class="form-actions">
+              <button type="submit" class="button">Log mock device</button>
+              <button type="reset" class="button secondary">Clear</button>
+            </div>
+          </form>
+        </article>
+
+        <article class="card entity-form-card">
+          <h3>Coordinate appointment</h3>
+          <p class="entity-form-card__intro">Preview how scheduling captures patient needs, practice availability, and outreach follow-up.</p>
+          <form class="entity-form" aria-label="Coordinate appointment" novalidate>
+            <div class="form-row form-row--split">
+              <label for="appt-patient">Patient name
+                <input id="appt-patient" name="appt-patient" type="text" placeholder="Avery Chen" />
+              </label>
+              <label for="appt-practice">Practice
+                <select id="appt-practice" name="appt-practice">
+                  <option value="">Select location</option>
+                  <option value="riverbend">Riverbend Dental</option>
+                  <option value="north-coast">North Coast DSO</option>
+                  <option value="midtown">Midtown Smile</option>
+                </select>
+              </label>
+            </div>
+            <div class="form-row form-row--split">
+              <label for="appt-provider">Provider
+                <select id="appt-provider" name="appt-provider">
+                  <option value="">Select provider</option>
+                  <option value="dr-lane">Dr. Lane</option>
+                  <option value="dr-singh">Dr. Singh</option>
+                  <option value="dr-bennett">Dr. Bennett</option>
+                </select>
+              </label>
+              <label for="appt-datetime">Appointment date &amp; time
+                <input id="appt-datetime" name="appt-datetime" type="datetime-local" />
+              </label>
+            </div>
+            <div class="form-row form-row--stack">
+              <label for="appt-reason">Visit reason
+                <textarea id="appt-reason" name="appt-reason" rows="3" placeholder="6-month hygiene visit with whitening consult"></textarea>
+              </label>
+            </div>
+            <fieldset class="form-row form-row--stack">
+              <legend>Outreach &amp; reminders</legend>
+              <label class="checkbox">
+                <input type="checkbox" name="appt-sms" /> Send SMS reminders 48 &amp; 2 hours prior
+              </label>
+              <label class="checkbox">
+                <input type="checkbox" name="appt-kit" /> Ship pre-visit comfort kit
+              </label>
+              <label class="checkbox">
+                <input type="checkbox" name="appt-followup" /> Trigger post-visit review request
+              </label>
+            </fieldset>
+            <div class="form-actions">
+              <button type="submit" class="button">Schedule mock visit</button>
+              <button type="reset" class="button secondary">Clear</button>
+            </div>
+          </form>
+        </article>
+      </div>
+    </section>
+
     <section class="dashboard-section">
       <div class="card">
         <h2>Need deeper controls?</h2>
