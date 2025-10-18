@@ -11,6 +11,81 @@
     alertBox.classList.add('show');
   }
 
+  const REQUIRED_ATTRIBUTES = ['elmPilotUser', 'elmDefaultOrgMembership', 'elmOrgMemberships'];
+
+  const DEFAULT_CONFIG = {
+    userFlow: 'SWA',
+    redirectPath: '/welcome.html',
+    userAttributes: [
+      'City',
+      'Country',
+      'DisplayName',
+      'Email',
+      'GivenName',
+      'JobTitle',
+      'PostalCode',
+      'State',
+      'StreetAddress',
+      'Surname',
+      'elmPilotUser',
+      'elmDefaultOrgMembership',
+      'elmOrgMemberships'
+    ],
+    defaultAttributeValues: {
+      elmPilotUser: 'true'
+    }
+  };
+
+  function resolveConfig() {
+    const globalConfig = window.practxSwaSignupConfig || {};
+
+    const rawAttributes = globalConfig.userAttributes ?? DEFAULT_CONFIG.userAttributes;
+    const attributeList = Array.isArray(rawAttributes)
+      ? rawAttributes
+      : String(rawAttributes || '')
+          .split(',')
+          .map((value) => value.trim())
+          .filter(Boolean);
+
+    const attributes = attributeList.length ? attributeList.slice() : DEFAULT_CONFIG.userAttributes.slice();
+    REQUIRED_ATTRIBUTES.forEach((requiredAttribute) => {
+      if (!attributes.some((attr) => attr && attr.toLowerCase() === requiredAttribute.toLowerCase())) {
+        attributes.push(requiredAttribute);
+      }
+    });
+
+    const defaults = Object.assign({}, DEFAULT_CONFIG.defaultAttributeValues);
+    if (globalConfig.defaultAttributeValues && typeof globalConfig.defaultAttributeValues === 'object') {
+      Object.keys(globalConfig.defaultAttributeValues).forEach((key) => {
+        const value = globalConfig.defaultAttributeValues[key];
+        if (value !== undefined && value !== null && String(value).trim() !== '') {
+          defaults[key] = value;
+        }
+      });
+    }
+
+    const userFlow = String(globalConfig.userFlow || DEFAULT_CONFIG.userFlow || '').trim();
+
+    const redirectCandidate =
+      globalConfig.redirectUri || globalConfig.redirectPath || DEFAULT_CONFIG.redirectPath || '/welcome.html';
+
+    let redirectUri;
+    try {
+      redirectUri = new URL(redirectCandidate, window.location.origin).toString();
+    } catch (error) {
+      redirectUri = new URL('/welcome.html', window.location.origin).toString();
+    }
+
+    return {
+      userFlow,
+      redirectUri,
+      userAttributes: attributes,
+      defaultAttributeValues: defaults
+    };
+  }
+
+  const signupConfig = resolveConfig();
+
   const COOKIE_NAME = 'practx_uid';
 
   function getCookie(name) {
@@ -62,6 +137,73 @@
     return fallbackHash(text);
   }
 
+  function splitName(fullName) {
+    const parts = String(fullName || '')
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean);
+    if (parts.length === 0) {
+      return { first: '', last: '' };
+    }
+    if (parts.length === 1) {
+      return { first: parts[0], last: '' };
+    }
+    return { first: parts[0], last: parts.slice(1).join(' ') };
+  }
+
+  function encodeState(value) {
+    try {
+      const json = JSON.stringify(value);
+      return btoa(unescape(encodeURIComponent(json)));
+    } catch (error) {
+      console.warn('Unable to encode signup state payload', error);
+      return null;
+    }
+  }
+
+  function buildAttributeParam(attributeNames, ...defaultMaps) {
+    const normalizedDefaults = new Map();
+
+    defaultMaps.forEach((map) => {
+      if (!map || typeof map !== 'object') return;
+      Object.keys(map).forEach((key) => {
+        const value = map[key];
+        if (value === undefined || value === null) return;
+        const stringValue = typeof value === 'boolean' ? (value ? 'true' : 'false') : String(value).trim();
+        if (!stringValue) return;
+        const lowerKey = key.toLowerCase();
+        normalizedDefaults.set(lowerKey, { key, value: stringValue });
+      });
+    });
+
+    const seen = new Set();
+    const segments = [];
+
+    attributeNames.forEach((raw) => {
+      const attribute = String(raw || '').trim();
+      if (!attribute) return;
+      const lowerKey = attribute.toLowerCase();
+      if (seen.has(lowerKey)) return;
+      seen.add(lowerKey);
+
+      const defaultEntry = normalizedDefaults.get(lowerKey);
+      if (defaultEntry) {
+        segments.push(`${attribute}:${encodeURIComponent(defaultEntry.value)}`);
+        normalizedDefaults.delete(lowerKey);
+      } else {
+        segments.push(attribute);
+      }
+    });
+
+    normalizedDefaults.forEach((entry, lowerKey) => {
+      if (seen.has(lowerKey)) return;
+      const fallbackName = attributeNames.find((name) => String(name).toLowerCase() === lowerKey) || entry.key;
+      segments.push(`${fallbackName}:${encodeURIComponent(entry.value)}`);
+    });
+
+    return segments.length ? segments.join(',') : '';
+  }
+
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
 
@@ -87,12 +229,7 @@
       return;
     }
 
-    showAlert('Opening your email client…');
-
-    const subjectParts = ['Practx waitlist request'];
-    if (interest) {
-      subjectParts.push(`- ${interest}`);
-    }
+    showAlert('Redirecting you to the secure signup flow…');
 
     const userToken = getUserToken();
     const submitterIdentity = (() => {
@@ -114,23 +251,50 @@
       hashText(interactionSource)
     ]);
 
-    const details = [
-      `Name: ${name}`,
-      `Email: ${email}`,
-      company ? `Practice / Company: ${company}` : null,
-      `Primary interest: ${interest}`,
-      '',
-      '---',
-      'Tracking:',
-      `User hash: ${userHash}`,
-      `Interaction hash: ${interactionHash}`
-    ].filter(Boolean);
+    const { first, last } = splitName(name);
 
-    const mailto = `mailto:rdennis125@gmail.com?subject=${encodeURIComponent(subjectParts.join(' '))}&body=${encodeURIComponent(details.join('\n'))}`;
+    const dynamicDefaults = {
+      DisplayName: name,
+      displayName: name,
+      GivenName: first,
+      givenName: first,
+      Surname: last,
+      surname: last,
+      Email: email,
+      email: email,
+      EmailAddress: email,
+      emailAddress: email,
+      EmailAddresses: email
+    };
 
-    setTimeout(() => {
-      window.location.href = mailto;
-    }, 150);
+    const attributeParam = buildAttributeParam(
+      signupConfig.userAttributes,
+      signupConfig.defaultAttributeValues,
+      dynamicDefaults
+    );
+
+    const statePayload = encodeState({
+      interest,
+      company: company || undefined,
+      source: submitterIdentity,
+      path: window.location.pathname,
+      userHash,
+      interactionHash
+    });
+
+    const loginUrl = new URL('/.auth/login/aad-b2c', window.location.origin);
+    if (signupConfig.userFlow) {
+      loginUrl.searchParams.set('user_flow', signupConfig.userFlow);
+    }
+    loginUrl.searchParams.set('post_login_redirect_uri', signupConfig.redirectUri);
+    if (attributeParam) {
+      loginUrl.searchParams.set('userAttributes', attributeParam);
+    }
+    if (statePayload) {
+      loginUrl.searchParams.set('state', statePayload);
+    }
+
+    window.location.assign(loginUrl.toString());
   });
 })();
 
