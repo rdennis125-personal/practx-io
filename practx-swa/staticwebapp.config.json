@@ -1,8 +1,8 @@
 {
   "routes": [
     {
-      "route": "/equipment/*",
-      "allowedRoles": ["APP_ROLE_SWA_ELM"]
+      "route": "/smile-spa/*",
+      "allowedRoles": ["APP_ROLE_SWA_SMILESPA"]
     },
     {
       "route": "/debug/token-debug.html",
