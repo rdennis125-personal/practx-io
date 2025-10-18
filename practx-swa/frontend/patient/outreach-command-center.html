@@ -267,13 +267,11 @@
       try {
         const res = await fetch('/.auth/me', { credentials: 'include' });
         if (res.status === 401) { window.location = '/.auth/login/aad'; return; }
-        const data = await res.json();
-        const roles = (data?.clientPrincipal?.userRoles) || [];
-        if (!roles.includes('APP_ROLE_SWA_OUTREACH')) {
+        if (res.status === 403) {
           window.location = '/forbidden.html';
           return;
         }
-        console.debug('Outreach access granted', roles);
+        console.debug('Outreach access granted');
       } catch (err) {
         console.error(err);
         window.location = '/.auth/login/aad';
