@@ -29,14 +29,15 @@
             <input id="auth-email" name="email" type="email" autocomplete="email" required />
 
             <label for="auth-role">Role</label>
-            <input
-              id="auth-role"
-              name="role"
-              type="text"
-              autocomplete="organization-title"
-              placeholder="Practice manager, technician, etc."
-              required
-            />
+            <select id="auth-role" name="role" autocomplete="organization-title" required>
+              <option value="" disabled selected>Select your role</option>
+              <option value="practice-manager">Practice Manager</option>
+              <option value="operations-director">Operations Director</option>
+              <option value="equipment-coordinator">Equipment Coordinator</option>
+              <option value="patient-outreach-specialist">Patient Outreach Specialist</option>
+              <option value="service-manager">Service Manager</option>
+              <option value="smile-spa-lead">Smile Spa Lead</option>
+            </select>
 
             <label for="auth-area">Primary command center</label>
             <select id="auth-area" name="area" required>
