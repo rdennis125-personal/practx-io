@@ -294,7 +294,7 @@
       return;
     }
 
-    const loginUrl = new URL('/.auth/login/practx-extid', window.location.origin);
+    const loginUrl = new URL('/.auth/login/practx', window.location.origin);
     if (signupConfig.userFlow) {
       loginUrl.searchParams.set('user_flow', signupConfig.userFlow);
     }
