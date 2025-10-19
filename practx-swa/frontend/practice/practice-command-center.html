@@ -30,7 +30,7 @@
           <li><a href="/smile-spa-franchise.html">Expand Access</a></li>
           <li><a href="/practx-service-franchise.html">Ensure Uptime</a></li>
         </ul>
-        <a class="button nav-auth-button" href="/logout-complete/">Logout</a>
+        <a class="button nav-auth-button" data-auth-source="nav-login" href="/logout-complete/">Logout</a>
       </div>
     </nav>
   </header>
@@ -266,9 +266,16 @@
   </main>
   <script>
     (async () => {
+      const redirectToLogin = () => {
+        const loginUrl = new URL('/.auth/login/practx-extid', window.location.origin);
+        loginUrl.searchParams.set('post_login_redirect_uri', window.location.href);
+        loginUrl.searchParams.set('user_flow', 'SWA');
+        window.location = loginUrl.toString();
+      };
+
       try {
         const res = await fetch('/.auth/me', { credentials: 'include' });
-        if (res.status === 401) { window.location = '/.auth/login/aad'; return; }
+        if (res.status === 401) { redirectToLogin(); return; }
         if (res.status === 403) {
           window.location = '/forbidden.html';
           return;
@@ -276,7 +283,7 @@
         console.debug('Practice access granted');
       } catch (err) {
         console.error(err);
-        window.location = '/.auth/login/aad';
+        redirectToLogin();
       }
     })();
   </script>
