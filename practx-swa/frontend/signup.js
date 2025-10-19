@@ -282,7 +282,19 @@
       interactionHash
     });
 
-    const loginUrl = new URL('/.auth/login/aad-b2c', window.location.origin);
+    const authOptions = {
+      redirectUri: signupConfig.redirectUri,
+      userAttributes: attributeParam || undefined,
+      state: statePayload || undefined,
+      userFlow: signupConfig.userFlow
+    };
+
+    if (typeof window.practxTriggerAuthFlow === 'function') {
+      window.practxTriggerAuthFlow(authOptions);
+      return;
+    }
+
+    const loginUrl = new URL('/.auth/login/practx-extid', window.location.origin);
     if (signupConfig.userFlow) {
       loginUrl.searchParams.set('user_flow', signupConfig.userFlow);
     }

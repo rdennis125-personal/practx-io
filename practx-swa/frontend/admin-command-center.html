@@ -29,7 +29,7 @@
           <li><a href="/smile-spa-franchise.html">Expand Access</a></li>
           <li><a href="/practx-service-franchise.html">Ensure Uptime</a></li>
         </ul>
-        <a class="button nav-auth-button" href="/logout-complete/">Logout</a>
+        <a class="button nav-auth-button" data-auth-source="nav-login" href="/logout-complete/">Logout</a>
       </div>
     </nav>
   </header>
@@ -603,7 +603,7 @@
         <h2>Need deeper controls?</h2>
         <p>Launch the real Practx admin experience to configure policies, run provisioning scripts, and open vendor service requests.</p>
         <div class="hero-actions">
-          <a class="button" href="mailto:hello@practx.io?subject=Practx%20Admin%20Command%20Center">Request access</a>
+          <a class="button" href="/.auth/login/practx-extid?post_login_redirect_uri=/welcome.html&amp;user_flow=SWA" data-auth-source="admin-command-center">Request access</a>
           <a class="button secondary" href="/admin.html">Explore admin services</a>
         </div>
       </div>
