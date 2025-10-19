@@ -1,5 +1,5 @@
 (function () {
-  const PROVIDER_PATH = '/.auth/login/practx-extid';
+  const PROVIDER_PATH = '/.auth/login/practx';
   const DEFAULT_REDIRECT = '/welcome.html';
 
   function resolveConfig() {
@@ -100,10 +100,23 @@
           return;
         }
         event.preventDefault();
-        triggerAuthFlow({
+
+        const options = {
           redirectUri: element.getAttribute('data-auth-redirect') || undefined,
           state: buildStatePayload(element)
-        });
+        };
+
+        const userFlow = element.getAttribute('data-auth-flow') || element.getAttribute('data-auth-user-flow');
+        if (userFlow) {
+          options.userFlow = userFlow;
+        }
+
+        const userAttributes = element.getAttribute('data-auth-attributes');
+        if (userAttributes) {
+          options.userAttributes = userAttributes;
+        }
+
+        triggerAuthFlow(options);
       });
     });
   });
