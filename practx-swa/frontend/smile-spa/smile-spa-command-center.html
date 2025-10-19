@@ -266,7 +266,7 @@
   <script>
     (async () => {
       const redirectToLogin = () => {
-        const loginUrl = new URL('/.auth/login/practx-extid', window.location.origin);
+        const loginUrl = new URL('/.auth/login/practx', window.location.origin);
         loginUrl.searchParams.set('post_login_redirect_uri', window.location.href);
         loginUrl.searchParams.set('user_flow', 'SWA');
         window.location = loginUrl.toString();

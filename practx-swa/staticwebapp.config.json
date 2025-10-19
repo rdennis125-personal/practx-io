@@ -2,7 +2,7 @@
   "auth": {
     "identityProviders": {
       "customOpenIdConnectProviders": {
-        "practx-extid": {
+        "practx": {
           "registration": {
             "clientIdSettingName": "AUTH_CLIENT_ID",
             "clientCredential": { "clientSecretSettingName": "AUTH_CLIENT_SECRET" },
@@ -26,7 +26,7 @@
   ],
 
   "responseOverrides": {
-    "401": { "statusCode": 302, "redirect": "/.auth/login/practx-extid?post_login_redirect_uri=/welcome" },
+    "401": { "statusCode": 302, "redirect": "/.auth/login/practx?post_login_redirect_uri=/welcome" },
     "403": { "statusCode": 302, "redirect": "/forbidden.html" }
   },
 
