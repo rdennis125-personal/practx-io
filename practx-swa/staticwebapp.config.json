@@ -20,7 +20,7 @@
   },
 
   "routes": [
-    { "route": "/smile-spa/*", "allowedRoles": ["APP_ROLE_SWA_SMILESPA"] },
+    { "route": "/smile-spa/*", "allowedRoles": ["SWA_SMILESPA"] },
     { "route": "/welcome", "allowedRoles": ["authenticated"] },
     { "route": "/debug/token-debug.html", "allowedRoles": ["authenticated"] }
   ],
