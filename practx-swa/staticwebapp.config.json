@@ -1,18 +1,35 @@
 {
-  "routes": [
-    {
-      "route": "/smile-spa/*",
-      "allowedRoles": ["APP_ROLE_SWA_SMILESPA"]
-    },
-    {
-      "route": "/debug/token-debug.html",
-      "allowedRoles": ["authenticated"]
+  "auth": {
+    "identityProviders": {
+      "customOpenIdConnectProviders": {
+        "practx-extid": {
+          "registration": {
+            "clientIdSettingName": "AUTH_CLIENT_ID",
+            "clientCredential": { "clientSecretSettingName": "AUTH_CLIENT_SECRET" },
+            "openIdConnectConfiguration": {
+              "wellKnownOpenIdConfiguration": "https://practx.ciamlogin.com/practx.onmicrosoft.com/v2.0/.well-known/openid-configuration?appid=429e7327-c28f-49c6-b9b2-0c5904df9e84"
+            }
+          },
+          "login": {
+            "name": "Sign in with Practx",
+            "scopes": ["openid","profile","email"]
+          }
+        }
+      }
     }
+  },
+
+  "routes": [
+    { "route": "/smile-spa/*", "allowedRoles": ["APP_ROLE_SWA_SMILESPA"] },
+    { "route": "/welcome", "allowedRoles": ["authenticated"] },
+    { "route": "/debug/token-debug.html", "allowedRoles": ["authenticated"] }
   ],
+
   "responseOverrides": {
-    "401": { "statusCode": 302, "redirect": "/.auth/login/aad" },
+    "401": { "statusCode": 302, "redirect": "/.auth/login/practx-extid?post_login_redirect_uri=/welcome" },
     "403": { "statusCode": 302, "redirect": "/forbidden.html" }
   },
+
   "navigationFallback": {
     "rewrite": "/index.html",
     "exclude": [
