@@ -4,6 +4,8 @@
   <meta charset="utf-8" />
   <title>SWA Auth Debug</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script defer src="/assets/config/signup-flow.js"></script>
+  <script defer src="/assets/js/auth-modal.js"></script>
   <style>
     body { font-family: system-ui, sans-serif; max-width: 840px; margin: 2rem auto; padding: 0 1rem; }
     pre { background:#f6f8fa; padding:1rem; overflow:auto; border-radius:8px; }
@@ -16,7 +18,14 @@
   <p>Shows what Azure Static Web Apps sees at <code>/.auth/me</code>. Use this to confirm <code>userRoles</code> includes <code>APP_ROLE_SWA_ELM</code>.</p>
 
   <div class="bar">
-    <a class="btn" href="/.auth/login/practx-extid?post_login_redirect_uri=/debug/auth-debug.html&amp;user_flow=SWA">Sign in</a>
+    <a
+      class="btn"
+      id="run-user-flow"
+      data-auth-source="auth-debug"
+      href="/.auth/login/practx?post_login_redirect_uri=/debug/auth-debug.html&amp;user_flow=SWA"
+    >
+      Sign in
+    </a>
     <a class="btn" href="/.auth/logout">Sign out</a>
     <a class="btn" href="/debug/token-debug.html">View ID Token Claims</a>
   </div>
@@ -32,6 +41,31 @@
     } catch (e) {
       document.getElementById('out').textContent = String(e);
     }
+  })();
+
+  (function () {
+    const loginLink = document.getElementById('run-user-flow');
+    if (!loginLink) {
+      return;
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const userFlow = params.get('user_flow') || 'SWA';
+    const redirectUri = window.location.href;
+
+    const loginUrl = new URL('/.auth/login/practx', window.location.origin);
+    loginUrl.searchParams.set('post_login_redirect_uri', redirectUri);
+    if (userFlow) {
+      loginUrl.searchParams.set('user_flow', userFlow);
+      loginLink.textContent = `Run ${userFlow} user flow`;
+      loginLink.setAttribute('data-auth-flow', userFlow);
+    } else {
+      loginLink.textContent = 'Sign in';
+      loginLink.removeAttribute('data-auth-flow');
+    }
+
+    loginLink.href = loginUrl.toString();
+    loginLink.setAttribute('data-auth-redirect', redirectUri);
   })();
   </script>
 </body>
