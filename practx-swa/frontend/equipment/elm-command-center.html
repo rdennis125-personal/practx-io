@@ -132,7 +132,7 @@
           </div>
           <div class="flex flex-wrap gap-3">
             <button type="button" data-open-drawer="locations" class="focus-outline inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:border-slate-400 hover:text-slate-900">
-              <span aria-hidden="true">🏢</span> Configure Locations
+              <span aria-hidden="true">🏢</span> Configure Rooms/Spaces
             </button>
             <button type="button" data-open-drawer="providers" class="focus-outline inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:border-slate-400 hover:text-slate-900">
               <span aria-hidden="true">🤝</span> Approved Providers
@@ -171,13 +171,13 @@
           <div class="flex flex-col gap-4 border-b border-slate-200 pb-4 md:flex-row md:items-end md:justify-between">
             <div>
               <h2 class="text-xl font-semibold text-slate-900">Active Assets</h2>
-              <p class="text-sm text-slate-500">Monitor uptime, spend, and service readiness across locations.</p>
+              <p class="text-sm text-slate-500">Monitor uptime, spend, and service readiness across rooms and shared spaces.</p>
             </div>
             <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
               <label class="flex items-center gap-2 text-sm text-slate-500">
                 <span class="sr-only">Search assets</span>
                 <svg class="h-4 w-4 text-slate-400" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27a6.471 6.471 0 001.57-4.23A6.5 6.5 0 109.5 16a6.47 6.47 0 004.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1114 9.5 4.505 4.505 0 019.5 14z"/></svg>
-                <input id="asset-search" type="search" placeholder="Search by asset, type, or location" class="w-full rounded-full border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 sm:w-72" />
+                <input id="asset-search" type="search" placeholder="Search by asset, type, or room/space" class="w-full rounded-full border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 sm:w-72" />
               </label>
               <label class="text-sm text-slate-500">
                 <span class="sr-only">Filter by status</span>
@@ -210,7 +210,7 @@
                 <tr>
                   <th scope="col" class="px-4 py-3">Asset ID</th>
                   <th scope="col" class="px-4 py-3">Type / Model</th>
-                  <th scope="col" class="px-4 py-3">Location</th>
+                  <th scope="col" class="px-4 py-3">Room/Space</th>
                   <th scope="col" class="px-4 py-3">Status</th>
                   <th scope="col" class="px-4 py-3">Next Service</th>
                   <th scope="col" class="px-4 py-3">Warranty</th>
@@ -235,7 +235,7 @@
       <div class="flex h-full flex-col bg-white shadow-2xl">
         <div class="flex items-start justify-between border-b border-slate-200 px-6 py-5">
           <div>
-            <h2 class="text-lg font-semibold text-slate-900">Locations</h2>
+            <h2 class="text-lg font-semibold text-slate-900">Rooms/Spaces</h2>
             <p class="text-sm text-slate-500">Manage operatory rooms and shared spaces.</p>
           </div>
           <button type="button" class="focus-outline rounded-full border border-transparent p-2 text-slate-400 hover:text-slate-600" data-close-drawer>
@@ -274,7 +274,7 @@
         <div class="flex items-start justify-between border-b border-slate-200 px-6 py-5">
           <div>
             <h2 class="text-lg font-semibold text-slate-900">Service Windows</h2>
-            <p class="text-sm text-slate-500">Define when technicians can access each location.</p>
+            <p class="text-sm text-slate-500">Define when technicians can access each room/space.</p>
           </div>
           <button type="button" class="focus-outline rounded-full border border-transparent p-2 text-slate-400 hover:text-slate-600" data-close-drawer>
             <span class="sr-only">Close</span>
@@ -1070,7 +1070,7 @@
       const { adding, editing } = uiState;
       const addForm = adding.locations
         ? `<form data-location-form="add" class="mb-6 space-y-4 rounded-2xl border border-blue-100 bg-blue-50/60 p-4">
-            <h3 class="text-sm font-semibold text-blue-700">Add location</h3>
+            <h3 class="text-sm font-semibold text-blue-700">Add room/space</h3>
             <label class="block text-sm font-medium text-slate-600">Identifier
               <input name="id" required class="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200" />
             </label>
@@ -1085,7 +1085,7 @@
               <button type="submit" class="focus-outline rounded-full bg-blue-600 px-4 py-2 text-xs font-semibold text-white">Save</button>
             </div>
           </form>`
-        : `<button type="button" data-add="locations" class="focus-outline mb-6 inline-flex items-center gap-2 rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-600 hover:border-slate-400"><span aria-hidden="true">＋</span>Add location</button>`;
+        : `<button type="button" data-add="locations" class="focus-outline mb-6 inline-flex items-center gap-2 rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-600 hover:border-slate-400"><span aria-hidden="true">＋</span>Add room/space</button>`;
 
       const items = state.practiceOverview.config.locations
         .map((location) => {
@@ -1121,7 +1121,7 @@
         })
         .join('');
 
-      container.innerHTML = `${addForm}${items || '<p class="text-sm text-slate-500">No locations configured.</p>'}`;
+      container.innerHTML = `${addForm}${items || '<p class="text-sm text-slate-500">No rooms/spaces configured.</p>'}`;
     }
 
     function renderProvidersDrawer() {
