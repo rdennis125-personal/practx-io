@@ -204,18 +204,18 @@
 
           <div id="asset-detail" class="mt-6 hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"></div>
 
-          <div class="mt-6 overflow-x-auto" data-sticky-header>
-            <table class="min-w-full divide-y divide-slate-200 text-left text-sm text-slate-600" aria-describedby="assets-section">
-              <thead class="text-xs uppercase tracking-widest text-slate-500">
+          <div class="mt-6 overflow-x-auto xl:overflow-visible" data-sticky-header>
+            <table class="w-full table-auto divide-y divide-slate-200 text-left text-xs text-slate-600 sm:text-sm" aria-describedby="assets-section">
+              <thead class="text-[11px] uppercase tracking-widest text-slate-500 sm:text-xs">
                 <tr>
-                  <th scope="col" class="px-4 py-3">Asset ID</th>
-                  <th scope="col" class="px-4 py-3">Type / Model</th>
-                  <th scope="col" class="px-4 py-3">Room/Space</th>
-                  <th scope="col" class="px-4 py-3">Status</th>
-                  <th scope="col" class="px-4 py-3">Next Service</th>
-                  <th scope="col" class="px-4 py-3">Warranty</th>
-                  <th scope="col" class="px-4 py-3 text-right">Spend YTD</th>
-                  <th scope="col" class="px-4 py-3 text-right">Actions</th>
+                  <th scope="col" class="whitespace-nowrap px-3 py-3">Asset ID</th>
+                  <th scope="col" class="px-3 py-3">Type / Model</th>
+                  <th scope="col" class="px-3 py-3">Room/Space</th>
+                  <th scope="col" class="px-3 py-3">Status</th>
+                  <th scope="col" class="hidden md:table-cell px-3 py-3">Next Service</th>
+                  <th scope="col" class="hidden xl:table-cell px-3 py-3">Warranty</th>
+                  <th scope="col" class="px-3 py-3 text-right">Spend YTD</th>
+                  <th scope="col" class="hidden lg:table-cell px-3 py-3 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody id="assets-body" class="divide-y divide-slate-100 bg-white" aria-live="polite"></tbody>
@@ -825,31 +825,32 @@
         .map(asset => {
           const isActive = uiState.activeAssetId === asset.id;
           return `<tr class="transition hover:bg-slate-50 ${isActive ? 'bg-blue-50/60' : ''}" data-asset-row="${asset.id}">
-            <td class="px-4 py-3 text-sm font-semibold text-blue-600">
-              <a href="#" data-asset-link="${asset.id}" class="focus-outline inline-flex items-center gap-2 text-blue-600 hover:text-blue-700">
+            <td class="whitespace-nowrap px-3 py-3 text-xs font-semibold text-blue-600 sm:text-sm">
+              <a href="#" data-asset-link="${asset.id}" class="focus-outline inline-flex items-center gap-1 text-blue-600 hover:
+text-blue-700">
                 ${asset.id}
                 <svg class="h-3 w-3" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 1l1.41 1.41L4.83 7H15v2H4.83l4.58 4.59L8 15l-7-7z"/></svg>
               </a>
             </td>
-            <td class="px-4 py-3">
-              <div class="font-medium text-slate-900">${asset.type}</div>
-              <div class="text-xs text-slate-500">${asset.model}</div>
+            <td class="px-3 py-3">
+              <div class="text-sm font-medium text-slate-900">${asset.type}</div>
+              <div class="text-xs text-slate-500 sm:text-[13px]">${asset.model}</div>
             </td>
-            <td class="px-4 py-3 text-sm text-slate-600">${getLocationName(asset.locationId)}</td>
-            <td class="px-4 py-3">
-              <div class="flex items-center gap-2">
+            <td class="px-3 py-3 text-xs text-slate-600 sm:text-sm">${getLocationName(asset.locationId)}</td>
+            <td class="px-3 py-3">
+              <div class="flex flex-wrap items-center gap-2">
                 <span class="${statusClasses(asset.status)}">${asset.status}</span>
-                <button type="button" class="focus-outline inline-flex items-center gap-1 rounded-full border border-slate-300 px-3 py-1 text-xs font-semibold text-slate-600 transition hover:border-slate-400" data-report="${asset.id}">
-                  <svg viewBox="0 0 20 20" class="h-3.5 w-3.5" aria-hidden="true"><path fill="currentColor" d="M10 2a2 2 0 00-2 2v5a2 2 0 002 2 2 2 0 002-2V4a2 2 0 00-2-2zm0 13a1.5 1.5 0 101.5 1.5A1.5 1.5 0 0010 15z"/></svg>
+                <button type="button" class="focus-outline hidden items-center gap-1 rounded-full border border-slate-300 px-2.5 py-1 text-[10px] font-semibold text-slate-600 transition hover:border-slate-400 xl:inline-flex" data-report="${asset.id}">
+                  <svg viewBox="0 0 20 20" class="h-3.5 w-3.5" aria-hidden="true"><path fill="currentColor" d="M10 2a2 2 0 002 2v5a2 2 0 002-2V4a2 2 0 00-2-2zm0 13a1.5 1.5 0 101.5 1.5A1.5 1.5 0 0010 15z"/></svg>
                   Report
                 </button>
               </div>
             </td>
-            <td class="px-4 py-3 text-sm text-slate-600">${formatDate(asset.nextService)}</td>
-            <td class="px-4 py-3 text-sm text-slate-600">${formatDate(asset.warranty)}</td>
-            <td class="px-4 py-3 text-right text-sm font-semibold text-slate-900">${formatCurrency(asset.spendYtd)}</td>
-            <td class="px-4 py-3 text-right text-sm">
-              <button type="button" class="focus-outline inline-flex items-center gap-1 rounded-full border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-500" disabled title="Coming soon">
+            <td class="hidden px-3 py-3 text-xs text-slate-600 md:table-cell sm:text-sm">${formatDate(asset.nextService)}</td>
+            <td class="hidden px-3 py-3 text-xs text-slate-600 xl:table-cell">${formatDate(asset.warranty)}</td>
+            <td class="px-3 py-3 text-right text-xs font-semibold text-slate-900 sm:text-sm">${formatCurrency(asset.spendYtd)}</td>
+            <td class="hidden px-3 py-3 text-right text-xs font-medium text-slate-500 lg:table-cell">
+              <button type="button" class="focus-outline inline-flex items-center gap-1 rounded-full border border-slate-200 px-2.5 py-1 text-[10px] font-semibold text-slate-500" disabled title="Coming soon">
                 <svg viewBox="0 0 16 16" class="h-4 w-4" aria-hidden="true"><path fill="currentColor" d="M8 3a1 1 0 01.707.293l4 4a1 1 0 01-1.414 1.414L8 5.414 4.707 8.707A1 1 0 013.293 7.293l4-4A1 1 0 018 3z"/></svg>
                 Actions
               </button>
