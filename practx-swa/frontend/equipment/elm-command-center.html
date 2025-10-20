@@ -2,7 +2,7 @@
 <!-- This is a MOCK UI. Replace static data with real API calls later. -->
 <!-- Inline sparklines use <svg> paths seeded from mock arrays. -->
 <!-- Drawers and modals are pure vanilla JS with focus trap helpers. -->
-<html lang="en" class="h-full bg-slate-50">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -15,6 +15,7 @@
   <meta property="og:image" content="https://practx.io/assets/logo.png" />
   <meta name="twitter:card" content="summary" />
   <link rel="icon" href="/assets/logo.png" type="image/png" />
+  <link rel="stylesheet" href="/assets/styles.css" />
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     :root {
@@ -84,8 +85,10 @@
       pointer-events: none;
     }
   </style>
+  <script defer src="/assets/js/auth-modal.js"></script>
+  <script defer src="/assets/js/entity-forms.js"></script>
 </head>
-<body class="flex min-h-full flex-col bg-slate-50 text-slate-900">
+<body class="command-center">
   <header>
     <nav>
       <a class="logo" href="/index.html">
@@ -103,122 +106,124 @@
       </div>
     </nav>
   </header>
-  <main class="flex-1 bg-slate-50">
-    <section class="border-b border-slate-200 bg-white/70 backdrop-blur">
-      <div class="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-10 sm:px-6 lg:px-8">
-        <div class="flex flex-col justify-between gap-6 md:flex-row md:items-center">
-          <div>
-            <div class="flex items-center gap-3 text-sm font-medium text-slate-500" aria-label="Breadcrumb">
-              <span>Equipment</span>
-              <span aria-hidden="true">›</span>
-              <span>Command Center</span>
+  <main>
+    <div class="bg-slate-50 text-slate-900">
+      <section class="border-b border-slate-200 bg-white/70 backdrop-blur">
+        <div class="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-10 sm:px-6 lg:px-8">
+          <div class="flex flex-col justify-between gap-6 md:flex-row md:items-center">
+            <div>
+              <div class="flex items-center gap-3 text-sm font-medium text-slate-500" aria-label="Breadcrumb">
+                <span>Equipment</span>
+                <span aria-hidden="true">›</span>
+                <span>Command Center</span>
+              </div>
+              <div class="mt-4 flex items-center gap-3 text-slate-900">
+                <div class="flex h-10 w-10 items-center justify-center rounded-full bg-slate-900 text-white text-lg font-semibold">P</div>
+                <div>
+                  <p class="text-xs uppercase tracking-widest text-slate-400">Practx</p>
+                  <h1 class="text-2xl font-semibold text-slate-900 sm:text-3xl">ELM Command Center</h1>
+                </div>
+              </div>
             </div>
-            <div class="mt-4 flex items-center gap-3 text-slate-900">
-              <div class="flex h-10 w-10 items-center justify-center rounded-full bg-slate-900 text-white text-lg font-semibold">P</div>
-              <div>
-                <p class="text-xs uppercase tracking-widest text-slate-400">Practx</p>
-                <h1 class="text-2xl font-semibold text-slate-900 sm:text-3xl">ELM Command Center</h1>
+            <div class="grid gap-2 text-right text-sm text-slate-500">
+              <p><span class="font-semibold text-slate-900">Practice:</span> <span id="practice-name" class="font-medium"></span></p>
+              <p><span class="font-semibold text-slate-900">Last refreshed:</span> <span id="last-refreshed"></span></p>
+            </div>
+          </div>
+          <div class="flex flex-wrap gap-3">
+            <button type="button" data-open-drawer="locations" class="focus-outline inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:border-slate-400 hover:text-slate-900">
+              <span aria-hidden="true">🏢</span> Configure Locations
+            </button>
+            <button type="button" data-open-drawer="providers" class="focus-outline inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:border-slate-400 hover:text-slate-900">
+              <span aria-hidden="true">🤝</span> Approved Providers
+            </button>
+            <button type="button" data-open-drawer="service-windows" class="focus-outline inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:border-slate-400 hover:text-slate-900">
+              <span aria-hidden="true">🕒</span> Service Windows
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+        <div class="grid gap-6 lg:grid-cols-3">
+          <div class="lg:col-span-2">
+            <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3" id="kpi-grid" aria-live="polite"></div>
+          </div>
+          <div class="grid gap-4">
+            <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+              <h3 class="text-sm font-semibold text-slate-700">Spend vs Forecast</h3>
+              <div class="mt-4 flex items-center justify-between text-xs text-slate-500">
+                <span class="inline-flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-blue-500"></span>Spend</span>
+                <span class="inline-flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-emerald-500"></span>Forecast</span>
+              </div>
+              <div id="trend-spend" class="mt-4"></div>
+            </div>
+            <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+              <h3 class="text-sm font-semibold text-slate-700">Incidents Over Time</h3>
+              <div id="trend-incidents" class="mt-4"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="mx-auto max-w-7xl px-4 pb-14 sm:px-6 lg:px-8" id="assets-section">
+        <div class="rounded-3xl border border-slate-200 bg-white/70 p-6 shadow-sm backdrop-blur">
+          <div class="flex flex-col gap-4 border-b border-slate-200 pb-4 md:flex-row md:items-end md:justify-between">
+            <div>
+              <h2 class="text-xl font-semibold text-slate-900">Active Assets</h2>
+              <p class="text-sm text-slate-500">Monitor uptime, spend, and service readiness across locations.</p>
+            </div>
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+              <label class="flex items-center gap-2 text-sm text-slate-500">
+                <span class="sr-only">Search assets</span>
+                <svg class="h-4 w-4 text-slate-400" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27a6.471 6.471 0 001.57-4.23A6.5 6.5 0 109.5 16a6.47 6.47 0 004.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1114 9.5 4.505 4.505 0 019.5 14z"/></svg>
+                <input id="asset-search" type="search" placeholder="Search by asset, type, or location" class="w-full rounded-full border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 sm:w-72" />
+              </label>
+              <label class="text-sm text-slate-500">
+                <span class="sr-only">Filter by status</span>
+                <select id="status-filter" class="focus-outline rounded-full border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200">
+                  <option value="All">All Statuses</option>
+                  <option value="Healthy">Healthy</option>
+                  <option value="Attention">Attention</option>
+                  <option value="Down">Down</option>
+                  <option value="Unknown">Unknown</option>
+                </select>
+              </label>
+              <div class="inline-flex overflow-hidden rounded-full border border-slate-300 text-sm font-medium text-slate-600">
+                <button type="button" data-sort="spendYtd" class="focus-outline flex items-center gap-1 border-r border-slate-300 bg-white px-3 py-2 hover:bg-slate-100" aria-label="Sort by spend">
+                  Spend YTD
+                  <span aria-hidden="true" class="sort-indicator" data-sort-indicator="spendYtd">↕</span>
+                </button>
+                <button type="button" data-sort="nextService" class="focus-outline flex items-center gap-1 bg-white px-3 py-2 hover:bg-slate-100" aria-label="Sort by next service date">
+                  Next Service
+                  <span aria-hidden="true" class="sort-indicator" data-sort-indicator="nextService">↕</span>
+                </button>
               </div>
             </div>
           </div>
-          <div class="grid gap-2 text-right text-sm text-slate-500">
-            <p><span class="font-semibold text-slate-900">Practice:</span> <span id="practice-name" class="font-medium"></span></p>
-            <p><span class="font-semibold text-slate-900">Last refreshed:</span> <span id="last-refreshed"></span></p>
-          </div>
-        </div>
-        <div class="flex flex-wrap gap-3">
-          <button type="button" data-open-drawer="locations" class="focus-outline inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:border-slate-400 hover:text-slate-900">
-            <span aria-hidden="true">🏢</span> Configure Locations
-          </button>
-          <button type="button" data-open-drawer="providers" class="focus-outline inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:border-slate-400 hover:text-slate-900">
-            <span aria-hidden="true">🤝</span> Approved Providers
-          </button>
-          <button type="button" data-open-drawer="service-windows" class="focus-outline inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:border-slate-400 hover:text-slate-900">
-            <span aria-hidden="true">🕒</span> Service Windows
-          </button>
-        </div>
-      </div>
-    </section>
 
-    <section class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-      <div class="grid gap-6 lg:grid-cols-3">
-        <div class="lg:col-span-2">
-          <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3" id="kpi-grid" aria-live="polite"></div>
-        </div>
-        <div class="grid gap-4">
-          <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h3 class="text-sm font-semibold text-slate-700">Spend vs Forecast</h3>
-            <div class="mt-4 flex items-center justify-between text-xs text-slate-500">
-              <span class="inline-flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-blue-500"></span>Spend</span>
-              <span class="inline-flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-emerald-500"></span>Forecast</span>
-            </div>
-            <div id="trend-spend" class="mt-4"></div>
-          </div>
-          <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h3 class="text-sm font-semibold text-slate-700">Incidents Over Time</h3>
-            <div id="trend-incidents" class="mt-4"></div>
-          </div>
-        </div>
-      </div>
-    </section>
+          <div id="asset-detail" class="mt-6 hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"></div>
 
-    <section class="mx-auto max-w-7xl px-4 pb-14 sm:px-6 lg:px-8" id="assets-section">
-      <div class="rounded-3xl border border-slate-200 bg-white/70 p-6 shadow-sm backdrop-blur">
-        <div class="flex flex-col gap-4 border-b border-slate-200 pb-4 md:flex-row md:items-end md:justify-between">
-          <div>
-            <h2 class="text-xl font-semibold text-slate-900">Active Assets</h2>
-            <p class="text-sm text-slate-500">Monitor uptime, spend, and service readiness across locations.</p>
-          </div>
-          <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
-            <label class="flex items-center gap-2 text-sm text-slate-500">
-              <span class="sr-only">Search assets</span>
-              <svg class="h-4 w-4 text-slate-400" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27a6.471 6.471 0 001.57-4.23A6.5 6.5 0 109.5 16a6.47 6.47 0 004.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1114 9.5 4.505 4.505 0 019.5 14z"/></svg>
-              <input id="asset-search" type="search" placeholder="Search by asset, type, or location" class="w-full rounded-full border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 sm:w-72" />
-            </label>
-            <label class="text-sm text-slate-500">
-              <span class="sr-only">Filter by status</span>
-              <select id="status-filter" class="focus-outline rounded-full border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200">
-                <option value="All">All Statuses</option>
-                <option value="Healthy">Healthy</option>
-                <option value="Attention">Attention</option>
-                <option value="Down">Down</option>
-                <option value="Unknown">Unknown</option>
-              </select>
-            </label>
-            <div class="inline-flex overflow-hidden rounded-full border border-slate-300 text-sm font-medium text-slate-600">
-              <button type="button" data-sort="spendYtd" class="focus-outline flex items-center gap-1 border-r border-slate-300 bg-white px-3 py-2 hover:bg-slate-100" aria-label="Sort by spend">
-                Spend YTD
-                <span aria-hidden="true" class="sort-indicator" data-sort-indicator="spendYtd">↕</span>
-              </button>
-              <button type="button" data-sort="nextService" class="focus-outline flex items-center gap-1 bg-white px-3 py-2 hover:bg-slate-100" aria-label="Sort by next service date">
-                Next Service
-                <span aria-hidden="true" class="sort-indicator" data-sort-indicator="nextService">↕</span>
-              </button>
-            </div>
+          <div class="mt-6 overflow-x-auto" data-sticky-header>
+            <table class="min-w-full divide-y divide-slate-200 text-left text-sm text-slate-600" aria-describedby="assets-section">
+              <thead class="text-xs uppercase tracking-widest text-slate-500">
+                <tr>
+                  <th scope="col" class="px-4 py-3">Asset ID</th>
+                  <th scope="col" class="px-4 py-3">Type / Model</th>
+                  <th scope="col" class="px-4 py-3">Location</th>
+                  <th scope="col" class="px-4 py-3">Status</th>
+                  <th scope="col" class="px-4 py-3">Next Service</th>
+                  <th scope="col" class="px-4 py-3">Warranty</th>
+                  <th scope="col" class="px-4 py-3 text-right">Spend YTD</th>
+                  <th scope="col" class="px-4 py-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="assets-body" class="divide-y divide-slate-100 bg-white" aria-live="polite"></tbody>
+            </table>
           </div>
         </div>
-
-        <div id="asset-detail" class="mt-6 hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"></div>
-
-        <div class="mt-6 overflow-x-auto" data-sticky-header>
-          <table class="min-w-full divide-y divide-slate-200 text-left text-sm text-slate-600" aria-describedby="assets-section">
-            <thead class="text-xs uppercase tracking-widest text-slate-500">
-              <tr>
-                <th scope="col" class="px-4 py-3">Asset ID</th>
-                <th scope="col" class="px-4 py-3">Type / Model</th>
-                <th scope="col" class="px-4 py-3">Location</th>
-                <th scope="col" class="px-4 py-3">Status</th>
-                <th scope="col" class="px-4 py-3">Next Service</th>
-                <th scope="col" class="px-4 py-3">Warranty</th>
-                <th scope="col" class="px-4 py-3 text-right">Spend YTD</th>
-                <th scope="col" class="px-4 py-3 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="assets-body" class="divide-y divide-slate-100 bg-white" aria-live="polite"></tbody>
-          </table>
-        </div>
-      </div>
-    </section>
+      </section>
+    </div>
   </main>
   <footer class="bg-white">
     <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 text-sm text-slate-500">© Practx</div>
