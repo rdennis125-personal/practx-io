@@ -13,6 +13,88 @@
   <meta name="twitter:card" content="summary" />
   <link rel="icon" href="/assets/logo.png" type="image/png" />
   <link rel="stylesheet" href="/assets/styles.css" />
+  <style>
+    .dashboard-section--quick .dashboard-grid,
+    .dashboard-grid--four {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .quick-card .button {
+      width: 100%;
+      margin-top: 0.75rem;
+    }
+
+    .form-card {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .command-form {
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    .command-form label {
+      display: grid;
+      gap: 0.25rem;
+      font-weight: 600;
+    }
+
+    .command-form input,
+    .command-form select,
+    .command-form textarea {
+      font: inherit;
+      padding: 0.55rem 0.75rem;
+      border: 1px solid #d0d6dc;
+      border-radius: 0.5rem;
+      background: #fff;
+    }
+
+    .command-form textarea {
+      min-height: 120px;
+    }
+
+    .toast {
+      position: fixed;
+      right: 1.5rem;
+      bottom: 1.5rem;
+      background: #063970;
+      color: #fff;
+      padding: 0.85rem 1.25rem;
+      border-radius: 999px;
+      box-shadow: 0 18px 35px rgba(6, 57, 112, 0.18);
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      z-index: 1000;
+    }
+
+    .toast--success::before {
+      content: '✔';
+      margin-right: 0.5rem;
+    }
+
+    .toast.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 720px) {
+      .dashboard-grid--four {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      }
+
+      .toast {
+        left: 1rem;
+        right: 1rem;
+        border-radius: 1rem;
+        text-align: center;
+      }
+    }
+  </style>
   <script defer src="/assets/js/auth-modal.js"></script>
   <script defer src="/assets/js/entity-forms.js"></script>
 </head>
@@ -39,17 +121,15 @@
       <div class="command-center-hero__content">
         <span class="eyebrow">Equipment Lifecycle Management</span>
         <h1>Summit Dental Care</h1>
-        <p>Monitor every asset, anticipate downtime, and orchestrate service with the Practx ELM command center.</p>
+        <p>
+          Welcome to your single view for inventory, maintenance, financials, and vendor coordination.
+          Every lifecycle task for this practice starts here.
+        </p>
         <div class="hero-metrics" role="list">
           <div class="hero-metric" role="listitem">
             <span class="metric-label">Registered assets</span>
             <strong class="metric-value">68</strong>
             <span class="metric-subtext">Across 5 locations</span>
-          </div>
-          <div class="hero-metric" role="listitem">
-            <span class="metric-label">Average asset age</span>
-            <strong class="metric-value">5.2 yrs</strong>
-            <span class="metric-subtext">18 units under warranty</span>
           </div>
           <div class="hero-metric" role="listitem">
             <span class="metric-label">Fleet uptime</span>
@@ -61,7 +141,41 @@
             <strong class="metric-value">4</strong>
             <span class="metric-subtext">2 waiting on parts</span>
           </div>
+          <div class="hero-metric" role="listitem">
+            <span class="metric-label">Capital forecast</span>
+            <strong class="metric-value">$61.7k</strong>
+            <span class="metric-subtext">90 day outlook</span>
+          </div>
         </div>
+      </div>
+    </section>
+
+    <section class="dashboard-section dashboard-section--quick">
+      <div class="section-heading">
+        <h2>Command shortcuts</h2>
+        <p>Launch any lifecycle task without leaving the command center.</p>
+      </div>
+      <div class="dashboard-grid dashboard-grid--four">
+        <article class="dashboard-card card quick-card">
+          <h3>Inventory</h3>
+          <p>Register new equipment or update serials in seconds.</p>
+          <button class="button button--ghost" data-scroll-target="#inventory-forms">Open inventory tools</button>
+        </article>
+        <article class="dashboard-card card quick-card">
+          <h3>Maintenance</h3>
+          <p>Schedule preventive care and confirm technician assignments.</p>
+          <button class="button button--ghost" data-scroll-target="#service-forms">Open maintenance tools</button>
+        </article>
+        <article class="dashboard-card card quick-card">
+          <h3>Lifecycle</h3>
+          <p>Flag refresh candidates and track replacement decisions.</p>
+          <button class="button button--ghost" data-scroll-target="#lifecycle-playbooks">Review lifecycle playbooks</button>
+        </article>
+        <article class="dashboard-card card quick-card">
+          <h3>Vendors &amp; spend</h3>
+          <p>Coordinate parts orders and monitor financial impact.</p>
+          <button class="button button--ghost" data-scroll-target="#spend-insights">View vendor insights</button>
+        </article>
       </div>
     </section>
 
@@ -163,7 +277,69 @@
       </div>
     </section>
 
-    <section class="dashboard-section">
+    <section class="dashboard-section" id="inventory-forms">
+      <div class="section-heading">
+        <h2>Inventory control</h2>
+        <p>Capture the essentials for new assets or apply quick updates to the register.</p>
+      </div>
+      <div class="dashboard-grid dashboard-grid--two">
+        <article class="card form-card">
+          <h3>Register new asset</h3>
+          <form class="command-form" data-demo-form>
+            <label>
+              Asset name
+              <input type="text" name="asset_name" placeholder="e.g. Hygiene chair CH-229" required />
+            </label>
+            <label>
+              Category
+              <select name="asset_category" required>
+                <option value="">Select</option>
+                <option>Operatory</option>
+                <option>Imaging</option>
+                <option>Sterilization</option>
+                <option>Mechanical</option>
+                <option>Other</option>
+              </select>
+            </label>
+            <label>
+              Location
+              <input type="text" name="asset_location" placeholder="Operatory 6" required />
+            </label>
+            <label>
+              Warranty expiration
+              <input type="date" name="asset_warranty" />
+            </label>
+            <button type="submit" class="button">Add asset</button>
+          </form>
+        </article>
+        <article class="card form-card">
+          <h3>Update existing asset</h3>
+          <form class="command-form" data-demo-form>
+            <label>
+              Asset ID
+              <input type="text" name="asset_id" placeholder="e.g. ST-305" required />
+            </label>
+            <label>
+              New status
+              <select name="asset_status" required>
+                <option value="">Select status</option>
+                <option>Online</option>
+                <option>Scheduled maintenance</option>
+                <option>Watch</option>
+                <option>Out of service</option>
+              </select>
+            </label>
+            <label>
+              Notes
+              <textarea name="asset_notes" rows="3" placeholder="Add context for the team"></textarea>
+            </label>
+            <button type="submit" class="button button--ghost">Save update</button>
+          </form>
+        </article>
+      </div>
+    </section>
+
+    <section class="dashboard-section" id="service-forms">
       <div class="dashboard-grid dashboard-grid--two">
         <article class="dashboard-card card">
           <h2>Upcoming service</h2>
@@ -231,10 +407,95 @@
             </li>
           </ul>
         </article>
+        <article class="card form-card">
+          <h3>Schedule maintenance</h3>
+          <form class="command-form" data-demo-form>
+            <label>
+              Asset ID
+              <input type="text" name="service_asset" placeholder="e.g. PX-119" required />
+            </label>
+            <label>
+              Service window
+              <input type="date" name="service_date" required />
+            </label>
+            <label>
+              Technician
+              <input type="text" name="service_tech" placeholder="Assign technician" />
+            </label>
+            <label>
+              Service type
+              <select name="service_type" required>
+                <option value="">Select type</option>
+                <option>Preventive maintenance</option>
+                <option>Repair</option>
+                <option>Upgrade</option>
+                <option>Inspection</option>
+              </select>
+            </label>
+            <button type="submit" class="button">Schedule</button>
+          </form>
+        </article>
+        <article class="card form-card">
+          <h3>Log an issue</h3>
+          <form class="command-form" data-demo-form>
+            <label>
+              Asset ID
+              <input type="text" name="issue_asset" placeholder="e.g. VC-412" required />
+            </label>
+            <label>
+              Priority
+              <select name="issue_priority" required>
+                <option value="">Select priority</option>
+                <option>Critical</option>
+                <option>High</option>
+                <option>Medium</option>
+                <option>Low</option>
+              </select>
+            </label>
+            <label>
+              Issue summary
+              <textarea name="issue_summary" rows="3" placeholder="Describe the problem" required></textarea>
+            </label>
+            <button type="submit" class="button button--ghost">Create work order</button>
+          </form>
+        </article>
       </div>
     </section>
 
-    <section class="dashboard-section">
+    <section class="dashboard-section" id="lifecycle-playbooks">
+      <div class="section-heading">
+        <h2>Lifecycle playbooks</h2>
+        <p>Keep stakeholders aligned on refresh priorities and replacement strategy.</p>
+      </div>
+      <div class="card">
+        <details open>
+          <summary>90-day refresh pipeline</summary>
+          <ul class="dashboard-list">
+            <li>Hygiene chairs CH-204, CH-228, CH-229 slated for ergonomic upgrades.</li>
+            <li>Wet vacuum VC-412 scheduled for interim rental swap ahead of retrofit.</li>
+            <li>Digital sensor fleet (8 units) entering accelerated depreciation watch.</li>
+          </ul>
+        </details>
+        <details>
+          <summary>Capital approvals in motion</summary>
+          <ul class="dashboard-list">
+            <li>Cone beam CB-088 replacement — finance review May 12.</li>
+            <li>Compressor CP-207 retrofit — vendor quote pending.</li>
+            <li>Software licenses — align renewal with Q4 procurement cycle.</li>
+          </ul>
+        </details>
+        <details>
+          <summary>Vendor engagement</summary>
+          <ul class="dashboard-list">
+            <li>Practx Service Franchise covering preventive routes.</li>
+            <li>DeltaSterile providing sterilizer components with 48 hr SLA.</li>
+            <li>Northwest Imaging coordinating CBCT commissioning team.</li>
+          </ul>
+        </details>
+      </div>
+    </section>
+
+    <section class="dashboard-section" id="spend-insights">
       <h2>Maintenance spend &amp; forecast</h2>
       <div class="spend-grid">
         <article class="card spend-card">
@@ -262,6 +523,28 @@
           </ul>
         </article>
       </div>
+      <div class="card form-card">
+        <h3>Plan procurement</h3>
+        <form class="command-form" data-demo-form>
+          <label>
+            Asset or program
+            <input type="text" name="plan_asset" placeholder="e.g. Cone beam CB-088" required />
+          </label>
+          <label>
+            Target decision date
+            <input type="date" name="plan_decision" required />
+          </label>
+          <label>
+            Estimated investment
+            <input type="number" name="plan_investment" min="0" step="100" placeholder="e.g. 25000" />
+          </label>
+          <label>
+            Notes
+            <textarea name="plan_notes" rows="3" placeholder="Dependencies, vendor steps, approvals"></textarea>
+          </label>
+          <button type="submit" class="button">Save plan</button>
+        </form>
+      </div>
     </section>
   </main>
   <script>
@@ -286,6 +569,36 @@
         redirectToLogin();
       }
     })();
+  </script>
+  <script>
+    const scrollButtons = document.querySelectorAll('[data-scroll-target]');
+    scrollButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        const target = document.querySelector(button.getAttribute('data-scroll-target'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+
+    const demoForms = document.querySelectorAll('form[data-demo-form]');
+    demoForms.forEach((form) => {
+      form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const toast = document.createElement('div');
+        toast.className = 'toast toast--success';
+        toast.textContent = 'Action captured. Practx will sync this workflow in production.';
+        document.body.appendChild(toast);
+        setTimeout(() => {
+          toast.classList.add('is-visible');
+        }, 50);
+        setTimeout(() => {
+          toast.classList.remove('is-visible');
+          setTimeout(() => toast.remove(), 300);
+        }, 3000);
+        form.reset();
+      });
+    });
   </script>
   <footer>
     <div class="footer-content">
