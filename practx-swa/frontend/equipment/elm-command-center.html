@@ -1,4 +1,7 @@
 <!DOCTYPE html>
+<!-- This is a MOCK UI. Replace static data with real API calls later. -->
+<!-- Inline sparklines use <svg> paths seeded from mock arrays. -->
+<!-- Drawers and modals are pure vanilla JS with focus trap helpers. -->
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -13,159 +16,73 @@
   <meta name="twitter:card" content="summary" />
   <link rel="icon" href="/assets/logo.png" type="image/png" />
   <link rel="stylesheet" href="/assets/styles.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    .dashboard-grid--four {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 1.5rem;
+    :root {
+      color-scheme: light;
     }
 
-    .form-card {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
+    body {
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
-    .command-form {
-      display: grid;
-      gap: 0.75rem;
+    .sparkline-path {
+      fill: none;
+      stroke-width: 2;
+      vector-effect: non-scaling-stroke;
     }
 
-    .command-form label {
-      display: grid;
-      gap: 0.25rem;
+    .sparkline-area {
+      fill-opacity: 0.12;
+      stroke: none;
+    }
+
+    [data-sticky-header] thead th {
+      position: sticky;
+      top: 0;
+      background-color: rgb(248 250 252 / 0.96);
+      backdrop-filter: blur(8px);
+    }
+
+    .status-pill {
       font-weight: 600;
-    }
-
-    .command-form input,
-    .command-form select,
-    .command-form textarea {
-      font: inherit;
-      padding: 0.55rem 0.75rem;
-      border: 1px solid #d0d6dc;
-      border-radius: 0.5rem;
-      background: #fff;
-    }
-
-    .command-form textarea {
-      min-height: 120px;
-    }
-
-    .section-heading--split {
-      display: flex;
-      flex-wrap: wrap;
+      display: inline-flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-    }
-
-    .section-heading--split .section-heading__content {
-      flex: 1 1 320px;
-    }
-
-    .section-heading--split .section-heading__actions {
-      display: flex;
-      gap: 0.75rem;
-      align-items: center;
-    }
-
-    .quick-links {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .quick-link {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-      padding: 1rem 1.25rem;
-      border-radius: 1rem;
-      border: 1px solid #dbe2ea;
-      background: #f8fbff;
-      transition: border-color 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .quick-link:hover,
-    .quick-link:focus-within {
-      border-color: #5c8dff;
-      box-shadow: 0 10px 30px rgba(14, 76, 146, 0.12);
-    }
-
-    .quick-link strong {
-      font-size: 1.05rem;
-    }
-
-    .quick-link .button {
-      width: 100%;
-      justify-content: center;
-    }
-
-    .toast {
-      position: fixed;
-      right: 1.5rem;
-      bottom: 1.5rem;
-      background: #063970;
-      color: #fff;
-      padding: 0.85rem 1.25rem;
+      gap: 0.35rem;
+      padding: 0.25rem 0.75rem;
       border-radius: 999px;
-      box-shadow: 0 18px 35px rgba(6, 57, 112, 0.18);
+      font-size: 0.75rem;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+
+    .drawer-enter {
+      transform: translateX(100%);
       opacity: 0;
-      transform: translateY(12px);
-      transition: opacity 0.2s ease, transform 0.2s ease;
-      z-index: 1000;
     }
 
-    .toast--success::before {
-      content: '✔';
-      margin-right: 0.5rem;
+    .drawer-open {
+      transform: translateX(0);
+      opacity: 1;
     }
 
-    .toast.is-visible {
+    .modal-enter {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+
+    .modal-open {
       opacity: 1;
       transform: translateY(0);
     }
 
-    .table-card__note {
-      margin-bottom: 1rem;
-      color: #4d647a;
-      font-size: 0.95rem;
+    .focus-outline:focus {
+      outline: 3px solid rgb(59 130 246);
+      outline-offset: 2px;
     }
 
-    .data-table tbody tr[data-edit-asset] {
-      cursor: pointer;
-      transition: background-color 0.15s ease;
-    }
-
-    .data-table tbody tr[data-edit-asset]:hover,
-    .data-table tbody tr[data-edit-asset]:focus-within {
-      background-color: rgba(92, 141, 255, 0.08);
-    }
-
-    .data-table tbody tr[data-edit-asset] a {
-      color: inherit;
-      text-decoration: none;
-      display: block;
-      width: 100%;
-      height: 100%;
-    }
-
-    .data-table tbody tr[data-edit-asset] td:first-child {
-      font-weight: 600;
-    }
-
-    @media (max-width: 720px) {
-      .dashboard-grid--four {
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      }
-
-      .toast {
-        left: 1rem;
-        right: 1rem;
-        border-radius: 1rem;
-        text-align: center;
-      }
+    .toast {
+      pointer-events: none;
     }
   </style>
   <script defer src="/assets/js/auth-modal.js"></script>
@@ -190,565 +107,1423 @@
     </nav>
   </header>
   <main>
-    <section class="command-center-hero">
-      <div class="command-center-hero__content">
-        <span class="eyebrow">Equipment Lifecycle Management</span>
-        <h1>Summit Dental Care</h1>
-        <p>
-          Welcome to your single view for inventory, maintenance, financials, and vendor coordination.
-          Every lifecycle task for this practice starts here.
-        </p>
-        <div class="hero-metrics" role="list">
-          <div class="hero-metric" role="listitem">
-            <span class="metric-label">Registered assets</span>
-            <strong class="metric-value">68</strong>
-            <span class="metric-subtext">Across 5 locations</span>
+    <div class="bg-slate-50 text-slate-900">
+      <section class="border-b border-slate-200 bg-white/70 backdrop-blur">
+        <div class="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-10 sm:px-6 lg:px-8">
+          <div class="flex flex-col justify-between gap-6 md:flex-row md:items-center">
+            <div>
+              <div class="flex items-center gap-3 text-sm font-medium text-slate-500" aria-label="Breadcrumb">
+                <span>Equipment</span>
+                <span aria-hidden="true">›</span>
+                <span>Command Center</span>
+              </div>
+              <div class="mt-4 flex items-center gap-3 text-slate-900">
+                <div class="flex h-10 w-10 items-center justify-center rounded-full bg-slate-900 text-white text-lg font-semibold">P</div>
+                <div>
+                  <p class="text-xs uppercase tracking-widest text-slate-400">Practx</p>
+                  <h1 class="text-2xl font-semibold text-slate-900 sm:text-3xl">ELM Command Center</h1>
+                </div>
+              </div>
+            </div>
+            <div class="grid gap-2 text-right text-sm text-slate-500">
+              <p><span class="font-semibold text-slate-900">Practice:</span> <span id="practice-name" class="font-medium"></span></p>
+              <p><span class="font-semibold text-slate-900">Last refreshed:</span> <span id="last-refreshed"></span></p>
+            </div>
           </div>
-          <div class="hero-metric" role="listitem">
-            <span class="metric-label">Fleet uptime</span>
-            <strong class="metric-value">99.6%</strong>
-            <span class="metric-subtext">Past 30 days</span>
-          </div>
-          <div class="hero-metric" role="listitem">
-            <span class="metric-label">Work orders open</span>
-            <strong class="metric-value">4</strong>
-            <span class="metric-subtext">2 waiting on parts</span>
-          </div>
-          <div class="hero-metric" role="listitem">
-            <span class="metric-label">Capital forecast</span>
-            <strong class="metric-value">$61.7k</strong>
-            <span class="metric-subtext">90 day outlook</span>
+          <div class="flex flex-wrap gap-3">
+            <button type="button" data-open-drawer="locations" class="focus-outline inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:border-slate-400 hover:text-slate-900">
+              <span aria-hidden="true">🏢</span> Configure Locations
+            </button>
+            <button type="button" data-open-drawer="providers" class="focus-outline inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:border-slate-400 hover:text-slate-900">
+              <span aria-hidden="true">🤝</span> Approved Providers
+            </button>
+            <button type="button" data-open-drawer="service-windows" class="focus-outline inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:border-slate-400 hover:text-slate-900">
+              <span aria-hidden="true">🕒</span> Service Windows
+            </button>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <section class="dashboard-section">
-      <h2>Fleet overview</h2>
-      <div class="dashboard-grid">
-        <article class="dashboard-card card">
-          <h3>Inventory coverage</h3>
-          <p class="dashboard-card__metric">68 assets tracked</p>
-          <ul class="dashboard-list">
-            <li>Operatory: 34 chairs, 12 delivery units, 8 imaging devices</li>
-            <li>Support: 6 sterilizers, 4 compressors, 4 vacuums</li>
-            <li>8 assets tagged for end-of-life planning</li>
-          </ul>
-        </article>
-        <article class="dashboard-card card">
-          <h3>Service cadence</h3>
-          <p class="dashboard-card__metric">21 visits scheduled</p>
-          <ul class="dashboard-list">
-            <li>Preventive maintenance window every Tuesday &amp; Thursday</li>
-            <li>Technician SLA: 6 hours for critical outages</li>
-            <li>All sterilization assets compliant this quarter</li>
-          </ul>
-        </article>
-        <article class="dashboard-card card">
-          <h3>Lifecycle posture</h3>
-          <p class="dashboard-card__metric">12 upgrades planned</p>
-          <ul class="dashboard-list">
-            <li>Three hygiene chairs entering refresh cycle in Q3</li>
-            <li>Digital sensors refresh program underway</li>
-            <li>Financing approved for cone beam replacement</li>
-          </ul>
-        </article>
-      </div>
-    </section>
-
-    <section class="dashboard-section">
-      <div class="section-heading section-heading--split">
-        <div class="section-heading__content">
-          <h2>Equipment register</h2>
-          <p>Flag assets approaching service intervals, end-of-life thresholds, or downtime risk. Launch updates without leaving this dashboard.</p>
-        </div>
-        <div class="section-heading__actions">
-          <a class="button" href="#register-asset" data-scroll-target>+ Add asset</a>
-        </div>
-      </div>
-      <div class="card table-card">
-        <div class="quick-links" role="list">
-          <article class="quick-link" role="listitem">
-            <strong>Inventory updates</strong>
-            <p>Refresh serials, statuses, or locations.</p>
-            <button type="button" class="button button--ghost" data-scroll-target="#update-asset">Edit existing asset</button>
-          </article>
-          <article class="quick-link" role="listitem">
-            <strong>Schedule service</strong>
-            <p>Book technicians and align downtime windows.</p>
-            <button type="button" class="button button--ghost" data-scroll-target="#service-forms">Open maintenance tools</button>
-          </article>
-          <article class="quick-link" role="listitem">
-            <strong>Lifecycle planning</strong>
-            <p>Review refresh candidates and approvals.</p>
-            <button type="button" class="button button--ghost" data-scroll-target="#lifecycle-playbooks">Go to playbooks</button>
-          </article>
-          <article class="quick-link" role="listitem">
-            <strong>Procurement &amp; spend</strong>
-            <p>Track vendor coordination and budgets.</p>
-            <button type="button" class="button button--ghost" data-scroll-target="#spend-insights">View spend insights</button>
-          </article>
-        </div>
-        <p class="table-card__note">Select any asset row to fast-fill the edit form below.</p>
-        <div class="table-wrapper" role="region" aria-live="polite">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th scope="col">Asset</th>
-                <th scope="col">Type</th>
-                <th scope="col">Location</th>
-                <th scope="col">Age</th>
-                <th scope="col">Status</th>
-                <th scope="col">Next service</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr data-edit-asset data-asset-id="CH-204" data-asset-status="Online" data-asset-notes="Preventive PM due Jun 14" tabindex="0">
-                <td><a href="#update-asset" data-scroll-target>CH-204</a></td>
-                <td>Treatment chair</td>
-                <td>Operatory 2</td>
-                <td>4.1 yrs</td>
-                <td><span class="status-pill status-pill--ok">Online</span></td>
-                <td>Jun 14 &bull; Preventive PM</td>
-              </tr>
-              <tr data-edit-asset data-asset-id="PX-119" data-asset-status="Scheduled maintenance" data-asset-notes="Annual calibration on Apr 18" tabindex="0">
-                <td><a href="#update-asset" data-scroll-target>PX-119</a></td>
-                <td>Panoramic X-ray</td>
-                <td>Imaging suite</td>
-                <td>6.7 yrs</td>
-                <td><span class="status-pill status-pill--scheduled">Scheduled</span></td>
-                <td>Apr 18 &bull; Annual calibration</td>
-              </tr>
-              <tr data-edit-asset data-asset-id="ST-305" data-asset-status="Watch" data-asset-notes="Replace door gasket Apr 21" tabindex="0">
-                <td><a href="#update-asset" data-scroll-target>ST-305</a></td>
-                <td>Sterilizer</td>
-                <td>Sterile core</td>
-                <td>9.3 yrs</td>
-                <td><span class="status-pill status-pill--attention">Watch</span></td>
-                <td>Apr 21 &bull; Replace door gasket</td>
-              </tr>
-              <tr data-edit-asset data-asset-id="VC-412" data-asset-status="Out of service" data-asset-notes="Pending capital review for retrofit" tabindex="0">
-                <td><a href="#update-asset" data-scroll-target>VC-412</a></td>
-                <td>Wet vacuum</td>
-                <td>Mechanical room</td>
-                <td>11.8 yrs</td>
-                <td><span class="status-pill status-pill--risk">At risk</span></td>
-                <td>Pending capital review</td>
-              </tr>
-              <tr data-edit-asset data-asset-id="HL-044" data-asset-status="Online" data-asset-notes="Bulb kit scheduled for Aug 30" tabindex="0">
-                <td><a href="#update-asset" data-scroll-target>HL-044</a></td>
-                <td>Hygiene light</td>
-                <td>Operatory 5</td>
-                <td>2.3 yrs</td>
-                <td><span class="status-pill status-pill--ok">Online</span></td>
-                <td>Aug 30 &bull; Bulb replacement kit</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <section class="dashboard-section" id="inventory-forms">
-      <div class="section-heading">
-        <h2>Inventory control</h2>
-        <p>Capture the essentials for new assets or apply quick updates to the register.</p>
-      </div>
-      <div class="dashboard-grid dashboard-grid--two">
-        <article class="card form-card">
-          <h3>Register new asset</h3>
-          <form class="command-form" id="register-asset" data-demo-form>
-            <label>
-              Asset name
-              <input type="text" name="asset_name" placeholder="e.g. Hygiene chair CH-229" required />
-            </label>
-            <label>
-              Category
-              <select name="asset_category" required>
-                <option value="">Select</option>
-                <option>Operatory</option>
-                <option>Imaging</option>
-                <option>Sterilization</option>
-                <option>Mechanical</option>
-                <option>Other</option>
-              </select>
-            </label>
-            <label>
-              Location
-              <input type="text" name="asset_location" placeholder="Operatory 6" required />
-            </label>
-            <label>
-              Warranty expiration
-              <input type="date" name="asset_warranty" />
-            </label>
-            <button type="submit" class="button">Add asset</button>
-          </form>
-        </article>
-        <article class="card form-card">
-          <h3>Update existing asset</h3>
-          <form class="command-form" id="update-asset" data-demo-form>
-            <label>
-              Asset ID
-              <input type="text" name="asset_id" placeholder="e.g. ST-305" required />
-            </label>
-            <label>
-              New status
-              <select name="asset_status" required>
-                <option value="">Select status</option>
-                <option>Online</option>
-                <option>Scheduled maintenance</option>
-                <option>Watch</option>
-                <option>Out of service</option>
-              </select>
-            </label>
-            <label>
-              Notes
-              <textarea name="asset_notes" rows="3" placeholder="Add context for the team"></textarea>
-            </label>
-            <button type="submit" class="button button--ghost">Save update</button>
-          </form>
-        </article>
-      </div>
-    </section>
-
-    <section class="dashboard-section" id="service-forms">
-      <div class="dashboard-grid dashboard-grid--two">
-        <article class="dashboard-card card">
-          <h2>Upcoming service</h2>
-          <ul class="status-list">
-            <li>
-              <div class="status-list__details">
-                <span class="status-title">Panoramic X-ray PX-119</span>
-                <span class="status-meta">Apr 18 &bull; Annual calibration &bull; Practx Service Franchise</span>
-              </div>
-              <span class="status-pill status-pill--scheduled">Scheduled</span>
-            </li>
-            <li>
-              <div class="status-list__details">
-                <span class="status-title">Compressor CP-207</span>
-                <span class="status-meta">Apr 20 &bull; Oil-free kit replacement &bull; Technician: Rivera</span>
-              </div>
-              <span class="status-pill status-pill--attention">Prep</span>
-            </li>
-            <li>
-              <div class="status-list__details">
-                <span class="status-title">Sterilizer ST-305</span>
-                <span class="status-meta">Apr 21 &bull; Gasket swap &bull; Spare unit staged</span>
-              </div>
-              <span class="status-pill status-pill--attention">Watch</span>
-            </li>
-            <li>
-              <div class="status-list__details">
-                <span class="status-title">CBCT CB-088</span>
-                <span class="status-meta">Apr 27 &bull; Firmware update &bull; Remote session</span>
-              </div>
-              <span class="status-pill status-pill--scheduled">Scheduled</span>
-            </li>
-          </ul>
-        </article>
-        <article class="dashboard-card card">
-          <h2>Outstanding work orders</h2>
-          <ul class="status-list">
-            <li>
-              <div class="status-list__details">
-                <span class="status-title">Delivery unit DU-311</span>
-                <span class="status-meta">Opened Apr 10 &bull; Actuator failure &bull; Operatory 7</span>
-              </div>
-              <span class="status-pill status-pill--risk">Waiting on parts</span>
-            </li>
-            <li>
-              <div class="status-list__details">
-                <span class="status-title">Vacuum VC-412</span>
-                <span class="status-meta">Opened Apr 12 &bull; Bearing noise &bull; Rental standby approved</span>
-              </div>
-              <span class="status-pill status-pill--risk">Critical</span>
-            </li>
-            <li>
-              <div class="status-list__details">
-                <span class="status-title">Hygiene chair CH-228</span>
-                <span class="status-meta">Opened Apr 15 &bull; Armrest repair &bull; Technician ETA 2 hrs</span>
-              </div>
-              <span class="status-pill status-pill--scheduled">En route</span>
-            </li>
-            <li>
-              <div class="status-list__details">
-                <span class="status-title">Compressor CP-207</span>
-                <span class="status-meta">Opened Apr 16 &bull; Pressure spike alert &bull; Remote diagnostics running</span>
-              </div>
-              <span class="status-pill status-pill--attention">Monitoring</span>
-            </li>
-          </ul>
-        </article>
-        <article class="card form-card">
-          <h3>Schedule maintenance</h3>
-          <form class="command-form" data-demo-form>
-            <label>
-              Asset ID
-              <input type="text" name="service_asset" placeholder="e.g. PX-119" required />
-            </label>
-            <label>
-              Service window
-              <input type="date" name="service_date" required />
-            </label>
-            <label>
-              Technician
-              <input type="text" name="service_tech" placeholder="Assign technician" />
-            </label>
-            <label>
-              Service type
-              <select name="service_type" required>
-                <option value="">Select type</option>
-                <option>Preventive maintenance</option>
-                <option>Repair</option>
-                <option>Upgrade</option>
-                <option>Inspection</option>
-              </select>
-            </label>
-            <button type="submit" class="button">Schedule</button>
-          </form>
-        </article>
-        <article class="card form-card">
-          <h3>Log an issue</h3>
-          <form class="command-form" data-demo-form>
-            <label>
-              Asset ID
-              <input type="text" name="issue_asset" placeholder="e.g. VC-412" required />
-            </label>
-            <label>
-              Priority
-              <select name="issue_priority" required>
-                <option value="">Select priority</option>
-                <option>Critical</option>
-                <option>High</option>
-                <option>Medium</option>
-                <option>Low</option>
-              </select>
-            </label>
-            <label>
-              Issue summary
-              <textarea name="issue_summary" rows="3" placeholder="Describe the problem" required></textarea>
-            </label>
-            <button type="submit" class="button button--ghost">Create work order</button>
-          </form>
-        </article>
-      </div>
-    </section>
-
-    <section class="dashboard-section" id="lifecycle-playbooks">
-      <div class="section-heading">
-        <h2>Lifecycle playbooks</h2>
-        <p>Keep stakeholders aligned on refresh priorities and replacement strategy.</p>
-      </div>
-      <div class="card">
-        <details open>
-          <summary>90-day refresh pipeline</summary>
-          <ul class="dashboard-list">
-            <li>Hygiene chairs CH-204, CH-228, CH-229 slated for ergonomic upgrades.</li>
-            <li>Wet vacuum VC-412 scheduled for interim rental swap ahead of retrofit.</li>
-            <li>Digital sensor fleet (8 units) entering accelerated depreciation watch.</li>
-          </ul>
-        </details>
-        <details>
-          <summary>Capital approvals in motion</summary>
-          <ul class="dashboard-list">
-            <li>Cone beam CB-088 replacement — finance review May 12.</li>
-            <li>Compressor CP-207 retrofit — vendor quote pending.</li>
-            <li>Software licenses — align renewal with Q4 procurement cycle.</li>
-          </ul>
-        </details>
-        <details>
-          <summary>Vendor engagement</summary>
-          <ul class="dashboard-list">
-            <li>Practx Service Franchise covering preventive routes.</li>
-            <li>DeltaSterile providing sterilizer components with 48 hr SLA.</li>
-            <li>Northwest Imaging coordinating CBCT commissioning team.</li>
-          </ul>
-        </details>
-      </div>
-    </section>
-
-    <section class="dashboard-section" id="spend-insights">
-      <h2>Maintenance spend &amp; forecast</h2>
-      <div class="spend-grid">
-        <article class="card spend-card">
-          <div class="spend-metric">
-            <span class="spend-label">FY24 maintenance spend</span>
-            <strong class="spend-value">$182,400</strong>
-            <span class="spend-subtext">YTD 92% of plan</span>
+      <section class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+        <div class="grid gap-6 lg:grid-cols-3">
+          <div class="lg:col-span-2">
+            <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3" id="kpi-grid" aria-live="polite"></div>
           </div>
-          <ul class="dashboard-list">
-            <li>$14,600 processed in April to date</li>
-            <li>Warranty recovery offsets $3,200 this quarter</li>
-            <li>Capital reserve balance: $48,000</li>
-          </ul>
-        </article>
-        <article class="card spend-card">
-          <div class="spend-metric">
-            <span class="spend-label">90-day forecast</span>
-            <strong class="spend-value">$61,750</strong>
-            <span class="spend-subtext">Includes high-priority replacements</span>
+          <div class="grid gap-4">
+            <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+              <h3 class="text-sm font-semibold text-slate-700">Spend vs Forecast</h3>
+              <div class="mt-4 flex items-center justify-between text-xs text-slate-500">
+                <span class="inline-flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-blue-500"></span>Spend</span>
+                <span class="inline-flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-emerald-500"></span>Forecast</span>
+              </div>
+              <div id="trend-spend" class="mt-4"></div>
+            </div>
+            <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+              <h3 class="text-sm font-semibold text-slate-700">Incidents Over Time</h3>
+              <div id="trend-incidents" class="mt-4"></div>
+            </div>
           </div>
-          <ul class="dashboard-list">
-            <li>Approve cone beam procurement by May 15</li>
-            <li>Bundle hygiene chair upgrades for Q3 install</li>
-            <li>Lock parts allocation for compressor retrofit</li>
-          </ul>
-        </article>
-      </div>
-      <div class="card form-card">
-        <h3>Plan procurement</h3>
-        <form class="command-form" data-demo-form>
-          <label>
-            Asset or program
-            <input type="text" name="plan_asset" placeholder="e.g. Cone beam CB-088" required />
-          </label>
-          <label>
-            Target decision date
-            <input type="date" name="plan_decision" required />
-          </label>
-          <label>
-            Estimated investment
-            <input type="number" name="plan_investment" min="0" step="100" placeholder="e.g. 25000" />
-          </label>
-          <label>
-            Notes
-            <textarea name="plan_notes" rows="3" placeholder="Dependencies, vendor steps, approvals"></textarea>
-          </label>
-          <button type="submit" class="button">Save plan</button>
-        </form>
-      </div>
-    </section>
+        </div>
+      </section>
+
+      <section class="mx-auto max-w-7xl px-4 pb-14 sm:px-6 lg:px-8" id="assets-section">
+        <div class="rounded-3xl border border-slate-200 bg-white/70 p-6 shadow-sm backdrop-blur">
+          <div class="flex flex-col gap-4 border-b border-slate-200 pb-4 md:flex-row md:items-end md:justify-between">
+            <div>
+              <h2 class="text-xl font-semibold text-slate-900">Active Assets</h2>
+              <p class="text-sm text-slate-500">Monitor uptime, spend, and service readiness across locations.</p>
+            </div>
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+              <label class="flex items-center gap-2 text-sm text-slate-500">
+                <span class="sr-only">Search assets</span>
+                <svg class="h-4 w-4 text-slate-400" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27a6.471 6.471 0 001.57-4.23A6.5 6.5 0 109.5 16a6.47 6.47 0 004.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1114 9.5 4.505 4.505 0 019.5 14z"/></svg>
+                <input id="asset-search" type="search" placeholder="Search by asset, type, or location" class="w-full rounded-full border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 sm:w-72" />
+              </label>
+              <label class="text-sm text-slate-500">
+                <span class="sr-only">Filter by status</span>
+                <select id="status-filter" class="focus-outline rounded-full border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200">
+                  <option value="All">All Statuses</option>
+                  <option value="Healthy">Healthy</option>
+                  <option value="Attention">Attention</option>
+                  <option value="Down">Down</option>
+                  <option value="Unknown">Unknown</option>
+                </select>
+              </label>
+              <div class="inline-flex overflow-hidden rounded-full border border-slate-300 text-sm font-medium text-slate-600">
+                <button type="button" data-sort="spendYtd" class="focus-outline flex items-center gap-1 border-r border-slate-300 bg-white px-3 py-2 hover:bg-slate-100" aria-label="Sort by spend">
+                  Spend YTD
+                  <span aria-hidden="true" class="sort-indicator" data-sort-indicator="spendYtd">↕</span>
+                </button>
+                <button type="button" data-sort="nextService" class="focus-outline flex items-center gap-1 bg-white px-3 py-2 hover:bg-slate-100" aria-label="Sort by next service date">
+                  Next Service
+                  <span aria-hidden="true" class="sort-indicator" data-sort-indicator="nextService">↕</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div id="asset-detail" class="mt-6 hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"></div>
+
+          <div class="mt-6 overflow-x-auto" data-sticky-header>
+            <table class="min-w-full divide-y divide-slate-200 text-left text-sm text-slate-600" aria-describedby="assets-section">
+              <thead class="text-xs uppercase tracking-widest text-slate-500">
+                <tr>
+                  <th scope="col" class="px-4 py-3">Asset ID</th>
+                  <th scope="col" class="px-4 py-3">Type / Model</th>
+                  <th scope="col" class="px-4 py-3">Location</th>
+                  <th scope="col" class="px-4 py-3">Status</th>
+                  <th scope="col" class="px-4 py-3">Next Service</th>
+                  <th scope="col" class="px-4 py-3">Warranty</th>
+                  <th scope="col" class="px-4 py-3 text-right">Spend YTD</th>
+                  <th scope="col" class="px-4 py-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="assets-body" class="divide-y divide-slate-100 bg-white" aria-live="polite"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </div>
   </main>
-  <script>
-    (async () => {
-      const redirectToLogin = () => {
-        const loginUrl = new URL('/.auth/login/practx', window.location.origin);
-        loginUrl.searchParams.set('post_login_redirect_uri', window.location.href);
-        loginUrl.searchParams.set('user_flow', 'SWA');
-        window.location = loginUrl.toString();
-      };
+  <footer class="bg-white">
+    <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 text-sm text-slate-500">© Practx</div>
+  </footer>
 
-      try {
-        const res = await fetch('/.auth/me', { credentials: 'include' });
-        if (res.status === 401) { redirectToLogin(); return; }
-        if (res.status === 403) {
-          window.location = '/forbidden.html';
-          return;
+  <div id="drawer-locations" class="pointer-events-none fixed inset-0 z-40 hidden" data-drawer="locations" aria-hidden="true">
+    <div class="absolute inset-0 bg-slate-900/40 opacity-0 transition-opacity" data-drawer-backdrop></div>
+    <div class="drawer-enter absolute right-0 top-0 h-full w-full max-w-xl transform transition-all" data-drawer-panel>
+      <div class="flex h-full flex-col bg-white shadow-2xl">
+        <div class="flex items-start justify-between border-b border-slate-200 px-6 py-5">
+          <div>
+            <h2 class="text-lg font-semibold text-slate-900">Locations</h2>
+            <p class="text-sm text-slate-500">Manage operatory rooms and shared spaces.</p>
+          </div>
+          <button type="button" class="focus-outline rounded-full border border-transparent p-2 text-slate-400 hover:text-slate-600" data-close-drawer>
+            <span class="sr-only">Close</span>
+            <svg viewBox="0 0 24 24" class="h-5 w-5" aria-hidden="true"><path fill="currentColor" d="M18.3 5.71a1 1 0 00-1.41 0L12 10.59 7.11 5.7A1 1 0 105.7 7.11L10.59 12l-4.9 4.89a1 1 0 101.41 1.41L12 13.41l4.89 4.9a1 1 0 001.41-1.42L13.41 12l4.9-4.89a1 1 0 000-1.4z"/></svg>
+          </button>
+        </div>
+        <div class="flex-1 overflow-y-auto px-6 py-6" id="locations-drawer-content"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="drawer-providers" class="pointer-events-none fixed inset-0 z-40 hidden" data-drawer="providers" aria-hidden="true">
+    <div class="absolute inset-0 bg-slate-900/40 opacity-0 transition-opacity" data-drawer-backdrop></div>
+    <div class="drawer-enter absolute right-0 top-0 h-full w-full max-w-3xl transform transition-all" data-drawer-panel>
+      <div class="flex h-full flex-col bg-white shadow-2xl">
+        <div class="flex items-start justify-between border-b border-slate-200 px-6 py-5">
+          <div>
+            <h2 class="text-lg font-semibold text-slate-900">Approved Service Providers</h2>
+            <p class="text-sm text-slate-500">Coordinate preferred vendor coverage by priority.</p>
+          </div>
+          <button type="button" class="focus-outline rounded-full border border-transparent p-2 text-slate-400 hover:text-slate-600" data-close-drawer>
+            <span class="sr-only">Close</span>
+            <svg viewBox="0 0 24 24" class="h-5 w-5" aria-hidden="true"><path fill="currentColor" d="M18.3 5.71a1 1 0 00-1.41 0L12 10.59 7.11 5.7A1 1 0 105.7 7.11L10.59 12l-4.9 4.89a1 1 0 101.41 1.41L12 13.41l4.89 4.9a1 1 0 001.41-1.42L13.41 12l4.9-4.89a1 1 0 000-1.4z"/></svg>
+          </button>
+        </div>
+        <div class="flex-1 overflow-y-auto px-6 py-6" id="providers-drawer-content"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="drawer-service-windows" class="pointer-events-none fixed inset-0 z-40 hidden" data-drawer="service-windows" aria-hidden="true">
+    <div class="absolute inset-0 bg-slate-900/40 opacity-0 transition-opacity" data-drawer-backdrop></div>
+    <div class="drawer-enter absolute right-0 top-0 h-full w-full max-w-3xl transform transition-all" data-drawer-panel>
+      <div class="flex h-full flex-col bg-white shadow-2xl">
+        <div class="flex items-start justify-between border-b border-slate-200 px-6 py-5">
+          <div>
+            <h2 class="text-lg font-semibold text-slate-900">Service Windows</h2>
+            <p class="text-sm text-slate-500">Define when technicians can access each location.</p>
+          </div>
+          <button type="button" class="focus-outline rounded-full border border-transparent p-2 text-slate-400 hover:text-slate-600" data-close-drawer>
+            <span class="sr-only">Close</span>
+            <svg viewBox="0 0 24 24" class="h-5 w-5" aria-hidden="true"><path fill="currentColor" d="M18.3 5.71a1 1 0 00-1.41 0L12 10.59 7.11 5.7A1 1 0 105.7 7.11L10.59 12l-4.9 4.89a1 1 0 101.41 1.41L12 13.41l4.89 4.9a1 1 0 001.41-1.42L13.41 12l4.9-4.89a1 1 0 000-1.4z"/></svg>
+          </button>
+        </div>
+        <div class="flex-1 overflow-y-auto px-6 py-6" id="service-windows-drawer-content"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="downtime-modal" class="pointer-events-none fixed inset-0 z-50 hidden" role="dialog" aria-modal="true" aria-labelledby="downtime-title">
+    <div class="absolute inset-0 bg-slate-900/40 opacity-0 transition-opacity" data-modal-backdrop></div>
+    <div class="modal-enter relative mx-auto mt-16 w-full max-w-xl rounded-3xl bg-white p-6 shadow-2xl transition-all">
+      <div class="flex items-start justify-between">
+        <div>
+          <h2 id="downtime-title" class="text-xl font-semibold text-slate-900">Record downtime / emergency service</h2>
+          <p class="text-sm text-slate-500">Log the event and notify your vendor team.</p>
+        </div>
+        <button type="button" class="focus-outline rounded-full border border-transparent p-2 text-slate-400 hover:text-slate-600" data-close-modal>
+          <span class="sr-only">Close</span>
+          <svg viewBox="0 0 24 24" class="h-5 w-5" aria-hidden="true"><path fill="currentColor" d="M18.3 5.71a1 1 0 00-1.41 0L12 10.59 7.11 5.7A1 1 0 105.7 7.11L10.59 12l-4.9 4.89a1 1 0 101.41 1.41L12 13.41l4.89 4.9a1 1 0 001.41-1.42L13.41 12l4.9-4.89a1 1 0 000-1.4z"/></svg>
+        </button>
+      </div>
+      <form id="downtime-form" class="mt-6 space-y-5">
+        <input type="hidden" name="assetId" />
+        <div class="grid gap-4 sm:grid-cols-2">
+          <label class="text-sm font-medium text-slate-600">Start time
+            <input type="datetime-local" name="startTime" required class="mt-1 w-full rounded-2xl border border-slate-300 px-3 py-2 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200" />
+          </label>
+          <label class="text-sm font-medium text-slate-600">Impact level
+            <select name="impact" class="mt-1 w-full rounded-2xl border border-slate-300 px-3 py-2 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200">
+              <option value="Minor">Minor</option>
+              <option value="Room down">Room down</option>
+              <option value="Practice impacted">Practice impacted</option>
+            </select>
+          </label>
+        </div>
+        <label class="text-sm font-medium text-slate-600">Symptom / description
+          <textarea name="symptom" rows="3" required class="mt-1 w-full rounded-2xl border border-slate-300 px-3 py-2 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"></textarea>
+        </label>
+        <fieldset class="space-y-3 rounded-2xl border border-slate-200 p-4">
+          <legend class="text-sm font-semibold text-slate-700">Notifications</legend>
+          <label class="flex items-center gap-3 text-sm font-medium text-slate-600">
+            <input type="checkbox" name="emergency" class="h-4 w-4 rounded border-slate-300 text-blue-500 focus:ring-blue-200" />
+            Request emergency service dispatch
+          </label>
+          <label class="flex items-center gap-3 text-sm font-medium text-slate-600">
+            <input type="checkbox" name="notify" class="h-4 w-4 rounded border-slate-300 text-blue-500 focus:ring-blue-200" />
+            Notify preferred provider automatically
+          </label>
+        </fieldset>
+        <div class="flex justify-end gap-3">
+          <button type="button" data-close-modal class="focus-outline rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100">Cancel</button>
+          <button type="submit" class="focus-outline inline-flex items-center gap-2 rounded-full bg-blue-600 px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700">
+            Submit incident
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="toast" class="toast fixed bottom-6 right-6 hidden rounded-full bg-slate-900 px-4 py-2 text-sm font-medium text-white shadow-lg" role="status" aria-live="polite"></div>
+
+  <script id="mock-data" type="application/json">
+    {
+      "practiceOverview": {
+        "practiceName": "Summit Dental Care",
+        "kpis": {
+          "mtdSpend": 18320,
+          "ytdSpend": 212450,
+          "forecast30": 28450,
+          "forecast90": 76420,
+          "openWorkOrders": 6,
+          "avgDowntime": 2.3,
+          "slaHitRate": 0.94
+        },
+        "trends": {
+          "spendVsForecast": {
+            "labels": ["Aug", "Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"],
+            "spend": [16200, 17540, 18980, 20400, 21450, 18220, 19340, 20560, 21900, 23120, 22450, 18320],
+            "forecast": [15800, 16900, 18600, 19800, 21000, 18000, 18800, 20100, 21500, 22600, 23200, 19000]
+          },
+          "incidents": {
+            "labels": ["Aug", "Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"],
+            "values": [3, 2, 4, 5, 4, 3, 6, 5, 4, 3, 2, 4]
+          }
+        },
+        "config": {
+          "locations": [
+            { "id": "OP-1", "name": "Operatory 1", "notes": "Primary hygiene bay" },
+            { "id": "OP-2", "name": "Operatory 2", "notes": "Doctor's procedure room" },
+            { "id": "OP-3", "name": "Operatory 3", "notes": "Implant suite" },
+            { "id": "IMG-1", "name": "Imaging Lab", "notes": "CBCT and pano" },
+            { "id": "STER-1", "name": "Central Sterilization", "notes": "Shared between floors" },
+            { "id": "MECH-1", "name": "Mechanical Room", "notes": "Compressors and vacuums" }
+          ],
+          "providers": [
+            { "id": "prov-1", "name": "Delta Biomedical", "priority": 1, "coverage": "Same-day", "terms": "NTE $1,200 per visit" },
+            { "id": "prov-2", "name": "Vantage Dental Service", "priority": 2, "coverage": "Next-day", "terms": "Annual retainer $4,800" },
+            { "id": "prov-3", "name": "Praxis Imaging", "priority": 3, "coverage": "72-hour", "terms": "Per-call $450" }
+          ],
+          "serviceWindows": [
+            {
+              "id": "svc-1",
+              "label": "Weeknights 6–9pm",
+              "rrule": "FREQ=WEEKLY;BYDAY=MO,TU,WE,TH;BYHOUR=18;BYMINUTE=0;BYSECOND=0",
+              "blackouts": ["2024-07-04", "2024-11-28"]
+            },
+            {
+              "id": "svc-2",
+              "label": "Saturdays 8am–1pm",
+              "rrule": "FREQ=WEEKLY;BYDAY=SA;BYHOUR=8;BYMINUTE=0;BYSECOND=0;UNTIL=20241231T130000Z",
+              "blackouts": ["2024-12-21", "2024-12-28"]
+            },
+            {
+              "id": "svc-3",
+              "label": "Quarterly Deep Clean",
+              "rrule": "FREQ=MONTHLY;INTERVAL=3;BYDAY=SA;BYSETPOS=2;BYHOUR=7;BYMINUTE=0;BYSECOND=0",
+              "blackouts": ["2024-10-12"]
+            }
+          ]
         }
-        console.debug('ELM access granted');
-      } catch (err) {
-        console.error(err);
-        redirectToLogin();
-      }
-    })();
+      },
+      "assets": [
+        {
+          "id": "CHAIR-101",
+          "type": "Operatory Chair",
+          "model": "A-dec 500",
+          "locationId": "OP-1",
+          "status": "Healthy",
+          "nextService": "2024-07-12",
+          "warranty": "2026-01-01",
+          "spendYtd": 2350,
+          "trending": [72, 74, 73, 75, 76, 77, 78, 79, 78, 77, 78, 80],
+          "spend": { "ytd": 2350, "mtd": 420 },
+          "forecast": { "30": 320, "90": 840 },
+          "playbook": ["Inspect upholstery for tears", "Calibrate headrest and arm sensors", "Confirm foot control response"],
+          "history": [
+            { "date": "2024-05-06", "summary": "Preventive maintenance completed", "type": "Service" },
+            { "date": "2024-02-14", "summary": "Hydraulic fluid topped off", "type": "Maintenance" }
+          ]
+        },
+        {
+          "id": "DELIV-204",
+          "type": "Delivery Unit",
+          "model": "Midmark Elevance",
+          "locationId": "OP-2",
+          "status": "Attention",
+          "nextService": "2024-06-28",
+          "warranty": "2025-09-30",
+          "spendYtd": 4120,
+          "trending": [65, 66, 67, 66, 64, 62, 63, 61, 62, 63, 64, 63],
+          "spend": { "ytd": 4120, "mtd": 780 },
+          "forecast": { "30": 560, "90": 1380 },
+          "playbook": ["Flush waterlines weekly", "Replace O-rings quarterly", "Verify air pressure limits"],
+          "history": [
+            { "date": "2024-05-22", "summary": "Handpiece coupler replaced", "type": "Repair" },
+            { "date": "2024-03-18", "summary": "Tubing leak detected", "type": "Incident" }
+          ]
+        },
+        {
+          "id": "IMG-330",
+          "type": "CBCT Scanner",
+          "model": "Planmeca ProMax",
+          "locationId": "IMG-1",
+          "status": "Healthy",
+          "nextService": "2024-08-05",
+          "warranty": "2027-03-15",
+          "spendYtd": 15240,
+          "trending": [88, 87, 88, 89, 90, 89, 90, 91, 92, 93, 92, 91],
+          "spend": { "ytd": 15240, "mtd": 1120 },
+          "forecast": { "30": 2100, "90": 5400 },
+          "playbook": ["Warm-up cycle before first scan", "Run QA phantom weekly", "Archive scans to PACS"],
+          "history": [
+            { "date": "2024-04-16", "summary": "Calibration verification passed", "type": "Service" },
+            { "date": "2024-01-09", "summary": "Firmware updated to v3.2", "type": "Upgrade" }
+          ]
+        },
+        {
+          "id": "STER-88",
+          "type": "Sterilizer",
+          "model": "Tuttnauer EZ10",
+          "locationId": "STER-1",
+          "status": "Attention",
+          "nextService": "2024-06-20",
+          "warranty": "2024-12-31",
+          "spendYtd": 6840,
+          "trending": [58, 59, 57, 60, 61, 62, 60, 58, 59, 61, 62, 60],
+          "spend": { "ytd": 6840, "mtd": 980 },
+          "forecast": { "30": 720, "90": 1680 },
+          "playbook": ["Document spore test results", "Drain reservoir weekly", "Inspect door gasket"],
+          "history": [
+            { "date": "2024-05-30", "summary": "Cycle aborted due to pressure drop", "type": "Incident" },
+            { "date": "2024-02-02", "summary": "Heating element replaced", "type": "Repair" }
+          ]
+        },
+        {
+          "id": "COMP-14",
+          "type": "Compressor",
+          "model": "TechWest Ultimate",
+          "locationId": "MECH-1",
+          "status": "Healthy",
+          "nextService": "2024-09-01",
+          "warranty": "2025-04-01",
+          "spendYtd": 4380,
+          "trending": [76, 75, 74, 73, 72, 74, 75, 74, 76, 77, 78, 79],
+          "spend": { "ytd": 4380, "mtd": 360 },
+          "forecast": { "30": 480, "90": 1240 },
+          "playbook": ["Check oil level bi-weekly", "Purge moisture traps", "Verify dryer set point"],
+          "history": [
+            { "date": "2024-03-12", "summary": "Filter kit replaced", "type": "Maintenance" }
+          ]
+        },
+        {
+          "id": "VAC-07",
+          "type": "Vacuum System",
+          "model": "Dentsply DryVac",
+          "locationId": "MECH-1",
+          "status": "Down",
+          "nextService": "2024-06-05",
+          "warranty": null,
+          "spendYtd": 8120,
+          "trending": [44, 42, 40, 38, 36, 35, 34, 33, 32, 31, 30, 29],
+          "spend": { "ytd": 8120, "mtd": 1680 },
+          "forecast": { "30": 2200, "90": 5100 },
+          "playbook": ["Verify suction at each operatory", "Clean debris filters daily", "Escalate if kPa < 12"],
+          "history": [
+            { "date": "2024-06-02", "summary": "Emergency shutdown due to overheating", "type": "Incident" },
+            { "date": "2024-05-08", "summary": "Bearing vibration detected", "type": "Alert" }
+          ]
+        },
+        {
+          "id": "XRAY-21",
+          "type": "Intraoral X-ray",
+          "model": "Carestream CS 2200",
+          "locationId": "OP-3",
+          "status": "Healthy",
+          "nextService": "2024-11-18",
+          "warranty": "2026-05-30",
+          "spendYtd": 1980,
+          "trending": [81, 82, 83, 83, 84, 85, 85, 86, 86, 87, 87, 88],
+          "spend": { "ytd": 1980, "mtd": 260 },
+          "forecast": { "30": 340, "90": 960 },
+          "playbook": ["Replace arm tension springs annually", "Clean collimator surfaces", "Document QA exposures"],
+          "history": [
+            { "date": "2024-04-02", "summary": "Arm alignment adjusted", "type": "Maintenance" }
+          ]
+        },
+        {
+          "id": "LASER-05",
+          "type": "Soft Tissue Laser",
+          "model": "Biolase Epic X",
+          "locationId": "OP-2",
+          "status": "Healthy",
+          "nextService": "2024-10-09",
+          "warranty": "2025-12-15",
+          "spendYtd": 1560,
+          "trending": [74, 75, 74, 73, 72, 74, 76, 78, 79, 78, 77, 78],
+          "spend": { "ytd": 1560, "mtd": 180 },
+          "forecast": { "30": 210, "90": 640 },
+          "playbook": ["Replace fiber tips daily", "Verify aiming beam calibration", "Store in locked case"],
+          "history": [
+            { "date": "2024-03-05", "summary": "Laser calibration certification", "type": "Compliance" }
+          ]
+        },
+        {
+          "id": "ITR-17",
+          "type": "Intraoral Scanner",
+          "model": "iTero Element 5D",
+          "locationId": "IMG-1",
+          "status": "Attention",
+          "nextService": "2024-07-25",
+          "warranty": "2025-11-04",
+          "spendYtd": 5230,
+          "trending": [79, 78, 77, 76, 76, 75, 74, 73, 73, 72, 71, 70],
+          "spend": { "ytd": 5230, "mtd": 620 },
+          "forecast": { "30": 780, "90": 1680 },
+          "playbook": ["Update software monthly", "Sanitize wand sleeves", "Monitor calibration logs"],
+          "history": [
+            { "date": "2024-05-18", "summary": "Scanner overheating flagged", "type": "Alert" }
+          ]
+        },
+        {
+          "id": "HAND-62",
+          "type": "Handpiece Set",
+          "model": "KaVo MASTERtorque",
+          "locationId": "STER-1",
+          "status": "Unknown",
+          "nextService": null,
+          "warranty": "2024-09-09",
+          "spendYtd": 1120,
+          "trending": [60, 59, 58, 60, 61, 59, 58, 57, 56, 55, 55, 54],
+          "spend": { "ytd": 1120, "mtd": 140 },
+          "forecast": { "30": 180, "90": 420 },
+          "playbook": ["Track sterilization cycles", "Lubricate before autoclave", "Replace turbines quarterly"],
+          "history": [
+            { "date": "2024-02-27", "summary": "Awaiting serial number verification", "type": "Task" }
+          ]
+        },
+        {
+          "id": "MON-02",
+          "type": "Patient Monitor",
+          "model": "Philips IntelliVue",
+          "locationId": "OP-1",
+          "status": "Healthy",
+          "nextService": "2024-12-01",
+          "warranty": "2026-04-18",
+          "spendYtd": 2640,
+          "trending": [85, 84, 83, 82, 83, 84, 85, 86, 86, 87, 88, 89],
+          "spend": { "ytd": 2640, "mtd": 240 },
+          "forecast": { "30": 310, "90": 920 },
+          "playbook": ["Run self-test weekly", "Document sensor replacements", "Verify BP cuff rotation"],
+          "history": [
+            { "date": "2024-04-22", "summary": "ECG lead replaced", "type": "Maintenance" }
+          ]
+        }
+      ]
+    }
   </script>
+
   <script>
-    const scrollButtons = document.querySelectorAll('[data-scroll-target]');
-    scrollButtons.forEach((button) => {
-      button.addEventListener('click', (event) => {
-        event.preventDefault();
-        const target = document.querySelector(button.getAttribute('data-scroll-target'));
-        if (target) {
-          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      });
-    });
-
-    const updateForm = document.querySelector('#update-asset');
-    const assetIdInput = updateForm?.querySelector('input[name="asset_id"]');
-    const statusSelect = updateForm?.querySelector('select[name="asset_status"]');
-    const notesField = updateForm?.querySelector('textarea[name="asset_notes"]');
-
-    const focusUpdateForm = () => {
-      if (updateForm) {
-        updateForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        const firstField = updateForm.querySelector('input, select, textarea, button');
-        if (firstField instanceof HTMLElement) {
-          firstField.focus({ preventScroll: true });
-        }
+    const rawData = document.getElementById('mock-data').textContent;
+    const state = JSON.parse(rawData);
+    state.incidents = [];
+    const uiState = {
+      activeAssetId: null,
+      activeAssetTab: 'trending',
+      assetSearch: '',
+      assetStatusFilter: 'All',
+      assetSort: { key: null, direction: 'asc' },
+      editing: {
+        locations: null,
+        providers: null,
+        serviceWindows: null
+      },
+      adding: {
+        locations: false,
+        providers: false,
+        serviceWindows: false
       }
     };
 
-    const assetRows = document.querySelectorAll('tr[data-edit-asset]');
-    assetRows.forEach((row) => {
-      row.setAttribute('tabindex', '0');
-
-      const applyRowToForm = () => {
-        if (!updateForm) return;
-        if (assetIdInput) {
-          assetIdInput.value = row.dataset.assetId || '';
-        }
-        if (statusSelect) {
-          const desiredStatus = row.dataset.assetStatus || '';
-          statusSelect.value = desiredStatus;
-          if (statusSelect.value !== desiredStatus) {
-            statusSelect.value = '';
+    const refs = {};
+    const focusTrap = (() => {
+      let active = null;
+      const getFocusable = (container) => {
+        return Array.from(container.querySelectorAll('a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])')).filter(el => !el.hasAttribute('disabled') && !el.getAttribute('aria-hidden'));
+      };
+      const handleKeydown = (event) => {
+        if (!active) return;
+        if (event.key === 'Tab') {
+          const { first, last } = active;
+          if (event.shiftKey && document.activeElement === first) {
+            event.preventDefault();
+            last.focus();
+          } else if (!event.shiftKey && document.activeElement === last) {
+            event.preventDefault();
+            first.focus();
           }
         }
-        if (notesField) {
-          notesField.value = row.dataset.assetNotes || '';
+        if (event.key === 'Escape') {
+          if (typeof active.onEscape === 'function') {
+            active.onEscape();
+          }
         }
-        focusUpdateForm();
+      };
+      return {
+        trap(container, onEscape) {
+          const focusable = getFocusable(container);
+          if (focusable.length) {
+            focusable[0].focus();
+          }
+          active = { container, first: focusable[0], last: focusable[focusable.length - 1], onEscape };
+          container.addEventListener('keydown', handleKeydown);
+          document.addEventListener('keydown', handleKeydown);
+        },
+        release() {
+          if (!active) return;
+          active.container.removeEventListener('keydown', handleKeydown);
+          document.removeEventListener('keydown', handleKeydown);
+          active = null;
+        }
+      };
+    })();
+
+    function formatCurrency(value) {
+      return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(value);
+    }
+
+    function formatNumber(value, options = {}) {
+      return new Intl.NumberFormat('en-US', options).format(value);
+    }
+
+    function formatPercent(value) {
+      return `${Math.round(value * 100)}%`;
+    }
+
+    function formatHours(value) {
+      return `${value.toFixed(1)} hrs`;
+    }
+
+    function formatDate(value) {
+      if (!value) return '—';
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return value;
+      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    function relativeTimeFromNow(dateString) {
+      const date = new Date(dateString);
+      if (Number.isNaN(date.getTime())) return 'Unknown';
+      const now = new Date();
+      const diff = Math.abs(now - date);
+      const days = Math.round(diff / (1000 * 60 * 60 * 24));
+      if (days === 0) return 'Today';
+      if (days === 1) return '1 day ago';
+      if (days < 7) return `${days} days ago`;
+      const weeks = Math.round(days / 7);
+      if (weeks < 5) return `${weeks} wk${weeks > 1 ? 's' : ''} ago`;
+      const months = Math.round(days / 30);
+      return `${months} mo${months > 1 ? 's' : ''} ago`;
+    }
+
+    function buildSparklinePath(values, width = 240, height = 80, padding = 6) {
+      if (!values.length) return '';
+      const min = Math.min(...values);
+      const max = Math.max(...values);
+      const range = max - min || 1;
+      const step = (width - padding * 2) / (values.length - 1 || 1);
+      return values
+        .map((value, index) => {
+          const x = padding + index * step;
+          const y = height - padding - ((value - min) / range) * (height - padding * 2);
+          return `${index === 0 ? 'M' : 'L'}${x.toFixed(2)},${y.toFixed(2)}`;
+        })
+        .join(' ');
+    }
+
+    function buildSparklineArea(values, width = 240, height = 80, padding = 6) {
+      if (!values.length) return '';
+      const path = buildSparklinePath(values, width, height, padding);
+      if (!path) return '';
+      const coordinates = path.split(' ').map(point => point.substring(1).split(',').map(Number));
+      const last = coordinates[coordinates.length - 1];
+      const first = coordinates[0];
+      const baselineY = height - padding;
+      return `${path} L${last[0]},${baselineY} L${first[0]},${baselineY} Z`;
+    }
+
+    function renderKPIs() {
+      const kpiGrid = document.getElementById('kpi-grid');
+      const kpis = state.practiceOverview.kpis;
+      const items = [
+        { label: 'MTD Spend', value: formatCurrency(kpis.mtdSpend) },
+        { label: 'YTD Spend', value: formatCurrency(kpis.ytdSpend) },
+        { label: 'Forecast', value: `${formatCurrency(kpis.forecast30)} / ${formatCurrency(kpis.forecast90)}<span class="text-xs text-slate-500"> (30 / 90 days)</span>` },
+        { label: 'Open Work Orders', value: formatNumber(kpis.openWorkOrders) },
+        { label: 'Avg Downtime', value: formatHours(kpis.avgDowntime) },
+        { label: 'SLA Hit Rate', value: formatPercent(kpis.slaHitRate) }
+      ];
+      kpiGrid.innerHTML = items
+        .map((item) => {
+          return `<article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+            <p class="text-xs font-medium uppercase tracking-wider text-slate-500">${item.label}</p>
+            <p class="mt-3 text-2xl font-semibold text-slate-900">${item.value}</p>
+          </article>`;
+        })
+        .join('');
+    }
+
+    function renderTrends() {
+      const spendContainer = document.getElementById('trend-spend');
+      const incidentsContainer = document.getElementById('trend-incidents');
+      const spendData = state.practiceOverview.trends.spendVsForecast;
+      const incidentsData = state.practiceOverview.trends.incidents;
+
+      const width = 260;
+      const height = 90;
+      const spendPath = buildSparklinePath(spendData.spend, width, height);
+      const forecastPath = buildSparklinePath(spendData.forecast, width, height);
+      spendContainer.innerHTML = `<svg viewBox="0 0 ${width} ${height}" class="h-24 w-full" role="img" aria-label="Spend vs forecast trend">
+        <desc>Monthly spend and forecast comparison for the last 12 periods</desc>
+        <path d="${buildSparklineArea(spendData.spend, width, height)}" class="sparkline-area fill-blue-500/20"></path>
+        <path d="${spendPath}" class="sparkline-path stroke-blue-500"></path>
+        <path d="${forecastPath}" class="sparkline-path stroke-emerald-500"></path>
+      </svg>`;
+
+      const incidentsPath = buildSparklinePath(incidentsData.values, width, height);
+      incidentsContainer.innerHTML = `<svg viewBox="0 0 ${width} ${height}" class="h-24 w-full" role="img" aria-label="Incidents trend">
+        <desc>Monthly incidents recorded for the last 12 periods</desc>
+        <path d="${buildSparklineArea(incidentsData.values, width, height)}" class="sparkline-area fill-rose-500/20"></path>
+        <path d="${incidentsPath}" class="sparkline-path stroke-rose-500"></path>
+      </svg>`;
+    }
+
+    function statusClasses(status) {
+      switch (status) {
+        case 'Healthy':
+          return 'status-pill bg-emerald-100 text-emerald-700';
+        case 'Attention':
+          return 'status-pill bg-amber-100 text-amber-700';
+        case 'Down':
+          return 'status-pill bg-rose-100 text-rose-700';
+        default:
+          return 'status-pill bg-slate-200 text-slate-700';
+      }
+    }
+
+    function getLocationName(id) {
+      const locations = state.practiceOverview.config.locations;
+      const location = locations.find(loc => loc.id === id);
+      return location ? `${location.name} (${location.id})` : id;
+    }
+
+    function renderAssets() {
+      const tbody = document.getElementById('assets-body');
+      const { assetSearch, assetStatusFilter, assetSort } = uiState;
+      let assets = [...state.assets];
+      if (assetSearch) {
+        const term = assetSearch.trim().toLowerCase();
+        assets = assets.filter(asset => {
+          return [asset.id, asset.type, asset.model, getLocationName(asset.locationId)].some(value =>
+            value && value.toLowerCase().includes(term)
+          );
+        });
+      }
+      if (assetStatusFilter !== 'All') {
+        assets = assets.filter(asset => asset.status === assetStatusFilter);
+      }
+      if (assetSort.key) {
+        assets.sort((a, b) => {
+          const { key, direction } = assetSort;
+          let valueA = a[key];
+          let valueB = b[key];
+          if (key === 'nextService') {
+            valueA = valueA ? new Date(valueA).getTime() : Infinity;
+            valueB = valueB ? new Date(valueB).getTime() : Infinity;
+          }
+          if (valueA === null || valueA === undefined) valueA = direction === 'asc' ? Infinity : -Infinity;
+          if (valueB === null || valueB === undefined) valueB = direction === 'asc' ? Infinity : -Infinity;
+          if (valueA < valueB) return direction === 'asc' ? -1 : 1;
+          if (valueA > valueB) return direction === 'asc' ? 1 : -1;
+          return 0;
+        });
+      }
+      tbody.innerHTML = assets
+        .map(asset => {
+          const isActive = uiState.activeAssetId === asset.id;
+          return `<tr class="transition hover:bg-slate-50 ${isActive ? 'bg-blue-50/60' : ''}" data-asset-row="${asset.id}">
+            <td class="px-4 py-3 text-sm font-semibold text-blue-600">
+              <a href="#" data-asset-link="${asset.id}" class="focus-outline inline-flex items-center gap-2 text-blue-600 hover:text-blue-700">
+                ${asset.id}
+                <svg class="h-3 w-3" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 1l1.41 1.41L4.83 7H15v2H4.83l4.58 4.59L8 15l-7-7z"/></svg>
+              </a>
+            </td>
+            <td class="px-4 py-3">
+              <div class="font-medium text-slate-900">${asset.type}</div>
+              <div class="text-xs text-slate-500">${asset.model}</div>
+            </td>
+            <td class="px-4 py-3 text-sm text-slate-600">${getLocationName(asset.locationId)}</td>
+            <td class="px-4 py-3">
+              <div class="flex items-center gap-2">
+                <span class="${statusClasses(asset.status)}">${asset.status}</span>
+                <button type="button" class="focus-outline inline-flex items-center gap-1 rounded-full border border-slate-300 px-3 py-1 text-xs font-semibold text-slate-600 transition hover:border-slate-400" data-report="${asset.id}">
+                  <svg viewBox="0 0 20 20" class="h-3.5 w-3.5" aria-hidden="true"><path fill="currentColor" d="M10 2a2 2 0 00-2 2v5a2 2 0 002 2 2 2 0 002-2V4a2 2 0 00-2-2zm0 13a1.5 1.5 0 101.5 1.5A1.5 1.5 0 0010 15z"/></svg>
+                  Report
+                </button>
+              </div>
+            </td>
+            <td class="px-4 py-3 text-sm text-slate-600">${formatDate(asset.nextService)}</td>
+            <td class="px-4 py-3 text-sm text-slate-600">${formatDate(asset.warranty)}</td>
+            <td class="px-4 py-3 text-right text-sm font-semibold text-slate-900">${formatCurrency(asset.spendYtd)}</td>
+            <td class="px-4 py-3 text-right text-sm">
+              <button type="button" class="focus-outline inline-flex items-center gap-1 rounded-full border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-500" disabled title="Coming soon">
+                <svg viewBox="0 0 16 16" class="h-4 w-4" aria-hidden="true"><path fill="currentColor" d="M8 3a1 1 0 01.707.293l4 4a1 1 0 01-1.414 1.414L8 5.414 4.707 8.707A1 1 0 013.293 7.293l4-4A1 1 0 018 3z"/></svg>
+                Actions
+              </button>
+            </td>
+          </tr>`;
+        })
+        .join('');
+      document.querySelectorAll('[data-sort-indicator]').forEach((indicator) => {
+        const key = indicator.getAttribute('data-sort-indicator');
+        if (uiState.assetSort.key === key) {
+          indicator.textContent = uiState.assetSort.direction === 'asc' ? '↑' : '↓';
+        } else {
+          indicator.textContent = '↕';
+        }
+      });
+    }
+
+    function renderAssetDetail() {
+      const container = document.getElementById('asset-detail');
+      const asset = state.assets.find(item => item.id === uiState.activeAssetId);
+      if (!asset) {
+        container.classList.add('hidden');
+        container.innerHTML = '';
+        return;
+      }
+      container.classList.remove('hidden');
+      const tabs = [
+        { id: 'trending', label: 'Trending' },
+        { id: 'spend', label: 'Spend' },
+        { id: 'forecast', label: 'Forecast' },
+        { id: 'playbook', label: 'Playbook' },
+        { id: 'history', label: 'History' }
+      ];
+      const width = 520;
+      const height = 120;
+      const trendingPath = buildSparklinePath(asset.trending, width, height, 10);
+      const trendingArea = buildSparklineArea(asset.trending, width, height, 10);
+      const tabContent = {
+        trending: `<div class="space-y-4">
+          <div class="flex items-center gap-4 text-sm text-slate-500">
+            <span class="font-medium text-slate-900">Utilization Trend</span>
+            <span>Last 12 readings</span>
+          </div>
+          <svg viewBox="0 0 ${width} ${height}" class="h-32 w-full" role="img" aria-label="Asset utilization trend">
+            <desc>Asset utilization sparkline with 12 data points</desc>
+            <path d="${trendingArea}" class="sparkline-area fill-blue-500/15"></path>
+            <path d="${trendingPath}" class="sparkline-path stroke-blue-600"></path>
+          </svg>
+          <div class="flex items-center gap-6 text-xs text-slate-500">
+            <span class="inline-flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-blue-600"></span>Performance index</span>
+            <span>Range ${Math.min(...asset.trending)} - ${Math.max(...asset.trending)}</span>
+          </div>
+        </div>`,
+        spend: `<div class="grid gap-4 sm:grid-cols-2">
+          <div class="rounded-2xl border border-slate-200 p-4">
+            <h3 class="text-sm font-medium text-slate-500">Year-to-date</h3>
+            <p class="mt-2 text-2xl font-semibold text-slate-900">${formatCurrency(asset.spend.ytd)}</p>
+          </div>
+          <div class="rounded-2xl border border-slate-200 p-4">
+            <h3 class="text-sm font-medium text-slate-500">Month-to-date</h3>
+            <p class="mt-2 text-2xl font-semibold text-slate-900">${formatCurrency(asset.spend.mtd)}</p>
+          </div>
+        </div>`,
+        forecast: `<div class="grid gap-4 sm:grid-cols-2">
+          <div class="rounded-2xl border border-slate-200 p-4">
+            <h3 class="text-sm font-medium text-slate-500">30-day projection</h3>
+            <p class="mt-2 text-2xl font-semibold text-slate-900">${formatCurrency(asset.forecast['30'])}</p>
+          </div>
+          <div class="rounded-2xl border border-slate-200 p-4">
+            <h3 class="text-sm font-medium text-slate-500">90-day projection</h3>
+            <p class="mt-2 text-2xl font-semibold text-slate-900">${formatCurrency(asset.forecast['90'])}</p>
+          </div>
+        </div>`,
+        playbook: `<ul class="list-disc space-y-2 pl-5 text-sm text-slate-600">
+          ${asset.playbook.map(step => `<li>${step}</li>`).join('')}
+        </ul>`,
+        history: `<ul class="space-y-3 text-sm text-slate-600">
+          ${asset.history.map(event => `<li class="rounded-2xl border border-slate-200 p-3">
+            <div class="flex items-center justify-between text-xs text-slate-500">
+              <span>${formatDate(event.date)}</span>
+              <span class="font-semibold uppercase tracking-widest text-slate-400">${event.type}</span>
+            </div>
+            <p class="mt-1 font-medium text-slate-800">${event.summary}</p>
+          </li>`).join('')}
+        </ul>`
       };
 
-      row.addEventListener('click', () => {
-        applyRowToForm();
+      container.innerHTML = `
+        <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+          <div>
+            <h3 class="text-lg font-semibold text-slate-900">${asset.id}</h3>
+            <p class="text-sm text-slate-500">${asset.type} · ${asset.model}</p>
+            <p class="text-xs text-slate-400">Located in ${getLocationName(asset.locationId)}</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="${statusClasses(asset.status)}">${asset.status}</span>
+            <button type="button" class="focus-outline inline-flex items-center gap-2 rounded-full border border-slate-300 px-4 py-1.5 text-xs font-semibold text-slate-600" data-report="${asset.id}">
+              <svg viewBox="0 0 20 20" class="h-4 w-4" aria-hidden="true"><path fill="currentColor" d="M10 2a2 2 0 00-2 2v5a2 2 0 002 2 2 2 0 002-2V4a2 2 0 00-2-2zm0 13a1.5 1.5 0 101.5 1.5A1.5 1.5 0 0010 15z"/></svg>
+              Report event
+            </button>
+          </div>
+        </div>
+        <div class="mt-4">
+          <div class="flex flex-wrap gap-2" role="tablist" aria-label="Asset detail tabs">
+            ${tabs
+              .map(tab => `<button type="button" role="tab" aria-selected="${uiState.activeAssetTab === tab.id}" data-asset-tab="${tab.id}" class="focus-outline rounded-full px-4 py-2 text-sm font-semibold ${uiState.activeAssetTab === tab.id ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">${tab.label}</button>`)
+              .join('')}
+          </div>
+          <div class="mt-6" role="tabpanel">${tabContent[uiState.activeAssetTab]}</div>
+        </div>
+      `;
+    }
+
+    function openDrawer(key) {
+      const drawer = document.querySelector(`[data-drawer="${key}"]`);
+      if (!drawer) return;
+      drawer.classList.remove('hidden');
+      drawer.setAttribute('aria-hidden', 'false');
+      drawer.classList.remove('pointer-events-none');
+      const backdrop = drawer.querySelector('[data-drawer-backdrop]');
+      const panel = drawer.querySelector('[data-drawer-panel]');
+      requestAnimationFrame(() => {
+        backdrop.classList.add('opacity-100');
+        panel.classList.remove('drawer-enter');
+        panel.classList.add('drawer-open');
+      });
+      const close = () => closeDrawer(key);
+      backdrop.addEventListener('click', close, { once: true });
+      drawer.querySelectorAll('[data-close-drawer]').forEach(btn => btn.addEventListener('click', close, { once: true }));
+      focusTrap.trap(panel, close);
+      activeDrawerKey = key;
+      renderDrawerContent(key);
+    }
+
+    function closeDrawer(key) {
+      const drawer = document.querySelector(`[data-drawer="${key}"]`);
+      if (!drawer) return;
+      const backdrop = drawer.querySelector('[data-drawer-backdrop]');
+      const panel = drawer.querySelector('[data-drawer-panel]');
+      backdrop.classList.remove('opacity-100');
+      panel.classList.remove('drawer-open');
+      panel.classList.add('drawer-enter');
+      setTimeout(() => {
+        drawer.classList.add('hidden');
+        drawer.classList.add('pointer-events-none');
+        drawer.setAttribute('aria-hidden', 'true');
+      }, 200);
+      focusTrap.release();
+      activeDrawerKey = null;
+    }
+
+    function openModal(assetId) {
+      const modal = document.getElementById('downtime-modal');
+      modal.classList.remove('hidden');
+      modal.classList.remove('pointer-events-none');
+      const backdrop = modal.querySelector('[data-modal-backdrop]');
+      const panel = modal.querySelector('.modal-enter');
+      const form = modal.querySelector('#downtime-form');
+      form.assetId.value = assetId;
+      const now = new Date();
+      form.startTime.value = now.toISOString().slice(0, 16);
+      form.symptom.value = '';
+      form.emergency.checked = false;
+      form.notify.checked = false;
+      requestAnimationFrame(() => {
+        backdrop.classList.add('opacity-100');
+        panel.classList.add('modal-open');
+      });
+      const close = () => closeModal();
+      backdrop.addEventListener('click', close, { once: true });
+      modal.querySelectorAll('[data-close-modal]').forEach(btn => btn.addEventListener('click', close, { once: true }));
+      focusTrap.trap(panel, close);
+      activeModal = modal;
+    }
+
+    function closeModal() {
+      if (!activeModal) return;
+      const modal = activeModal;
+      const backdrop = modal.querySelector('[data-modal-backdrop]');
+      const panel = modal.querySelector('.modal-enter');
+      backdrop.classList.remove('opacity-100');
+      panel.classList.remove('modal-open');
+      setTimeout(() => {
+        modal.classList.add('hidden');
+        modal.classList.add('pointer-events-none');
+      }, 180);
+      focusTrap.release();
+      activeModal = null;
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.remove('hidden');
+      toast.style.opacity = '1';
+      toast.style.transform = 'translateY(0)';
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(12px)';
+        setTimeout(() => {
+          toast.classList.add('hidden');
+        }, 200);
+      }, 2600);
+    }
+
+    function renderDrawerContent(key) {
+      if (key === 'locations') {
+        renderLocationsDrawer();
+      } else if (key === 'providers') {
+        renderProvidersDrawer();
+      } else if (key === 'service-windows') {
+        renderServiceWindowsDrawer();
+      }
+    }
+
+    function renderLocationsDrawer() {
+      const container = document.getElementById('locations-drawer-content');
+      const { adding, editing } = uiState;
+      const addForm = adding.locations
+        ? `<form data-location-form="add" class="mb-6 space-y-4 rounded-2xl border border-blue-100 bg-blue-50/60 p-4">
+            <h3 class="text-sm font-semibold text-blue-700">Add location</h3>
+            <label class="block text-sm font-medium text-slate-600">Identifier
+              <input name="id" required class="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200" />
+            </label>
+            <label class="block text-sm font-medium text-slate-600">Display name
+              <input name="name" required class="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200" />
+            </label>
+            <label class="block text-sm font-medium text-slate-600">Notes
+              <textarea name="notes" rows="2" class="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"></textarea>
+            </label>
+            <div class="flex justify-end gap-3">
+              <button type="button" data-cancel-add="locations" class="focus-outline rounded-full border border-slate-300 px-4 py-2 text-xs font-semibold text-slate-600">Cancel</button>
+              <button type="submit" class="focus-outline rounded-full bg-blue-600 px-4 py-2 text-xs font-semibold text-white">Save</button>
+            </div>
+          </form>`
+        : `<button type="button" data-add="locations" class="focus-outline mb-6 inline-flex items-center gap-2 rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-600 hover:border-slate-400"><span aria-hidden="true">＋</span>Add location</button>`;
+
+      const items = state.practiceOverview.config.locations
+        .map((location) => {
+          const isEditing = editing.locations === location.id;
+          return `<article class="mb-4 rounded-2xl border border-slate-200 p-4 shadow-sm">
+            <div class="flex items-start justify-between gap-4">
+              <div>
+                <p class="text-sm font-semibold text-slate-900">${location.name}</p>
+                <p class="text-xs uppercase tracking-widest text-slate-400">${location.id}</p>
+                <p class="mt-2 text-sm text-slate-600">${location.notes || '—'}</p>
+              </div>
+              <div class="flex gap-2">
+                <button type="button" data-edit-location="${location.id}" class="focus-outline rounded-full border border-slate-300 px-3 py-1 text-xs font-semibold text-slate-600">Edit</button>
+                <button type="button" data-remove-location="${location.id}" class="focus-outline rounded-full border border-rose-200 px-3 py-1 text-xs font-semibold text-rose-600">Remove</button>
+              </div>
+            </div>
+            <form data-location-form="${location.id}" class="${isEditing ? '' : 'hidden'} mt-4 space-y-3 rounded-2xl border border-blue-100 bg-blue-50/60 p-4">
+              <label class="block text-xs font-semibold uppercase tracking-widest text-slate-500">Identifier
+                <input name="id" value="${location.id}" required class="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200" />
+              </label>
+              <label class="block text-xs font-semibold uppercase tracking-widest text-slate-500">Display name
+                <input name="name" value="${location.name}" required class="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200" />
+              </label>
+              <label class="block text-xs font-semibold uppercase tracking-widest text-slate-500">Notes
+                <textarea name="notes" rows="2" class="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200">${location.notes || ''}</textarea>
+              </label>
+              <div class="flex justify-end gap-3">
+                <button type="button" data-cancel-edit="locations" class="focus-outline rounded-full border border-slate-300 px-4 py-1.5 text-xs font-semibold text-slate-600">Cancel</button>
+                <button type="submit" class="focus-outline rounded-full bg-blue-600 px-4 py-1.5 text-xs font-semibold text-white">Save changes</button>
+              </div>
+            </form>
+          </article>`;
+        })
+        .join('');
+
+      container.innerHTML = `${addForm}${items || '<p class="text-sm text-slate-500">No locations configured.</p>'}`;
+    }
+
+    function renderProvidersDrawer() {
+      const container = document.getElementById('providers-drawer-content');
+      const { adding, editing } = uiState;
+      const addForm = adding.providers
+        ? `<form data-provider-form="add" class="mb-6 space-y-4 rounded-2xl border border-blue-100 bg-blue-50/60 p-4">
+            <h3 class="text-sm font-semibold text-blue-700">Add provider</h3>
+            <div class="grid gap-3 sm:grid-cols-2">
+              <label class="text-sm font-medium text-slate-600">Provider name
+                <input name="name" required class="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200" />
+              </label>
+              <label class="text-sm font-medium text-slate-600">Priority
+                <input type="number" name="priority" min="1" required class="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200" />
+              </label>
+            </div>
+            <label class="text-sm font-medium text-slate-600">Coverage
+              <input name="coverage" required class="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200" />
+            </label>
+            <label class="text-sm font-medium text-slate-600">Terms
+              <textarea name="terms" rows="2" class="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"></textarea>
+            </label>
+            <div class="flex justify-end gap-3">
+              <button type="button" data-cancel-add="providers" class="focus-outline rounded-full border border-slate-300 px-4 py-2 text-xs font-semibold text-slate-600">Cancel</button>
+              <button type="submit" class="focus-outline rounded-full bg-blue-600 px-4 py-2 text-xs font-semibold text-white">Save</button>
+            </div>
+          </form>`
+        : `<button type="button" data-add="providers" class="focus-outline mb-6 inline-flex items-center gap-2 rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-600 hover:border-slate-400"><span aria-hidden="true">＋</span>Add provider</button>`;
+
+      const items = state.practiceOverview.config.providers
+        .sort((a, b) => a.priority - b.priority)
+        .map((provider) => {
+          const isEditing = editing.providers === provider.id;
+          return `<article class="mb-4 rounded-2xl border border-slate-200 p-4 shadow-sm">
+            <div class="flex items-start justify-between gap-4">
+              <div>
+                <p class="text-sm font-semibold text-slate-900">${provider.name}</p>
+                <p class="text-xs uppercase tracking-widest text-slate-400">Priority ${provider.priority}</p>
+                <p class="mt-2 text-sm text-slate-600">Coverage: ${provider.coverage}</p>
+                <p class="mt-1 text-xs text-slate-500">${provider.terms || '—'}</p>
+              </div>
+              <div class="flex gap-2">
+                <button type="button" data-edit-provider="${provider.id}" class="focus-outline rounded-full border border-slate-300 px-3 py-1 text-xs font-semibold text-slate-600">Edit</button>
+                <button type="button" data-remove-provider="${provider.id}" class="focus-outline rounded-full border border-rose-200 px-3 py-1 text-xs font-semibold text-rose-600">Remove</button>
+              </div>
+            </div>
+            <form data-provider-form="${provider.id}" class="${isEditing ? '' : 'hidden'} mt-4 space-y-3 rounded-2xl border border-blue-100 bg-blue-50/60 p-4">
+              <div class="grid gap-3 sm:grid-cols-2">
+                <label class="text-xs font-semibold uppercase tracking-widest text-slate-500">Provider name
+                  <input name="name" value="${provider.name}" required class="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200" />
+                </label>
+                <label class="text-xs font-semibold uppercase tracking-widest text-slate-500">Priority
+                  <input type="number" name="priority" min="1" value="${provider.priority}" required class="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200" />
+                </label>
+              </div>
+              <label class="text-xs font-semibold uppercase tracking-widest text-slate-500">Coverage
+                <input name="coverage" value="${provider.coverage}" required class="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200" />
+              </label>
+              <label class="text-xs font-semibold uppercase tracking-widest text-slate-500">Terms
+                <textarea name="terms" rows="2" class="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200">${provider.terms || ''}</textarea>
+              </label>
+              <div class="flex justify-end gap-3">
+                <button type="button" data-cancel-edit="providers" class="focus-outline rounded-full border border-slate-300 px-4 py-1.5 text-xs font-semibold text-slate-600">Cancel</button>
+                <button type="submit" class="focus-outline rounded-full bg-blue-600 px-4 py-1.5 text-xs font-semibold text-white">Save changes</button>
+              </div>
+            </form>
+          </article>`;
+        })
+        .join('');
+
+      container.innerHTML = `${addForm}${items || '<p class="text-sm text-slate-500">No providers configured.</p>'}`;
+    }
+
+    function renderServiceWindowsDrawer() {
+      const container = document.getElementById('service-windows-drawer-content');
+      const { adding, editing } = uiState;
+      const addForm = adding.serviceWindows
+        ? `<form data-service-window-form="add" class="mb-6 space-y-4 rounded-2xl border border-blue-100 bg-blue-50/60 p-4">
+            <h3 class="text-sm font-semibold text-blue-700">Add service window</h3>
+            <label class="text-sm font-medium text-slate-600">Label
+              <input name="label" required class="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200" />
+            </label>
+            <label class="text-sm font-medium text-slate-600">RRULE
+              <input name="rrule" required class="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200" placeholder="FREQ=WEEKLY;..." />
+            </label>
+            <label class="text-sm font-medium text-slate-600">Blackout dates (one per line)
+              <textarea name="blackouts" rows="3" class="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"></textarea>
+            </label>
+            <div class="flex justify-end gap-3">
+              <button type="button" data-cancel-add="serviceWindows" class="focus-outline rounded-full border border-slate-300 px-4 py-2 text-xs font-semibold text-slate-600">Cancel</button>
+              <button type="submit" class="focus-outline rounded-full bg-blue-600 px-4 py-2 text-xs font-semibold text-white">Save</button>
+            </div>
+          </form>`
+        : `<button type="button" data-add="serviceWindows" class="focus-outline mb-6 inline-flex items-center gap-2 rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-600 hover:border-slate-400"><span aria-hidden="true">＋</span>Add service window</button>`;
+
+      const items = state.practiceOverview.config.serviceWindows
+        .map((window) => {
+          const isEditing = editing.serviceWindows === window.id;
+          return `<article class="mb-4 rounded-2xl border border-slate-200 p-4 shadow-sm">
+            <div class="flex items-start justify-between gap-4">
+              <div>
+                <p class="text-sm font-semibold text-slate-900">${window.label}</p>
+                <p class="text-xs uppercase tracking-widest text-slate-400">${window.id}</p>
+                <p class="mt-2 text-xs font-mono text-slate-500">${window.rrule}</p>
+                <div class="mt-3 text-xs text-slate-500">
+                  <p class="font-semibold text-slate-600">Blackout dates</p>
+                  <ul class="list-disc pl-5">
+                    ${window.blackouts.map(date => `<li>${date}</li>`).join('') || '<li>None</li>'}
+                  </ul>
+                </div>
+              </div>
+              <div class="flex gap-2">
+                <button type="button" data-edit-service-window="${window.id}" class="focus-outline rounded-full border border-slate-300 px-3 py-1 text-xs font-semibold text-slate-600">Edit</button>
+                <button type="button" data-remove-service-window="${window.id}" class="focus-outline rounded-full border border-rose-200 px-3 py-1 text-xs font-semibold text-rose-600">Remove</button>
+              </div>
+            </div>
+            <form data-service-window-form="${window.id}" class="${isEditing ? '' : 'hidden'} mt-4 space-y-3 rounded-2xl border border-blue-100 bg-blue-50/60 p-4">
+              <label class="text-xs font-semibold uppercase tracking-widest text-slate-500">Label
+                <input name="label" value="${window.label}" required class="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200" />
+              </label>
+              <label class="text-xs font-semibold uppercase tracking-widest text-slate-500">RRULE
+                <input name="rrule" value="${window.rrule}" required class="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200" />
+              </label>
+              <label class="text-xs font-semibold uppercase tracking-widest text-slate-500">Blackout dates (one per line)
+                <textarea name="blackouts" rows="3" class="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200">${window.blackouts.join('\n')}</textarea>
+              </label>
+              <div class="flex justify-end gap-3">
+                <button type="button" data-cancel-edit="serviceWindows" class="focus-outline rounded-full border border-slate-300 px-4 py-1.5 text-xs font-semibold text-slate-600">Cancel</button>
+                <button type="submit" class="focus-outline rounded-full bg-blue-600 px-4 py-1.5 text-xs font-semibold text-white">Save changes</button>
+              </div>
+            </form>
+          </article>`;
+        })
+        .join('');
+
+      container.innerHTML = `${addForm}${items || '<p class="text-sm text-slate-500">No service windows configured.</p>'}`;
+    }
+
+    function handleDrawerInteractions(event) {
+      const target = event.target;
+      if (target.matches('[data-add]')) {
+        const key = target.getAttribute('data-add');
+        uiState.adding[key] = true;
+        renderDrawerContent(key === 'serviceWindows' ? 'service-windows' : key);
+      }
+      if (target.matches('[data-cancel-add]')) {
+        const key = target.getAttribute('data-cancel-add');
+        uiState.adding[key] = false;
+        renderDrawerContent(key === 'serviceWindows' ? 'service-windows' : key);
+      }
+      if (target.matches('[data-edit-location]')) {
+        uiState.editing.locations = target.getAttribute('data-edit-location');
+        renderLocationsDrawer();
+      }
+      if (target.matches('[data-edit-provider]')) {
+        uiState.editing.providers = target.getAttribute('data-edit-provider');
+        renderProvidersDrawer();
+      }
+      if (target.matches('[data-edit-service-window]')) {
+        uiState.editing.serviceWindows = target.getAttribute('data-edit-service-window');
+        renderServiceWindowsDrawer();
+      }
+      if (target.matches('[data-cancel-edit]')) {
+        const key = target.getAttribute('data-cancel-edit');
+        uiState.editing[key === 'serviceWindows' ? 'serviceWindows' : key] = null;
+        renderDrawerContent(key === 'serviceWindows' ? 'service-windows' : key);
+      }
+      if (target.matches('[data-remove-location]')) {
+        const id = target.getAttribute('data-remove-location');
+        state.practiceOverview.config.locations = state.practiceOverview.config.locations.filter(loc => loc.id !== id);
+        uiState.editing.locations = null;
+        renderLocationsDrawer();
+        renderAssets();
+        renderAssetDetail();
+      }
+      if (target.matches('[data-remove-provider]')) {
+        const id = target.getAttribute('data-remove-provider');
+        state.practiceOverview.config.providers = state.practiceOverview.config.providers.filter(prov => prov.id !== id);
+        uiState.editing.providers = null;
+        renderProvidersDrawer();
+      }
+      if (target.matches('[data-remove-service-window]')) {
+        const id = target.getAttribute('data-remove-service-window');
+        state.practiceOverview.config.serviceWindows = state.practiceOverview.config.serviceWindows.filter(win => win.id !== id);
+        uiState.editing.serviceWindows = null;
+        renderServiceWindowsDrawer();
+      }
+    }
+
+    function handleDrawerFormSubmit(event) {
+      const form = event.target.closest('form');
+      if (!form) return;
+      const locationFormKey = form.getAttribute('data-location-form');
+      const providerFormKey = form.getAttribute('data-provider-form');
+      const serviceWindowFormKey = form.getAttribute('data-service-window-form');
+
+      if (locationFormKey) {
+        event.preventDefault();
+        const formData = new FormData(form);
+        const newLocation = {
+          id: formData.get('id').trim(),
+          name: formData.get('name').trim(),
+          notes: formData.get('notes').trim()
+        };
+        if (!newLocation.id || !newLocation.name) return;
+        if (locationFormKey === 'add') {
+          state.practiceOverview.config.locations.push(newLocation);
+          uiState.adding.locations = false;
+        } else {
+          const index = state.practiceOverview.config.locations.findIndex(loc => loc.id === locationFormKey);
+          if (index > -1) {
+            state.practiceOverview.config.locations[index] = newLocation;
+          }
+          uiState.editing.locations = null;
+        }
+        renderLocationsDrawer();
+        renderAssets();
+        renderAssetDetail();
+      }
+
+      if (providerFormKey) {
+        event.preventDefault();
+        const formData = new FormData(form);
+        const updated = {
+          id: providerFormKey === 'add' ? `prov-${crypto.randomUUID().slice(0, 6)}` : providerFormKey,
+          name: formData.get('name').trim(),
+          priority: Number(formData.get('priority')),
+          coverage: formData.get('coverage').trim(),
+          terms: formData.get('terms').trim()
+        };
+        if (!updated.name || Number.isNaN(updated.priority)) return;
+        if (providerFormKey === 'add') {
+          state.practiceOverview.config.providers.push(updated);
+          uiState.adding.providers = false;
+        } else {
+          const index = state.practiceOverview.config.providers.findIndex(prov => prov.id === providerFormKey);
+          if (index > -1) {
+            state.practiceOverview.config.providers[index] = updated;
+          }
+          uiState.editing.providers = null;
+        }
+        renderProvidersDrawer();
+      }
+
+      if (serviceWindowFormKey) {
+        event.preventDefault();
+        const formData = new FormData(form);
+        const blackoutValue = formData.get('blackouts');
+        const blackouts = blackoutValue
+          ? blackoutValue.split(/\n|,/).map(item => item.trim()).filter(Boolean)
+          : [];
+        const updated = {
+          id: serviceWindowFormKey === 'add' ? `svc-${crypto.randomUUID().slice(0, 6)}` : serviceWindowFormKey,
+          label: formData.get('label').trim(),
+          rrule: formData.get('rrule').trim(),
+          blackouts
+        };
+        if (!updated.label || !updated.rrule) return;
+        if (serviceWindowFormKey === 'add') {
+          state.practiceOverview.config.serviceWindows.push(updated);
+          uiState.adding.serviceWindows = false;
+        } else {
+          const index = state.practiceOverview.config.serviceWindows.findIndex(win => win.id === serviceWindowFormKey);
+          if (index > -1) {
+            state.practiceOverview.config.serviceWindows[index] = updated;
+          }
+          uiState.editing.serviceWindows = null;
+        }
+        renderServiceWindowsDrawer();
+      }
+    }
+
+    function bindEvents() {
+      document.querySelectorAll('[data-open-drawer]').forEach((button) => {
+        button.addEventListener('click', () => {
+          const key = button.getAttribute('data-open-drawer');
+          openDrawer(key);
+        });
       });
 
-      row.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter' || event.key === ' ') {
+      document.getElementById('asset-search').addEventListener('input', (event) => {
+        uiState.assetSearch = event.target.value;
+        renderAssets();
+      });
+
+      document.getElementById('status-filter').addEventListener('change', (event) => {
+        uiState.assetStatusFilter = event.target.value;
+        renderAssets();
+      });
+
+      document.querySelectorAll('[data-sort]').forEach((button) => {
+        button.addEventListener('click', () => {
+          const key = button.getAttribute('data-sort');
+          if (uiState.assetSort.key === key) {
+            uiState.assetSort.direction = uiState.assetSort.direction === 'asc' ? 'desc' : 'asc';
+          } else {
+            uiState.assetSort.key = key;
+            uiState.assetSort.direction = 'asc';
+          }
+          renderAssets();
+        });
+      });
+
+      document.getElementById('assets-body').addEventListener('click', (event) => {
+        const link = event.target.closest('[data-asset-link]');
+        const report = event.target.closest('[data-report]');
+        if (link) {
           event.preventDefault();
-          applyRowToForm();
+          uiState.activeAssetId = link.getAttribute('data-asset-link');
+          uiState.activeAssetTab = 'trending';
+          renderAssets();
+          renderAssetDetail();
+          document.getElementById('asset-detail').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        if (report) {
+          const assetId = report.getAttribute('data-report');
+          openModal(assetId);
         }
       });
 
-      const link = row.querySelector('a[data-scroll-target]');
-      if (link) {
-        link.addEventListener('click', (event) => {
-          event.preventDefault();
-          event.stopPropagation();
-          applyRowToForm();
+      document.getElementById('asset-detail').addEventListener('click', (event) => {
+        const tabButton = event.target.closest('[data-asset-tab]');
+        const report = event.target.closest('[data-report]');
+        if (tabButton) {
+          uiState.activeAssetTab = tabButton.getAttribute('data-asset-tab');
+          renderAssetDetail();
+        }
+        if (report) {
+          const assetId = report.getAttribute('data-report');
+          openModal(assetId);
+        }
+      });
+
+      document.getElementById('downtime-form').addEventListener('submit', (event) => {
+        event.preventDefault();
+        const form = event.target;
+        const formData = new FormData(form);
+        const assetId = formData.get('assetId');
+        const asset = state.assets.find(item => item.id === assetId);
+        if (!asset) return;
+        const incident = {
+          id: `inc-${crypto.randomUUID().slice(0, 6)}`,
+          assetId,
+          startTime: formData.get('startTime'),
+          symptom: formData.get('symptom').trim(),
+          impact: formData.get('impact'),
+          emergency: formData.get('emergency') === 'on',
+          notify: formData.get('notify') === 'on'
+        };
+        state.incidents.unshift(incident);
+        asset.history.unshift({
+          date: incident.startTime,
+          summary: `Downtime logged: ${incident.symptom}`,
+          type: incident.impact
         });
+        if (asset.status === 'Healthy') {
+          asset.status = 'Attention';
+        }
+        renderAssets();
+        renderAssetDetail();
+        closeModal();
+        showToast(`Incident recorded for ${asset.id}`);
+      });
+
+      ['locations', 'providers', 'service-windows'].forEach((key) => {
+        const drawer = document.querySelector(`[data-drawer="${key}"]`);
+        drawer.addEventListener('click', handleDrawerInteractions);
+        drawer.addEventListener('submit', handleDrawerFormSubmit);
+      });
+    }
+
+    function initialize() {
+      refs.practiceName = document.getElementById('practice-name');
+      refs.practiceName.textContent = state.practiceOverview.practiceName;
+      refs.lastRefreshed = document.getElementById('last-refreshed');
+      refs.lastRefreshed.textContent = new Date().toLocaleString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit'
+      });
+      renderKPIs();
+      renderTrends();
+      renderAssets();
+      renderAssetDetail();
+      bindEvents();
+    }
+
+    let activeDrawerKey = null;
+    let activeModal = null;
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        if (activeModal) {
+          closeModal();
+        } else if (activeDrawerKey) {
+          closeDrawer(activeDrawerKey);
+        }
       }
     });
 
-    const demoForms = document.querySelectorAll('form[data-demo-form]');
-    demoForms.forEach((form) => {
-      form.addEventListener('submit', (event) => {
-        event.preventDefault();
-        const toast = document.createElement('div');
-        toast.className = 'toast toast--success';
-        toast.textContent = 'Action captured. Practx will sync this workflow in production.';
-        document.body.appendChild(toast);
-        setTimeout(() => {
-          toast.classList.add('is-visible');
-        }, 50);
-        setTimeout(() => {
-          toast.classList.remove('is-visible');
-          setTimeout(() => toast.remove(), 300);
-        }, 3000);
-        form.reset();
-      });
-    });
-  </script>
-  <footer>
-    <div class="footer-content">
-      <div class="footer-top">
-        <div class="footer-copy">&copy; <span id="year"></span> Practx. Access above all.</div>
-        <nav class="footer-links" aria-label="Practx company">
-          <a href="/about.html">About Us</a>
-          <a href="/contact.html">Contact</a>
-          <a href="/leadership.html">Leadership</a>
-          <a href="/careers.html">Careers</a>
-        </nav>
-      </div>
-      <div class="footer-bottom">
-        <small><a href="mailto:hello@practx.io">hello@practx.io</a> • <a href="/sitemap.xml">Sitemap</a></small>
-      </div>
-    </div>
-  </footer>
-  <script>
-    document.getElementById('year').textContent = new Date().getFullYear();
+    initialize();
   </script>
 </body>
 </html>
