@@ -1577,12 +1577,17 @@ text-blue-700">
               ${lifecycleAction}
               <div class="flex gap-3">
                 <button type="button" data-close-drawer class="focus-outline rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-600">Cancel</button>
+                <button type="button" data-close-drawer class="focus-outline rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-600">Close</button>
                 <button type="submit" class="focus-outline inline-flex items-center gap-2 rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700">Save asset</button>
               </div>
             </div>
           </form>
         </div>
       `;
+
+      root.querySelectorAll('[data-close-drawer]').forEach((button) => {
+        button.addEventListener('click', () => closeDrawer('asset-management'));
+      });
     }
 
     function handleDrawerInteractions(event) {
