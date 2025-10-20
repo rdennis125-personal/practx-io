@@ -14,16 +14,10 @@
   <link rel="icon" href="/assets/logo.png" type="image/png" />
   <link rel="stylesheet" href="/assets/styles.css" />
   <style>
-    .dashboard-section--quick .dashboard-grid,
     .dashboard-grid--four {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 1.5rem;
-    }
-
-    .quick-card .button {
-      width: 100%;
-      margin-top: 0.75rem;
     }
 
     .form-card {
@@ -57,6 +51,57 @@
       min-height: 120px;
     }
 
+    .section-heading--split {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .section-heading--split .section-heading__content {
+      flex: 1 1 320px;
+    }
+
+    .section-heading--split .section-heading__actions {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+    }
+
+    .quick-links {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .quick-link {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      padding: 1rem 1.25rem;
+      border-radius: 1rem;
+      border: 1px solid #dbe2ea;
+      background: #f8fbff;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .quick-link:hover,
+    .quick-link:focus-within {
+      border-color: #5c8dff;
+      box-shadow: 0 10px 30px rgba(14, 76, 146, 0.12);
+    }
+
+    .quick-link strong {
+      font-size: 1.05rem;
+    }
+
+    .quick-link .button {
+      width: 100%;
+      justify-content: center;
+    }
+
     .toast {
       position: fixed;
       right: 1.5rem;
@@ -80,6 +125,34 @@
     .toast.is-visible {
       opacity: 1;
       transform: translateY(0);
+    }
+
+    .table-card__note {
+      margin-bottom: 1rem;
+      color: #4d647a;
+      font-size: 0.95rem;
+    }
+
+    .data-table tbody tr[data-edit-asset] {
+      cursor: pointer;
+      transition: background-color 0.15s ease;
+    }
+
+    .data-table tbody tr[data-edit-asset]:hover,
+    .data-table tbody tr[data-edit-asset]:focus-within {
+      background-color: rgba(92, 141, 255, 0.08);
+    }
+
+    .data-table tbody tr[data-edit-asset] a {
+      color: inherit;
+      text-decoration: none;
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .data-table tbody tr[data-edit-asset] td:first-child {
+      font-weight: 600;
     }
 
     @media (max-width: 720px) {
@@ -150,35 +223,6 @@
       </div>
     </section>
 
-    <section class="dashboard-section dashboard-section--quick">
-      <div class="section-heading">
-        <h2>Command shortcuts</h2>
-        <p>Launch any lifecycle task without leaving the command center.</p>
-      </div>
-      <div class="dashboard-grid dashboard-grid--four">
-        <article class="dashboard-card card quick-card">
-          <h3>Inventory</h3>
-          <p>Register new equipment or update serials in seconds.</p>
-          <button class="button button--ghost" data-scroll-target="#inventory-forms">Open inventory tools</button>
-        </article>
-        <article class="dashboard-card card quick-card">
-          <h3>Maintenance</h3>
-          <p>Schedule preventive care and confirm technician assignments.</p>
-          <button class="button button--ghost" data-scroll-target="#service-forms">Open maintenance tools</button>
-        </article>
-        <article class="dashboard-card card quick-card">
-          <h3>Lifecycle</h3>
-          <p>Flag refresh candidates and track replacement decisions.</p>
-          <button class="button button--ghost" data-scroll-target="#lifecycle-playbooks">Review lifecycle playbooks</button>
-        </article>
-        <article class="dashboard-card card quick-card">
-          <h3>Vendors &amp; spend</h3>
-          <p>Coordinate parts orders and monitor financial impact.</p>
-          <button class="button button--ghost" data-scroll-target="#spend-insights">View vendor insights</button>
-        </article>
-      </div>
-    </section>
-
     <section class="dashboard-section">
       <h2>Fleet overview</h2>
       <div class="dashboard-grid">
@@ -213,11 +257,39 @@
     </section>
 
     <section class="dashboard-section">
-      <div class="section-heading">
-        <h2>Equipment register</h2>
-        <p>Flag assets approaching service intervals, end-of-life thresholds, or downtime risk.</p>
+      <div class="section-heading section-heading--split">
+        <div class="section-heading__content">
+          <h2>Equipment register</h2>
+          <p>Flag assets approaching service intervals, end-of-life thresholds, or downtime risk. Launch updates without leaving this dashboard.</p>
+        </div>
+        <div class="section-heading__actions">
+          <a class="button" href="#register-asset" data-scroll-target>+ Add asset</a>
+        </div>
       </div>
       <div class="card table-card">
+        <div class="quick-links" role="list">
+          <article class="quick-link" role="listitem">
+            <strong>Inventory updates</strong>
+            <p>Refresh serials, statuses, or locations.</p>
+            <button type="button" class="button button--ghost" data-scroll-target="#update-asset">Edit existing asset</button>
+          </article>
+          <article class="quick-link" role="listitem">
+            <strong>Schedule service</strong>
+            <p>Book technicians and align downtime windows.</p>
+            <button type="button" class="button button--ghost" data-scroll-target="#service-forms">Open maintenance tools</button>
+          </article>
+          <article class="quick-link" role="listitem">
+            <strong>Lifecycle planning</strong>
+            <p>Review refresh candidates and approvals.</p>
+            <button type="button" class="button button--ghost" data-scroll-target="#lifecycle-playbooks">Go to playbooks</button>
+          </article>
+          <article class="quick-link" role="listitem">
+            <strong>Procurement &amp; spend</strong>
+            <p>Track vendor coordination and budgets.</p>
+            <button type="button" class="button button--ghost" data-scroll-target="#spend-insights">View spend insights</button>
+          </article>
+        </div>
+        <p class="table-card__note">Select any asset row to fast-fill the edit form below.</p>
         <div class="table-wrapper" role="region" aria-live="polite">
           <table class="data-table">
             <thead>
@@ -231,40 +303,40 @@
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>CH-204</td>
+              <tr data-edit-asset data-asset-id="CH-204" data-asset-status="Online" data-asset-notes="Preventive PM due Jun 14" tabindex="0">
+                <td><a href="#update-asset" data-scroll-target>CH-204</a></td>
                 <td>Treatment chair</td>
                 <td>Operatory 2</td>
                 <td>4.1 yrs</td>
                 <td><span class="status-pill status-pill--ok">Online</span></td>
                 <td>Jun 14 &bull; Preventive PM</td>
               </tr>
-              <tr>
-                <td>PX-119</td>
+              <tr data-edit-asset data-asset-id="PX-119" data-asset-status="Scheduled maintenance" data-asset-notes="Annual calibration on Apr 18" tabindex="0">
+                <td><a href="#update-asset" data-scroll-target>PX-119</a></td>
                 <td>Panoramic X-ray</td>
                 <td>Imaging suite</td>
                 <td>6.7 yrs</td>
                 <td><span class="status-pill status-pill--scheduled">Scheduled</span></td>
                 <td>Apr 18 &bull; Annual calibration</td>
               </tr>
-              <tr>
-                <td>ST-305</td>
+              <tr data-edit-asset data-asset-id="ST-305" data-asset-status="Watch" data-asset-notes="Replace door gasket Apr 21" tabindex="0">
+                <td><a href="#update-asset" data-scroll-target>ST-305</a></td>
                 <td>Sterilizer</td>
                 <td>Sterile core</td>
                 <td>9.3 yrs</td>
                 <td><span class="status-pill status-pill--attention">Watch</span></td>
                 <td>Apr 21 &bull; Replace door gasket</td>
               </tr>
-              <tr>
-                <td>VC-412</td>
+              <tr data-edit-asset data-asset-id="VC-412" data-asset-status="Out of service" data-asset-notes="Pending capital review for retrofit" tabindex="0">
+                <td><a href="#update-asset" data-scroll-target>VC-412</a></td>
                 <td>Wet vacuum</td>
                 <td>Mechanical room</td>
                 <td>11.8 yrs</td>
                 <td><span class="status-pill status-pill--risk">At risk</span></td>
                 <td>Pending capital review</td>
               </tr>
-              <tr>
-                <td>HL-044</td>
+              <tr data-edit-asset data-asset-id="HL-044" data-asset-status="Online" data-asset-notes="Bulb kit scheduled for Aug 30" tabindex="0">
+                <td><a href="#update-asset" data-scroll-target>HL-044</a></td>
                 <td>Hygiene light</td>
                 <td>Operatory 5</td>
                 <td>2.3 yrs</td>
@@ -285,7 +357,7 @@
       <div class="dashboard-grid dashboard-grid--two">
         <article class="card form-card">
           <h3>Register new asset</h3>
-          <form class="command-form" data-demo-form>
+          <form class="command-form" id="register-asset" data-demo-form>
             <label>
               Asset name
               <input type="text" name="asset_name" placeholder="e.g. Hygiene chair CH-229" required />
@@ -314,7 +386,7 @@
         </article>
         <article class="card form-card">
           <h3>Update existing asset</h3>
-          <form class="command-form" data-demo-form>
+          <form class="command-form" id="update-asset" data-demo-form>
             <label>
               Asset ID
               <input type="text" name="asset_id" placeholder="e.g. ST-305" required />
@@ -573,12 +645,71 @@
   <script>
     const scrollButtons = document.querySelectorAll('[data-scroll-target]');
     scrollButtons.forEach((button) => {
-      button.addEventListener('click', () => {
+      button.addEventListener('click', (event) => {
+        event.preventDefault();
         const target = document.querySelector(button.getAttribute('data-scroll-target'));
         if (target) {
           target.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
       });
+    });
+
+    const updateForm = document.querySelector('#update-asset');
+    const assetIdInput = updateForm?.querySelector('input[name="asset_id"]');
+    const statusSelect = updateForm?.querySelector('select[name="asset_status"]');
+    const notesField = updateForm?.querySelector('textarea[name="asset_notes"]');
+
+    const focusUpdateForm = () => {
+      if (updateForm) {
+        updateForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const firstField = updateForm.querySelector('input, select, textarea, button');
+        if (firstField instanceof HTMLElement) {
+          firstField.focus({ preventScroll: true });
+        }
+      }
+    };
+
+    const assetRows = document.querySelectorAll('tr[data-edit-asset]');
+    assetRows.forEach((row) => {
+      row.setAttribute('tabindex', '0');
+
+      const applyRowToForm = () => {
+        if (!updateForm) return;
+        if (assetIdInput) {
+          assetIdInput.value = row.dataset.assetId || '';
+        }
+        if (statusSelect) {
+          const desiredStatus = row.dataset.assetStatus || '';
+          statusSelect.value = desiredStatus;
+          if (statusSelect.value !== desiredStatus) {
+            statusSelect.value = '';
+          }
+        }
+        if (notesField) {
+          notesField.value = row.dataset.assetNotes || '';
+        }
+        focusUpdateForm();
+      };
+
+      row.addEventListener('click', () => {
+        applyRowToForm();
+      });
+
+      row.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          applyRowToForm();
+        }
+      });
+
+      const link = row.querySelector('a[data-scroll-target]');
+      if (link) {
+        link.addEventListener('click', (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          applyRowToForm();
+        });
+      }
     });
 
     const demoForms = document.querySelectorAll('form[data-demo-form]');
