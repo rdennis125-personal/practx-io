@@ -3,92 +3,142 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Welcome to Practx</title>
-  <meta name="description" content="Finish setting up your Practx profile and explore every command center." />
+  <title>Welcome back | Practx</title>
+  <meta name="description" content="Verifying your Practx access and redirecting you to your token details." />
   <link rel="icon" href="/assets/logo.png" type="image/png" />
   <link rel="stylesheet" href="/assets/styles.css" />
-  <script defer src="/assets/js/auth-modal.js"></script>
+  <style>
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f5f5f7;
+      margin: 0;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      color: #1b1b1d;
+    }
+
+    main {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 20px 45px rgba(27, 27, 29, 0.08);
+      padding: 3rem 3.5rem;
+      text-align: center;
+      max-width: 520px;
+      width: min(90vw, 520px);
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .logo {
+      height: 56px;
+      width: 56px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-size: clamp(1.65rem, 2vw + 1rem, 2.3rem);
+      margin: 0;
+      font-weight: 700;
+    }
+
+    p {
+      margin: 0;
+      line-height: 1.6;
+      color: #3d3d40;
+    }
+
+    .status {
+      font-weight: 600;
+      color: #1b1b1d;
+    }
+
+    .actions {
+      margin-top: 0.5rem;
+      display: flex;
+      justify-content: center;
+    }
+
+    .actions a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.75rem 1.75rem;
+      border-radius: 999px;
+      border: 1px solid #d0d0d7;
+      background: #fff;
+      text-decoration: none;
+      color: #1b1b1d;
+      font-weight: 600;
+      transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .actions a:hover,
+    .actions a:focus {
+      background: #1b1b1d;
+      color: #fff;
+      border-color: #1b1b1d;
+    }
+  </style>
 </head>
 <body>
-  <header>
-    <nav>
-      <a class="logo" href="/index.html">
-        <img src="/assets/logo.png" alt="Practx logo" height="60" />
-      </a>
-      <div class="nav-links">
-        <ul>
-          <li><a href="/practice-management.html">Manage Practices</a></li>
-          <li><a href="/equipment-management.html">Manage Equipment</a></li>
-          <li><a href="/patient-outreach.html">Connect to Patients</a></li>
-          <li><a href="/smile-spa-franchise.html">Expand Access</a></li>
-          <li><a href="/practx-service-franchise.html">Ensure Uptime</a></li>
-        </ul>
-        <a class="button nav-auth-button" data-auth-source="nav-login" href="/.auth/login/practx?post_login_redirect_uri=/welcome">Login / Sign-Up</a>
-      </div>
-    </nav>
-  </header>
-  <main class="welcome-main">
-    <section class="welcome-hero">
-      <span class="eyebrow">You're almost there</span>
-      <h1>Welcome to Practx</h1>
-      <p>Select a command center to complete your onboarding checklist and tailor your workspace.</p>
-    </section>
-    <section class="welcome-links" aria-label="Practx command centers">
-      <article class="card">
-        <h3>Practice Command Center</h3>
-        <p>Configure teams, scheduling preferences, and clinic-wide automations.</p>
-        <div class="welcome-card__actions">
-          <a class="button secondary" href="/practice/practice-command-center.html">Go to Practice</a>
-        </div>
-      </article>
-      <article class="card">
-        <h3>Equipment Command Center</h3>
-        <p>Register your operatories, plan preventative maintenance, and track service requests.</p>
-        <div class="welcome-card__actions">
-          <a class="button secondary" href="/equipment/elm-command-center.html">Go to Equipment</a>
-        </div>
-      </article>
-      <article class="card">
-        <h3>Patient Outreach Command Center</h3>
-        <p>Set communication tone, connect CRM tools, and activate proactive outreach journeys.</p>
-        <div class="welcome-card__actions">
-          <a class="button secondary" href="/patient/outreach-command-center.html">Go to Patient Outreach</a>
-        </div>
-      </article>
-      <article class="card">
-        <h3>Service Command Center</h3>
-        <p>Invite technicians, define territories, and respond to new incident alerts.</p>
-        <div class="welcome-card__actions">
-          <a class="button secondary" href="/service/service-command-center.html">Go to Service</a>
-        </div>
-      </article>
-      <article class="card">
-        <h3>Smile Spa Command Center</h3>
-        <p>Personalize your spa locations, staffing templates, and guest experience playbooks.</p>
-        <div class="welcome-card__actions">
-          <a class="button secondary" href="/smile-spa/smile-spa-command-center.html">Go to Smile Spa</a>
-        </div>
-      </article>
-    </section>
-  </main>
-  <footer>
-    <div class="footer-content">
-      <div class="footer-top">
-        <div class="footer-copy">&copy; <span id="year"></span> Practx. Access above all.</div>
-        <nav class="footer-links" aria-label="Practx company">
-          <a href="/about.html">About Us</a>
-          <a href="/contact.html">Contact</a>
-          <a href="/leadership.html">Leadership</a>
-          <a href="/careers.html">Careers</a>
-        </nav>
-      </div>
-      <div class="footer-bottom">
-        <small><a href="mailto:hello@practx.io">hello@practx.io</a> • <a href="/sitemap.xml">Sitemap</a></small>
-      </div>
+  <main>
+    <img class="logo" src="/assets/logo.png" alt="Practx logo" />
+    <h1>Welcome back to Practx</h1>
+    <p class="status" id="welcome-status">Checking your access…</p>
+    <p id="welcome-helper">We'll redirect you to your token details as soon as you're signed in.</p>
+    <div class="actions">
+      <a href="/.auth/logout" id="sign-out">Sign out</a>
     </div>
-  </footer>
+  </main>
   <script>
-    document.getElementById('year').textContent = new Date().getFullYear();
+    (function () {
+      const statusEl = document.getElementById('welcome-status');
+      const helperEl = document.getElementById('welcome-helper');
+      const navigateTo = (target) => {
+        window.location.replace(target);
+      };
+
+      const redirectHome = () => navigateTo('/');
+      const redirectToDebug = () => navigateTo('/debug/token-debug.html');
+
+      const parsePrincipal = (payload) => {
+        if (!payload) return null;
+        if (Array.isArray(payload)) {
+          const firstEntry = payload[0] || {};
+          return firstEntry.clientPrincipal || firstEntry.principal || null;
+        }
+        return payload.clientPrincipal || payload.principal || null;
+      };
+
+      fetch('/.auth/me', { credentials: 'include', cache: 'no-store' })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`/.auth/me returned ${response.status}`);
+          }
+          return response.json();
+        })
+        .then((data) => {
+          const principal = parsePrincipal(data);
+          if (principal) {
+            statusEl.textContent = 'Redirecting you to Token Debug…';
+            helperEl.textContent = 'Your Practx roles and claims will load there in just a moment.';
+            setTimeout(redirectToDebug, 500);
+          } else {
+            statusEl.textContent = 'We could not find an active session.';
+            helperEl.textContent = 'Redirecting you back to the homepage to sign in again.';
+            setTimeout(redirectHome, 1200);
+          }
+        })
+        .catch((error) => {
+          console.error('Failed to verify authentication', error);
+          statusEl.textContent = 'Something went wrong while checking your session.';
+          helperEl.textContent = 'We will take you back to the homepage so you can try signing in again.';
+          setTimeout(redirectHome, 1500);
+        });
+    })();
   </script>
 </body>
 </html>
