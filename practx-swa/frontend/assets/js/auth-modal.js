@@ -1,6 +1,6 @@
 (function () {
   const PROVIDER_PATH = '/.auth/login/practx';
-  const DEFAULT_REDIRECT = '/welcome.html';
+  const DEFAULT_REDIRECT = '/welcome';
 
   function resolveConfig() {
     const config = window.practxSwaSignupConfig || {};

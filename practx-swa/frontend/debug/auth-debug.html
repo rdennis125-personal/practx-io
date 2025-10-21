@@ -22,7 +22,7 @@
       class="btn"
       id="run-user-flow"
       data-auth-source="auth-debug"
-      href="/.auth/login/practx?post_login_redirect_uri=/debug/auth-debug.html&amp;user_flow=SWA"
+      href="/.auth/login/practx?post_login_redirect_uri=/welcome"
     >
       Sign in
     </a>
@@ -51,7 +51,16 @@
 
     const params = new URLSearchParams(window.location.search);
     const userFlow = params.get('user_flow') || 'SWA';
-    const redirectUri = window.location.href;
+
+    let redirectUri = new URL('/welcome', window.location.origin).toString();
+    const redirectOverride = params.get('post_login_redirect_uri') || params.get('redirect_uri');
+    if (redirectOverride) {
+      try {
+        redirectUri = new URL(redirectOverride, window.location.origin).toString();
+      } catch (error) {
+        console.warn('Invalid redirect override, falling back to default', error);
+      }
+    }
 
     const loginUrl = new URL('/.auth/login/practx', window.location.origin);
     loginUrl.searchParams.set('post_login_redirect_uri', redirectUri);

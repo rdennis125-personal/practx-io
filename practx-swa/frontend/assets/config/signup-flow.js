@@ -5,7 +5,7 @@
 
   window.practxSwaSignupConfig = {
     userFlow: 'SWA',
-    redirectPath: '/welcome.html',
+    redirectPath: '/welcome',
     userAttributes: [
       'City',
       'Country',

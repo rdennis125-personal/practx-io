@@ -15,7 +15,7 @@
 
   const DEFAULT_CONFIG = {
     userFlow: 'SWA',
-    redirectPath: '/welcome.html',
+    redirectPath: '/welcome',
     userAttributes: [
       'City',
       'Country',
@@ -67,13 +67,13 @@
     const userFlow = String(globalConfig.userFlow || DEFAULT_CONFIG.userFlow || '').trim();
 
     const redirectCandidate =
-      globalConfig.redirectUri || globalConfig.redirectPath || DEFAULT_CONFIG.redirectPath || '/welcome.html';
+      globalConfig.redirectUri || globalConfig.redirectPath || DEFAULT_CONFIG.redirectPath || '/welcome';
 
     let redirectUri;
     try {
       redirectUri = new URL(redirectCandidate, window.location.origin).toString();
     } catch (error) {
-      redirectUri = new URL('/welcome.html', window.location.origin).toString();
+      redirectUri = new URL('/welcome', window.location.origin).toString();
     }
 
     return {
