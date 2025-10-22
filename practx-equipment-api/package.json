@@ -1,0 +1,13 @@
+{
+  "name": "practx-equipment-api",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Deployment tooling for the Practx Equipment API",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "@stoplight/spectral-cli": "^6.15.0"
+  },
+  "scripts": {
+    "lint:openapi": "spectral lint OpenAPI/openapi.yaml --ruleset=@stoplight/spectral:recommended"
+  }
+}
