@@ -7,6 +7,7 @@
     <AssemblyName>Practx.Equipment.Api</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="../../practx-shared-dotnet/src/Practx.Shared/Practx.Shared.csproj" />
+    <ProjectReference Include="../../../practx-shared-dotnet/src/Practx.Shared/Practx.Shared.csproj" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.8" />
   </ItemGroup>
 </Project>

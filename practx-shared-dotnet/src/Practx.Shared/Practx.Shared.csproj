@@ -5,4 +5,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>Practx.Shared</RootNamespace>
   </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+  </ItemGroup>
 </Project>

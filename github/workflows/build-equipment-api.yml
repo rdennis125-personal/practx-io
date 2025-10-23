@@ -23,7 +23,7 @@ jobs:
       - name: Build
         run: dotnet build practx-equipment-api/src/Practx.Equipment.Api/Practx.Equipment.Api.csproj --configuration Release --no-restore
       - name: Test
-        run: dotnet test practx-equipment-api/tests/Practx.Equipment.Api.Tests/Practx.Equipment.Api.Tests.csproj --configuration Release --no-build
+        run: dotnet test practx-equipment-api/tests/Practx.Equipment.Api.Tests/Practx.Equipment.Api.Tests.csproj --configuration Release
       - name: Install Swashbuckle CLI
         run: dotnet tool install --global Swashbuckle.AspNetCore.Cli --version 6.5.0
       - name: Export OpenAPI
