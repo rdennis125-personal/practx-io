@@ -18,7 +18,6 @@ jobs:
     defaults:
       run:
         shell: bash
-        working-directory: practx-equipment-api
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -36,27 +35,48 @@ jobs:
           cache-dependency-path: practx-equipment-api/package-lock.json
 
       - name: Install Node dependencies
+        working-directory: practx-equipment-api
         run: npm ci
 
       - name: Lint OpenAPI definition
+        working-directory: practx-equipment-api
         run: npm run lint:openapi
 
-      - name: Restore API project
-        run: dotnet restore src/Practx.Equipment.Api/Practx.Equipment.Api.csproj
+      - name: Restore solution
+        run: dotnet restore practx-equipment-api/Practx.Equipment.Api.sln
 
-      - name: Restore test project
-        run: dotnet restore tests/Practx.Equipment.Api.Tests/Practx.Equipment.Api.Tests.csproj
+      - name: Build solution
+        run: dotnet build practx-equipment-api/Practx.Equipment.Api.sln -c Release --no-restore
 
-      - name: Build API
-        run: dotnet build src/Practx.Equipment.Api/Practx.Equipment.Api.csproj -c Release --no-restore
+      - name: Dotnet info
+        run: dotnet --info
+
+      - name: List built test outputs
+        run: |
+          ls -la practx-equipment-api/tests/Practx.Equipment.Api.Tests/bin/Release/net8.0 || true
+
+      - name: Confirm test project & DLL exist
+        run: |
+          test -f practx-equipment-api/tests/Practx.Equipment.Api.Tests/Practx.Equipment.Api.Tests.csproj || (echo "Missing csproj" && exit 1)
+          test -f practx-equipment-api/tests/Practx.Equipment.Api.Tests/bin/Release/net8.0/Practx.Equipment.Api.Tests.dll || echo "DLL will be produced during build; this is informational."
 
       - name: Run tests
-        run: dotnet test tests/Practx.Equipment.Api.Tests/Practx.Equipment.Api.Tests.csproj -c Release --no-build
+        id: dotnet-test
+        continue-on-error: true
+        run: dotnet test practx-equipment-api/tests/Practx.Equipment.Api.Tests/Practx.Equipment.Api.Tests.csproj -c Release --no-build --logger "console;verbosity=normal"
+
+      - name: Fallback: run tests via dotnet vstest
+        if: steps.dotnet-test.outcome == 'failure'
+        run: |
+          dotnet vstest \
+            practx-equipment-api/tests/Practx.Equipment.Api.Tests/bin/Release/net8.0/Practx.Equipment.Api.Tests.dll \
+            --Platform:x64 --logger:"console;verbosity=normal"
 
       - name: Publish artifact
-        run: dotnet publish src/Practx.Equipment.Api/Practx.Equipment.Api.csproj -c Release -o publish
+        run: dotnet publish practx-equipment-api/src/Practx.Equipment.Api/Practx.Equipment.Api.csproj -c Release --no-build -o practx-equipment-api/publish
 
       - name: Create deployment package
+        working-directory: practx-equipment-api
         run: |
           cd publish
           zip -r ../equip-api-pkg.zip .
