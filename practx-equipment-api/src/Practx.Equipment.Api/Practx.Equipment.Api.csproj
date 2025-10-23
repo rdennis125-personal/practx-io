@@ -7,6 +7,6 @@
     <AssemblyName>Practx.Equipment.Api</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="../../practx-shared-dotnet/src/Practx.Shared/Practx.Shared.csproj" />
+    <ProjectReference Include="../../../practx-shared-dotnet/src/Practx.Shared/Practx.Shared.csproj" />
   </ItemGroup>
 </Project>
