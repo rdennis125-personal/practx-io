@@ -2,6 +2,8 @@ name: Azure Static Web Apps CI/CD Mango Moss
 
 on:
   push:
+    branches:
+      - main
     paths:
       - 'practx-swa/**'
       - 'infra/modules/swa/**'
