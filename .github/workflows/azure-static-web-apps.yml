@@ -1,17 +1,25 @@
 name: Azure Static Web Apps CI/CD Mango Hill
 
 on:
-  push:
+  pull_request:
     branches:
       - main
+    types:
+      - closed
+    paths:
+      - 'practx-swa/**'
+      - 'infra/modules/swa/**'
+      - '.github/workflows/azure-static-web-apps*.yml'
 
 jobs:
   build_and_deploy_job:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     name: Build and Deploy Job
     steps:
       - uses: actions/checkout@v3
         with:
+          ref: ${{ github.event.pull_request.base.ref }}
           submodules: true
           lfs: false
       - name: Build And Deploy
