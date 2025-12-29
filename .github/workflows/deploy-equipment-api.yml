@@ -91,7 +91,7 @@ jobs:
     environment:
       name: ${{ vars.ENV_NAME != '' && vars.ENV_NAME || 'DEV' }}
     env:
-      ELM_AZ_RG: ${{ vars.ELM_AZ_RG }}
+      ELM_AZ_RG: ${{ vars.CICD_RG }}
       ELM_SERVICE_NAME: ${{ vars.ELM_SERVICE_NAME }}
       ELM_APIM_NAME: ${{ vars.ELM_APIM_NAME }}
     defaults:
