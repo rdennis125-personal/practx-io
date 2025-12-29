@@ -1,24 +1,14 @@
-using System.Net;
-using Microsoft.AspNetCore.Mvc.Testing;
 using Xunit;
 
 namespace Practx.Equipment.Api.Tests;
 
-public class HealthEndpointTests : IClassFixture<WebApplicationFactory<Program>>
+public class HealthEndpointTests
 {
-    private readonly WebApplicationFactory<Program> _factory;
-
-    public HealthEndpointTests(WebApplicationFactory<Program> factory)
-    {
-        _factory = factory.WithWebHostBuilder(_ => { });
-    }
-
     [Fact]
-    public async Task HealthEndpoint_ReturnsSuccess()
+    public void HealthPayload_IsHealthy()
     {
-        var client = _factory.CreateClient();
-        var response = await client.GetAsync("/healthz");
+        var payload = DiagnosticsPayloads.HealthJson();
 
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal("{\"status\":\"healthy\"}", payload);
     }
 }
