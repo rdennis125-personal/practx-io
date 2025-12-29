@@ -54,22 +54,21 @@ jobs:
         run: dotnet --info
 
       - name: Verify test artifacts (diag)
+        working-directory: .
         run: |
-          ls -la tests/Practx.Equipment.Api.Tests || true
-          ls -la tests/Practx.Equipment.Api.Tests/bin/Release/net8.0 || true
-          cat tests/Practx.Equipment.Api.Tests/Practx.Equipment.Api.Tests.csproj || true
-
-      - name: Run tests
-        run: |
-          set -euo pipefail
-          dotnet test tests/Practx.Equipment.Api.Tests/Practx.Equipment.Api.Tests.csproj -c Release --no-build --logger "console;verbosity=normal" && exit 0
-          echo "dotnet test failed; attempting fallback with dotnet vstest..."
-          DLL="tests/Practx.Equipment.Api.Tests/bin/Release/net8.0/Practx.Equipment.Api.Tests.dll"
-          if [ ! -f "$DLL" ]; then
-            echo "Expected test DLL not found at $DLL"
+          ls -la practx-equipment-api/tests/Practx.Equipment.Api.Tests || true
+          ls -la practx-equipment-api/tests/Practx.Equipment.Api.Tests/bin/Release/net8.0 || true
+          cat practx-equipment-api/tests/Practx.Equipment.Api.Tests/Practx.Equipment.Api.Tests.csproj || true
+          if [ ! -f practx-equipment-api/tests/Practx.Equipment.Api.Tests/Practx.Equipment.Api.Tests.csproj ]; then
+            echo "Expected test project not found at practx-equipment-api/tests/Practx.Equipment.Api.Tests/Practx.Equipment.Api.Tests.csproj"
             exit 1
           fi
-          dotnet vstest "$DLL" --Platform:x64 --logger:"console;verbosity=normal"
+
+      - name: Run tests
+        working-directory: .
+        run: |
+          set -euo pipefail
+          dotnet test practx-equipment-api/tests/Practx.Equipment.Api.Tests/Practx.Equipment.Api.Tests.csproj --configuration Release --logger "console;verbosity=normal"
 
       - name: Publish artifact
         run: dotnet publish src/Practx.Equipment.Api/Practx.Equipment.Api.csproj -c Release -o publish
