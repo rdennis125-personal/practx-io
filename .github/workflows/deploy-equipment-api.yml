@@ -89,7 +89,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     environment:
-      name: ${{ vars.ENV_NAME != '' && vars.ENV_NAME || 'dev' }}
+      name: ${{ vars.ENV_NAME != '' && vars.ENV_NAME || 'DEV' }}
     env:
       AZ_RG: ${{ vars.AZ_RG }}
       SERVICE_NAME: ${{ vars.SERVICE_NAME }}
