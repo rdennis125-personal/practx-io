@@ -15,6 +15,98 @@
   <link rel="stylesheet" href="/assets/styles.css" />
   <script defer src="/assets/js/auth-modal.js"></script>
   <script defer src="/assets/js/entity-forms.js"></script>
+  <style>
+    :root {
+      color-scheme: light;
+    }
+
+    .command-center-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 1.25rem;
+    }
+
+    .command-center-actions .button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .drawer-enter {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+
+    .drawer-open {
+      transform: translateX(0);
+      opacity: 1;
+    }
+
+    .modal-enter {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+
+    .modal-open {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .focus-outline:focus {
+      outline: 3px solid rgb(59 130 246);
+      outline-offset: 2px;
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .form-grid label {
+      display: grid;
+      gap: 0.35rem;
+      font-size: 0.85rem;
+      color: #4a5568;
+    }
+
+    .form-grid input,
+    .form-grid select,
+    .form-grid textarea {
+      border-radius: 0.75rem;
+      border: 1px solid #e2e8f0;
+      padding: 0.55rem 0.75rem;
+      font-size: 0.9rem;
+      color: #1f2937;
+    }
+
+    .form-grid textarea {
+      min-height: 90px;
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+    }
+
+    .pill-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .pill-item {
+      border-radius: 999px;
+      border: 1px solid #e2e8f0;
+      padding: 0.35rem 0.75rem;
+      font-size: 0.75rem;
+      color: #475569;
+      background: #f8fafc;
+    }
+  </style>
 </head>
 <body class="command-center">
   <header>
@@ -62,6 +154,17 @@
             <span class="metric-subtext">12 variants shipping</span>
           </div>
         </div>
+        <div class="command-center-actions" role="group" aria-label="Outreach command center actions">
+          <button type="button" class="button focus-outline" data-open-drawer="campaign">
+            <span aria-hidden="true">🚀</span> Launch campaign
+          </button>
+          <button type="button" class="button focus-outline" data-open-drawer="fulfillment">
+            <span aria-hidden="true">📦</span> Create kit batch
+          </button>
+          <button type="button" class="button focus-outline" data-open-modal="response">
+            <span aria-hidden="true">💬</span> Log patient response
+          </button>
+        </div>
       </div>
     </section>
 
@@ -102,6 +205,11 @@
       <div class="section-heading">
         <h2>Campaign cockpit</h2>
         <p>Every program tracks target segments, channel mix, and practice partners.</p>
+        <div class="command-center-actions">
+          <button type="button" class="button focus-outline" data-open-drawer="campaign">
+            <span aria-hidden="true">＋</span> New campaign
+          </button>
+        </div>
       </div>
       <div class="card table-card">
         <div class="table-wrapper" role="region" aria-live="polite">
@@ -114,6 +222,7 @@
                 <th scope="col">Channel mix</th>
                 <th scope="col">Status</th>
                 <th scope="col">Next action</th>
+                <th scope="col">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -124,6 +233,7 @@
                 <td>Email + SMS + kits</td>
                 <td><span class="status-pill status-pill--ok">Scaling</span></td>
                 <td>Launch Smile Spa upsell workflow</td>
+                <td><button type="button" class="text-link focus-outline" data-open-drawer="campaign">Adjust</button></td>
               </tr>
               <tr>
                 <td>Health Check Reminder</td>
@@ -132,6 +242,7 @@
                 <td>SMS + voice assist</td>
                 <td><span class="status-pill status-pill--scheduled">In progress</span></td>
                 <td>Trigger AI call scripts</td>
+                <td><button type="button" class="text-link focus-outline" data-open-drawer="campaign">Tune</button></td>
               </tr>
               <tr>
                 <td>Member Reactivation</td>
@@ -140,6 +251,7 @@
                 <td>Email + concierge</td>
                 <td><span class="status-pill status-pill--attention">Watch</span></td>
                 <td>Refresh offer &amp; landing page</td>
+                <td><button type="button" class="text-link focus-outline" data-open-drawer="campaign">Review</button></td>
               </tr>
               <tr>
                 <td>Benefit Countdown</td>
@@ -148,6 +260,7 @@
                 <td>SMS + kits + postcard</td>
                 <td><span class="status-pill status-pill--scheduled">Queued</span></td>
                 <td>Finalize kit inventory</td>
+                <td><button type="button" class="text-link focus-outline" data-open-drawer="fulfillment">Prep</button></td>
               </tr>
               <tr>
                 <td>Smile Spa Insider</td>
@@ -156,6 +269,7 @@
                 <td>Email + paid social</td>
                 <td><span class="status-pill status-pill--ok">Live</span></td>
                 <td>Coordinate studio open houses</td>
+                <td><button type="button" class="text-link focus-outline" data-open-drawer="campaign">Refresh</button></td>
               </tr>
             </tbody>
           </table>
@@ -167,6 +281,11 @@
       <div class="dashboard-grid dashboard-grid--two">
         <article class="dashboard-card card">
           <h2>Fulfillment tracker</h2>
+          <div class="command-center-actions">
+            <button type="button" class="button focus-outline" data-open-drawer="fulfillment">
+              <span aria-hidden="true">＋</span> Add batch
+            </button>
+          </div>
           <ul class="status-list">
             <li>
               <div class="status-list__details">
@@ -200,6 +319,11 @@
         </article>
         <article class="dashboard-card card">
           <h2>Signal board</h2>
+          <div class="command-center-actions">
+            <button type="button" class="button focus-outline" data-open-modal="response">
+              <span aria-hidden="true">＋</span> Log response
+            </button>
+          </div>
           <ul class="status-list">
             <li>
               <div class="status-list__details">
@@ -264,6 +388,208 @@
       </div>
     </section>
   </main>
+  <div id="drawer-campaign" class="pointer-events-none fixed inset-0 z-40 hidden" data-drawer="campaign" aria-hidden="true">
+    <div class="absolute inset-0 bg-slate-900/40 opacity-0 transition-opacity" data-drawer-backdrop></div>
+    <div class="drawer-enter absolute right-0 top-0 h-full w-full max-w-2xl transform transition-all" data-drawer-panel>
+      <div class="flex h-full flex-col bg-white shadow-2xl">
+        <div class="flex items-start justify-between border-b border-slate-200 px-6 py-5">
+          <div>
+            <h2 class="text-lg font-semibold text-slate-900">Launch outreach campaign</h2>
+            <p class="text-sm text-slate-500">Define your segment, channel mix, and success targets.</p>
+          </div>
+          <button type="button" class="focus-outline rounded-full border border-transparent p-2 text-slate-400 hover:text-slate-600" data-close-drawer>
+            <span class="sr-only">Close</span>
+            <svg viewBox="0 0 24 24" class="h-5 w-5" aria-hidden="true"><path fill="currentColor" d="M18.3 5.71a1 1 0 00-1.41 0L12 10.59 7.11 5.7A1 1 0 105.7 7.11L10.59 12l-4.9 4.89a1 1 0 101.41 1.41L12 13.41l4.89 4.9a1 1 0 001.41-1.42L13.41 12l4.9-4.89a1 1 0 000-1.4z"/></svg>
+          </button>
+        </div>
+        <div class="flex-1 overflow-y-auto px-6 py-6">
+          <form class="entity-form" data-entity-type="outreachCampaign" data-destination="/patient/outreach-command-center.html">
+            <div class="form-grid">
+              <label>
+                Campaign name
+                <input name="campaign-name" placeholder="Brighten for Summer" required />
+              </label>
+              <label>
+                Focus
+                <select name="campaign-focus" required>
+                  <option value="">Select focus</option>
+                  <option>Recall</option>
+                  <option>Whitening</option>
+                  <option>Membership</option>
+                  <option>Insurance</option>
+                  <option>Smile Spa</option>
+                </select>
+              </label>
+              <fieldset>
+                <legend class="text-sm font-semibold text-slate-700">Channel mix</legend>
+                <div class="pill-list" role="list">
+                  <label class="pill-item" role="listitem"><input type="checkbox" name="campaign-channel-email" /> Email</label>
+                  <label class="pill-item" role="listitem"><input type="checkbox" name="campaign-channel-sms" /> SMS</label>
+                  <label class="pill-item" role="listitem"><input type="checkbox" name="campaign-channel-voice" /> Voice</label>
+                  <label class="pill-item" role="listitem"><input type="checkbox" name="campaign-channel-kits" /> Kits</label>
+                  <label class="pill-item" role="listitem"><input type="checkbox" name="campaign-channel-concierge" /> Concierge</label>
+                </div>
+              </fieldset>
+              <label>
+                Practices targeted
+                <input name="campaign-practices" placeholder="Summit North, Harbor Pointe, Skyline Ortho" />
+              </label>
+              <label>
+                Launch date
+                <input type="date" name="campaign-start" />
+              </label>
+              <label>
+                Campaign owner
+                <select name="campaign-owner">
+                  <option value="">Select owner</option>
+                  <option>Outreach Pod A</option>
+                  <option>Concierge Team</option>
+                  <option>Smile Spa Marketing</option>
+                  <option>Practice Success</option>
+                </select>
+              </label>
+              <label>
+                Success goal
+                <input name="campaign-goal" placeholder="30% response, 400 bookings" />
+              </label>
+            </div>
+            <div class="form-actions">
+              <button type="button" class="button focus-outline" data-close-drawer>Cancel</button>
+              <button type="submit" class="button focus-outline">Launch campaign</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="drawer-fulfillment" class="pointer-events-none fixed inset-0 z-40 hidden" data-drawer="fulfillment" aria-hidden="true">
+    <div class="absolute inset-0 bg-slate-900/40 opacity-0 transition-opacity" data-drawer-backdrop></div>
+    <div class="drawer-enter absolute right-0 top-0 h-full w-full max-w-2xl transform transition-all" data-drawer-panel>
+      <div class="flex h-full flex-col bg-white shadow-2xl">
+        <div class="flex items-start justify-between border-b border-slate-200 px-6 py-5">
+          <div>
+            <h2 class="text-lg font-semibold text-slate-900">Create kit fulfillment batch</h2>
+            <p class="text-sm text-slate-500">Queue kits, assign shipping windows, and flag priority orders.</p>
+          </div>
+          <button type="button" class="focus-outline rounded-full border border-transparent p-2 text-slate-400 hover:text-slate-600" data-close-drawer>
+            <span class="sr-only">Close</span>
+            <svg viewBox="0 0 24 24" class="h-5 w-5" aria-hidden="true"><path fill="currentColor" d="M18.3 5.71a1 1 0 00-1.41 0L12 10.59 7.11 5.7A1 1 0 105.7 7.11L10.59 12l-4.9 4.89a1 1 0 101.41 1.41L12 13.41l4.89 4.9a1 1 0 001.41-1.42L13.41 12l4.9-4.89a1 1 0 000-1.4z"/></svg>
+          </button>
+        </div>
+        <div class="flex-1 overflow-y-auto px-6 py-6">
+          <form class="entity-form" data-entity-type="outreachFulfillment" data-destination="/patient/outreach-command-center.html">
+            <div class="form-grid">
+              <label>
+                Batch name
+                <input name="batch-name" placeholder="Glow Whitening Batch #208" required />
+              </label>
+              <label>
+                Kit variant
+                <select name="batch-variant" required>
+                  <option value="">Select variant</option>
+                  <option>Glow whitening kit</option>
+                  <option>Comfort care kit</option>
+                  <option>Kids sparkle kit</option>
+                  <option>Sensitivity relief kit</option>
+                  <option>Smile Spa VIP</option>
+                </select>
+              </label>
+              <label>
+                Units
+                <input name="batch-size" type="number" min="1" placeholder="1200" />
+              </label>
+              <label>
+                Ship date
+                <input type="date" name="batch-ship-date" />
+              </label>
+              <label>
+                Priority
+                <select name="batch-priority">
+                  <option value="">Select priority</option>
+                  <option>Standard</option>
+                  <option>Expedite</option>
+                  <option>Practice escalation</option>
+                </select>
+              </label>
+              <label>
+                Notes
+                <textarea name="batch-notes" placeholder="Include Smile Spa inserts and concierge note."></textarea>
+              </label>
+            </div>
+            <div class="form-actions">
+              <button type="button" class="button focus-outline" data-close-drawer>Cancel</button>
+              <button type="submit" class="button focus-outline">Queue batch</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="response-modal" class="pointer-events-none fixed inset-0 z-50 hidden" role="dialog" aria-modal="true" aria-labelledby="response-title" data-modal="response">
+    <div class="absolute inset-0 bg-slate-900/40 opacity-0 transition-opacity" data-modal-backdrop></div>
+    <div class="modal-enter relative mx-auto mt-16 w-full max-w-xl rounded-3xl bg-white p-6 shadow-2xl transition-all">
+      <div class="flex items-start justify-between gap-4">
+        <div>
+          <p class="text-xs uppercase tracking-widest text-slate-400">Outreach touchpoint</p>
+          <h2 id="response-title" class="text-lg font-semibold text-slate-900">Log patient response</h2>
+        </div>
+        <button type="button" class="focus-outline rounded-full border border-transparent p-2 text-slate-400 hover:text-slate-600" data-close-modal>
+          <span class="sr-only">Close</span>
+          <svg viewBox="0 0 24 24" class="h-5 w-5" aria-hidden="true"><path fill="currentColor" d="M18.3 5.71a1 1 0 00-1.41 0L12 10.59 7.11 5.7A1 1 0 105.7 7.11L10.59 12l-4.9 4.89a1 1 0 101.41 1.41L12 13.41l4.89 4.9a1 1 0 001.41-1.42L13.41 12l4.9-4.89a1 1 0 000-1.4z"/></svg>
+        </button>
+      </div>
+      <form class="entity-form" data-entity-type="appointment" data-destination="/patient/outreach-command-center.html">
+        <div class="form-grid">
+          <label>
+            Patient
+            <input name="appt-patient" placeholder="Taylor Brooks" />
+          </label>
+          <label>
+            Practice
+            <select name="appt-practice">
+              <option value="">Select practice</option>
+              <option>Summit North</option>
+              <option>Harbor Pointe</option>
+              <option>Skyline Ortho</option>
+              <option>Midtown Smile</option>
+            </select>
+          </label>
+          <label>
+            Provider
+            <select name="appt-provider">
+              <option value="">Select provider</option>
+              <option>Dr. Martinez</option>
+              <option>Dr. Owens</option>
+              <option>Dr. Rivera</option>
+              <option>Dr. Nguyen</option>
+            </select>
+          </label>
+          <label>
+            Outreach channel
+            <input name="appt-reason" placeholder="SMS recall response" />
+          </label>
+          <label>
+            Follow-up scheduled
+            <input type="datetime-local" name="appt-datetime" />
+          </label>
+          <fieldset>
+            <legend class="text-sm font-semibold text-slate-700">Next steps</legend>
+            <div class="pill-list" role="list">
+              <label class="pill-item" role="listitem"><input type="checkbox" name="appt-reminder" /> Send reminder</label>
+              <label class="pill-item" role="listitem"><input type="checkbox" name="appt-kit" /> Trigger kit</label>
+              <label class="pill-item" role="listitem"><input type="checkbox" name="appt-concierge" /> Concierge follow-up</label>
+            </div>
+          </fieldset>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="button focus-outline" data-close-modal>Cancel</button>
+          <button type="submit" class="button focus-outline">Save response</button>
+        </div>
+      </form>
+    </div>
+  </div>
   <script>
     (async () => {
       const redirectToLogin = () => {
@@ -286,6 +612,104 @@
         redirectToLogin();
       }
     })();
+  </script>
+  <script>
+    const drawerTriggers = document.querySelectorAll('[data-open-drawer]');
+    const modalTriggers = document.querySelectorAll('[data-open-modal]');
+    const drawers = new Map();
+    const modals = new Map();
+
+    function openDrawer(key) {
+      const drawer = drawers.get(key);
+      if (!drawer) return;
+      drawer.classList.remove('hidden');
+      drawer.classList.remove('pointer-events-none');
+      drawer.setAttribute('aria-hidden', 'false');
+      const backdrop = drawer.querySelector('[data-drawer-backdrop]');
+      const panel = drawer.querySelector('[data-drawer-panel]');
+      requestAnimationFrame(() => {
+        backdrop.style.opacity = '1';
+        panel.classList.add('drawer-open');
+        panel.classList.remove('drawer-enter');
+      });
+    }
+
+    function closeDrawer(key) {
+      const drawer = drawers.get(key);
+      if (!drawer) return;
+      const backdrop = drawer.querySelector('[data-drawer-backdrop]');
+      const panel = drawer.querySelector('[data-drawer-panel]');
+      panel.classList.remove('drawer-open');
+      panel.classList.add('drawer-enter');
+      backdrop.style.opacity = '0';
+      setTimeout(() => {
+        drawer.classList.add('hidden');
+        drawer.classList.add('pointer-events-none');
+        drawer.setAttribute('aria-hidden', 'true');
+      }, 200);
+    }
+
+    function openModal(key) {
+      const modal = modals.get(key);
+      if (!modal) return;
+      modal.classList.remove('hidden');
+      modal.classList.remove('pointer-events-none');
+      const backdrop = modal.querySelector('[data-modal-backdrop]');
+      const panel = modal.querySelector('.modal-enter');
+      requestAnimationFrame(() => {
+        backdrop.style.opacity = '1';
+        panel.classList.add('modal-open');
+      });
+    }
+
+    function closeModal(key) {
+      const modal = modals.get(key);
+      if (!modal) return;
+      const backdrop = modal.querySelector('[data-modal-backdrop]');
+      const panel = modal.querySelector('.modal-enter');
+      panel.classList.remove('modal-open');
+      backdrop.style.opacity = '0';
+      setTimeout(() => {
+        modal.classList.add('hidden');
+        modal.classList.add('pointer-events-none');
+      }, 200);
+    }
+
+    document.querySelectorAll('[data-drawer]').forEach((drawer) => {
+      const key = drawer.getAttribute('data-drawer');
+      drawers.set(key, drawer);
+      drawer.addEventListener('click', (event) => {
+        if (event.target.matches('[data-drawer-backdrop]')) {
+          closeDrawer(key);
+        }
+      });
+      drawer.querySelectorAll('[data-close-drawer]').forEach((button) => {
+        button.addEventListener('click', () => closeDrawer(key));
+      });
+    });
+
+    document.querySelectorAll('[data-modal]').forEach((modal) => {
+      const key = modal.getAttribute('data-modal');
+      modals.set(key, modal);
+    });
+
+    document.querySelectorAll('[data-close-modal]').forEach((button) => {
+      button.addEventListener('click', () => closeModal('response'));
+    });
+
+    drawerTriggers.forEach((button) => {
+      button.addEventListener('click', () => {
+        const key = button.getAttribute('data-open-drawer');
+        openDrawer(key);
+      });
+    });
+
+    modalTriggers.forEach((button) => {
+      button.addEventListener('click', () => {
+        const key = button.getAttribute('data-open-modal');
+        openModal(key);
+      });
+    });
   </script>
   <footer>
     <div class="footer-content">

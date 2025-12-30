@@ -87,6 +87,38 @@
         ],
       };
     },
+    outreachCampaign(form, formData) {
+      const name = getTextValue(formData, 'campaign-name') || 'New outreach campaign';
+      const focus = getSelectLabel(form, 'campaign-focus') || 'Focus pending';
+      const channel = getCheckedLabels(form, 'campaign-channel');
+      const practices = getTextValue(formData, 'campaign-practices') || 'Practice list pending';
+      const start = formatDateValue(formData.get('campaign-start')) || 'Start date TBD';
+      const owner = getSelectLabel(form, 'campaign-owner') || 'Owner pending';
+      const goal = getTextValue(formData, 'campaign-goal') || 'No KPI goal set';
+
+      return {
+        heading: `${name} staged`,
+        body: `${name} (${focus}) will launch ${start.toLowerCase()} across ${practices}.`,
+        details: [
+          `Primary channels: ${channel.length ? channel.join(', ') : 'Channel mix pending'}`,
+          `Owner: ${owner}`,
+          `Success goal: ${goal}`,
+        ],
+      };
+    },
+    outreachFulfillment(form, formData) {
+      const batch = getTextValue(formData, 'batch-name') || 'New fulfillment batch';
+      const variant = getSelectLabel(form, 'batch-variant') || 'Kit variant pending';
+      const size = getTextValue(formData, 'batch-size') || 'Unit count pending';
+      const shipDate = formatDateValue(formData.get('batch-ship-date')) || 'Ship date TBD';
+      const priority = getSelectLabel(form, 'batch-priority') || 'Priority pending';
+      const notes = getTextValue(formData, 'batch-notes') || 'No special handling';
+
+      return {
+        heading: `${batch} queued`,
+        body: `${variant} batch set for ${shipDate.toLowerCase()} with ${size} units.`,
+        details: [
+          `Priority: ${priority}`,
     service(form, formData) {
       const workOrder = getTextValue(formData, 'wo-id') || 'New work order';
       const practice = getTextValue(formData, 'wo-practice') || 'Practice pending';
