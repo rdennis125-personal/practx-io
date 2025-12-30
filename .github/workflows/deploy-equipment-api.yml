@@ -91,7 +91,7 @@ jobs:
     environment:
       name: ${{ vars.ENV_NAME != '' && vars.ENV_NAME || 'DEV' }}
     env:
-      ELM_AZ_RG: ${{ vars.CICD_RG }}
+      CICD_RG: ${{ vars.CICD_RG }}
       ELM_SERVICE_NAME: ${{ vars.ELM_SERVICE_NAME }}
       ELM_APIM_NAME: ${{ vars.ELM_APIM_NAME }}
     defaults:
@@ -112,10 +112,10 @@ jobs:
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
       - name: Verify resource group exists
-        run: az group show -n "$ELM_AZ_RG" --query name -o tsv
+        run: az group show -n "$CICD_RG" --query name -o tsv
 
       - name: Verify Function App exists
-        run: az functionapp show -g "$ELM_AZ_RG" -n "$ELM_SERVICE_NAME" --query name -o tsv
+        run: az functionapp show -g "$CICD_RG" -n "$ELM_SERVICE_NAME" --query name -o tsv
 
       - name: Deploy to Function App
         uses: Azure/functions-action@v1
@@ -126,7 +126,7 @@ jobs:
       - name: Resolve service host
         id: resolve-host
         run: |
-          host=$(az functionapp show -g "$ELM_AZ_RG" -n "$ELM_SERVICE_NAME" --query defaultHostName -o tsv)
+          host=$(az functionapp show -g "$CICD_RG" -n "$ELM_SERVICE_NAME" --query defaultHostName -o tsv)
           if [[ -z "$host" ]]; then
             echo "Failed to resolve the Function App hostname" >&2
             exit 1
@@ -137,7 +137,7 @@ jobs:
 
       - name: Validate API Management service
         if: ${{ env.ELM_APIM_NAME != '' }}
-        run: az apim show -g "$ELM_AZ_RG" -n "$ELM_APIM_NAME" --query name -o tsv
+        run: az apim show -g "$CICD_RG" -n "$ELM_APIM_NAME" --query name -o tsv
 
       - name: Import OpenAPI into API Management
         if: ${{ env.ELM_APIM_NAME != '' }}
@@ -146,7 +146,7 @@ jobs:
           az apim api import \
             --path equipment/v1 \
             --api-id equipment-v1 \
-            --resource-group "$ELM_AZ_RG" \
+            --resource-group "$CICD_RG" \
             --service-name "$ELM_APIM_NAME" \
             --specification-format OpenApi \
             --specification-file OpenAPI/openapi.yaml \
