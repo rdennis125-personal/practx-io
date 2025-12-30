@@ -1,31 +1,37 @@
-param appName string
+param ELM_SERVICE_NAME string
 param env string
 param location string = resourceGroup().location
 param kvName string
+param storageAccountName string
 
-var planName = '${appName}-plan'
+var planName = '${ELM_SERVICE_NAME}-plan'
 var apimSecretName = 'APIM-BASE-URL-${toLower(env)}'
 var insightsSecretName = 'APPINSIGHTS-CONNECTION-STRING-${toLower(env)}'
+var contentShareName = toLower('${ELM_SERVICE_NAME}-content')
+
+resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' existing = {
+  name: storageAccountName
+}
+
+var storageConnectionString = 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};AccountKey=${listKeys(storageAccount.id, storageAccount.apiVersion).keys[0].value};EndpointSuffix=${environment().suffixes.storage}'
 
 resource appPlan 'Microsoft.Web/serverfarms@2022-03-01' = {
   name: planName
   location: location
   sku: {
-    tier: 'PremiumV3'
-    name: 'P1v3'
-    size: 'P1v3'
-    capacity: 1
+    tier: 'Dynamic'
+    name: 'Y1'
   }
-  kind: 'linux'
+  kind: 'functionapp,linux'
   properties: {
     reserved: true
   }
 }
 
-resource webApp 'Microsoft.Web/sites@2022-03-01' = {
-  name: appName
+resource functionApp 'Microsoft.Web/sites@2022-03-01' = {
+  name: ELM_SERVICE_NAME
   location: location
-  kind: 'app,linux'
+  kind: 'functionapp,linux'
   identity: {
     type: 'SystemAssigned'
   }
@@ -33,11 +39,31 @@ resource webApp 'Microsoft.Web/sites@2022-03-01' = {
     httpsOnly: true
     serverFarmId: appPlan.id
     siteConfig: {
-      linuxFxVersion: 'DOTNETCORE|8.0'
+      linuxFxVersion: 'DOTNET-ISOLATED|8.0'
       appSettings: [
         {
-          name: 'ASPNETCORE_ENVIRONMENT'
-          value: toUpper(env)
+          name: 'FUNCTIONS_WORKER_RUNTIME'
+          value: 'dotnet-isolated'
+        }
+        {
+          name: 'FUNCTIONS_EXTENSION_VERSION'
+          value: '~4'
+        }
+        {
+          name: 'AzureWebJobsStorage'
+          value: storageConnectionString
+        }
+        {
+          name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
+          value: storageConnectionString
+        }
+        {
+          name: 'WEBSITE_CONTENTSHARE'
+          value: contentShareName
+        }
+        {
+          name: 'WEBSITE_RUN_FROM_PACKAGE'
+          value: '1'
         }
         {
           name: 'APIM_BASE_URL'
@@ -56,5 +82,5 @@ resource webApp 'Microsoft.Web/sites@2022-03-01' = {
   }
 }
 
-output webAppPrincipalId string = webApp.identity.principalId
-output webAppResourceId string = webApp.id
+output functionAppPrincipalId string = functionApp.identity.principalId
+output functionAppResourceId string = functionApp.id

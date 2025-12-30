@@ -91,9 +91,9 @@ jobs:
     environment:
       name: ${{ vars.ENV_NAME != '' && vars.ENV_NAME || 'DEV' }}
     env:
-      AZ_RG: ${{ vars.AZ_RG }}
-      SERVICE_NAME: ${{ vars.SERVICE_NAME }}
-      APIM_NAME: ${{ vars.APIM_NAME }}
+      ELM_AZ_RG: ${{ vars.CICD_RG }}
+      ELM_SERVICE_NAME: ${{ vars.ELM_SERVICE_NAME }}
+      ELM_APIM_NAME: ${{ vars.ELM_APIM_NAME }}
     defaults:
       run:
         shell: bash
@@ -112,42 +112,42 @@ jobs:
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
       - name: Verify resource group exists
-        run: az group show -n "$AZ_RG" --query name -o tsv
+        run: az group show -n "$ELM_AZ_RG" --query name -o tsv
 
-      - name: Verify App Service exists
-        run: az resource show -g "$AZ_RG" -n "$SERVICE_NAME" --resource-type Microsoft.Web/sites --query name -o tsv
+      - name: Verify Function App exists
+        run: az functionapp show -g "$ELM_AZ_RG" -n "$ELM_SERVICE_NAME" --query name -o tsv
 
-      - name: Deploy to App Service
-        uses: azure/webapps-deploy@v3
+      - name: Deploy to Function App
+        uses: Azure/functions-action@v1
         with:
-          app-name: ${{ vars.SERVICE_NAME }}
+          app-name: ${{ vars.ELM_SERVICE_NAME }}
           package: deploy/equip-api-pkg.zip
 
       - name: Resolve service host
         id: resolve-host
         run: |
-          host=$(az webapp show -g "$AZ_RG" -n "$SERVICE_NAME" --query defaultHostName -o tsv)
+          host=$(az functionapp show -g "$ELM_AZ_RG" -n "$ELM_SERVICE_NAME" --query defaultHostName -o tsv)
           if [[ -z "$host" ]]; then
-            echo "Failed to resolve the App Service hostname" >&2
+            echo "Failed to resolve the Function App hostname" >&2
             exit 1
           fi
           echo "host=$host" >> "$GITHUB_OUTPUT"
-          echo "SERVICE_HOST=https://$host" >> "$GITHUB_ENV"
+          echo "ELM_SERVICE_HOST=https://$host" >> "$GITHUB_ENV"
           echo "Service hostname: https://$host" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Validate API Management service
-        if: ${{ env.APIM_NAME != '' }}
-        run: az apim show -g "$AZ_RG" -n "$APIM_NAME" --query name -o tsv
+        if: ${{ env.ELM_APIM_NAME != '' }}
+        run: az apim show -g "$ELM_AZ_RG" -n "$ELM_APIM_NAME" --query name -o tsv
 
       - name: Import OpenAPI into API Management
-        if: ${{ env.APIM_NAME != '' }}
+        if: ${{ env.ELM_APIM_NAME != '' }}
         working-directory: practx-equipment-api
         run: |
           az apim api import \
             --path equipment/v1 \
             --api-id equipment-v1 \
-            --resource-group "$AZ_RG" \
-            --service-name "$APIM_NAME" \
+            --resource-group "$ELM_AZ_RG" \
+            --service-name "$ELM_APIM_NAME" \
             --specification-format OpenApi \
             --specification-file OpenAPI/openapi.yaml \
             --service-url "https://${{ steps.resolve-host.outputs.host }}"
