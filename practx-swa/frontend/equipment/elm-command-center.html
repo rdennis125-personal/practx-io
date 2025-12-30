@@ -638,6 +638,9 @@
   <script>
     const rawData = document.getElementById('mock-data').textContent;
     const state = JSON.parse(rawData);
+    const apiConfig = {
+      baseUrl: '/api/equipment'
+    };
     state.incidents = [];
     const uiState = {
       activeAssetId: null,
@@ -744,6 +747,65 @@
       if (weeks < 5) return `${weeks} wk${weeks > 1 ? 's' : ''} ago`;
       const months = Math.round(days / 30);
       return `${months} mo${months > 1 ? 's' : ''} ago`;
+    }
+
+    function normalizeAsset(asset) {
+      const monitoringFlags = asset.monitoringFlags || {
+        telemetryEnabled: false,
+        maintenanceAutoCreate: false,
+        safetyAlerts: false
+      };
+      return {
+        ...asset,
+        manufacturer: asset.manufacturer || '',
+        installedDate: asset.installedDate || null,
+        monitoringFlags,
+        spend: asset.spend || { ytd: asset.spendYtd || 0, mtd: 0 },
+        forecast: asset.forecast || { '30': 0, '90': 0 },
+        playbook: asset.playbook || [],
+        serviceProviderIds: asset.serviceProviderIds || [],
+        serviceWindowIds: asset.serviceWindowIds || [],
+        history: asset.history || [],
+        trending: asset.trending || generateTrendingFromStatus(asset.status || 'Unknown')
+      };
+    }
+
+    function mapApiAsset(item) {
+      return normalizeAsset({
+        apiId: item.id,
+        id: item.assetId,
+        type: item.type,
+        manufacturer: item.manufacturer || '',
+        model: item.model || '',
+        locationId: item.location || '',
+        installedDate: item.installedDate || null,
+        status: item.status || 'Unknown',
+        nextService: item.nextServiceDate || null,
+        monitoringFlags: item.monitoringFlags || {
+          telemetryEnabled: false,
+          maintenanceAutoCreate: false,
+          safetyAlerts: false
+        },
+        spendYtd: item.spendYearToDate || 0,
+        sunsetDate: item.status === 'Sunset' ? item.updatedAt?.slice(0, 10) : null
+      });
+    }
+
+    async function loadAssetsFromApi() {
+      try {
+        const response = await fetch(`${apiConfig.baseUrl}?sort=spendYtd&direction=desc`);
+        if (!response.ok) {
+          throw new Error(`Equipment API error: ${response.status}`);
+        }
+        const payload = await response.json();
+        if (!payload || !Array.isArray(payload.items)) {
+          return null;
+        }
+        return payload.items.map(mapApiAsset);
+      } catch (error) {
+        console.warn('Unable to load equipment assets from API.', error);
+        return null;
+      }
     }
 
     function buildSparklinePath(values, width = 240, height = 80, padding = 6) {
@@ -1425,13 +1487,16 @@ text-blue-700">
             forecast: { ...existingAsset.forecast },
             playbook: [...(existingAsset.playbook || [])],
             serviceProviderIds: [...(existingAsset.serviceProviderIds || [])],
-            serviceWindowIds: [...(existingAsset.serviceWindowIds || [])]
+            serviceWindowIds: [...(existingAsset.serviceWindowIds || [])],
+            monitoringFlags: { ...existingAsset.monitoringFlags }
           }
         : {
             id: '',
             type: '',
+            manufacturer: '',
             model: '',
             locationId: '',
+            installedDate: '',
             status: 'Healthy',
             nextService: '',
             warranty: '',
@@ -1441,57 +1506,27 @@ text-blue-700">
             playbook: [],
             serviceProviderIds: [],
             serviceWindowIds: [],
+            monitoringFlags: {
+              telemetryEnabled: false,
+              maintenanceAutoCreate: false,
+              safetyAlerts: false
+            },
             sunsetDate: null
           };
       if (existingAsset) {
         uiState.assetDrawer.assetId = existingAsset.id;
       }
       const locations = state.practiceOverview.config.locations;
-      const providers = state.practiceOverview.config.providers;
-      const serviceWindows = state.practiceOverview.config.serviceWindows;
       const statusOptions = ['Healthy', 'Attention', 'Down', 'Unknown', 'Sunset'];
-      const spendYtd = asset.spend?.ytd ?? asset.spendYtd ?? 0;
-      const spendMtd = asset.spend?.mtd ?? 0;
-      const forecast30 = asset.forecast?.['30'] ?? 0;
-      const forecast90 = asset.forecast?.['90'] ?? 0;
-      const playbookValue = asset.playbook.join('\n');
-      const providerList = providers.length
-        ? `<div class="space-y-2">${providers
-            .map((provider) => {
-              const checked = asset.serviceProviderIds.includes(provider.id) ? 'checked' : '';
-              return `<label class="flex items-start gap-3 rounded-2xl border border-slate-200 px-3 py-3 text-sm text-slate-600">
-                <input type="checkbox" name="asset-providers" value="${provider.id}" ${checked} class="mt-1 h-4 w-4 rounded border-slate-300 text-blue-500 focus:ring-blue-200" />
-                <span>
-                  <span class="block font-semibold text-slate-700">${provider.name}</span>
-                  <span class="block text-xs text-slate-400">Priority ${provider.priority} · ${provider.coverage}</span>
-                </span>
-              </label>`;
-            })
-            .join('')}</div>`
-        : '<p class="text-sm text-slate-500">No providers configured.</p>';
-      const windowList = serviceWindows.length
-        ? `<div class="space-y-2">${serviceWindows
-            .map((window) => {
-              const checked = asset.serviceWindowIds.includes(window.id) ? 'checked' : '';
-              return `<label class="flex items-start gap-3 rounded-2xl border border-slate-200 px-3 py-3 text-sm text-slate-600">
-                <input type="checkbox" name="asset-windows" value="${window.id}" ${checked} class="mt-1 h-4 w-4 rounded border-slate-300 text-blue-500 focus:ring-blue-200" />
-                <span>
-                  <span class="block font-semibold text-slate-700">${window.label}</span>
-                  <span class="block text-xs text-slate-400">${window.rrule}</span>
-                </span>
-              </label>`;
-            })
-            .join('')}</div>`
-        : '<p class="text-sm text-slate-500">No service windows configured.</p>';
       const title = isAdd ? 'Add asset' : `Manage ${asset.id}`;
       const subtitle = isAdd
-        ? 'Register equipment and connect it to rooms, providers, and service windows.'
+        ? 'Register equipment and configure monitoring preferences.'
         : `${asset.type || 'Asset'}${asset.model ? ` • ${asset.model}` : ''}`;
       const lifecycleAction = existingAsset
         ? existingAsset.status === 'Sunset'
           ? `<button type="button" data-asset-reactivate class="focus-outline inline-flex items-center gap-2 rounded-full border border-emerald-200 px-4 py-2 text-xs font-semibold text-emerald-700 transition hover:border-emerald-300 hover:bg-emerald-50">Reactivate asset</button>`
           : `<button type="button" data-asset-sunset class="focus-outline inline-flex items-center gap-2 rounded-full border border-rose-200 px-4 py-2 text-xs font-semibold text-rose-600 transition hover:border-rose-300 hover:bg-rose-50">Sunset asset</button>`
-        : '<p class="text-xs text-slate-400">Relationships can be adjusted after you save.</p>';
+        : '<p class="text-xs text-slate-400">Finalize monitoring and service details after you save.</p>';
 
       root.innerHTML = `
         <div class="flex items-start justify-between border-b border-slate-200 px-6 py-5">
@@ -1518,6 +1553,9 @@ text-blue-700">
               <label class="text-sm font-medium text-slate-600">Model
                 <input name="asset-model" value="${asset.model}" class="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200" />
               </label>
+              <label class="text-sm font-medium text-slate-600">Manufacturer
+                <input name="asset-manufacturer" value="${asset.manufacturer}" class="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200" />
+              </label>
             </section>
 
             <section class="grid gap-4 sm:grid-cols-2">
@@ -1529,6 +1567,9 @@ text-blue-700">
                     .join('')}
                 </select>
               </label>
+              <label class="text-sm font-medium text-slate-600">Installed date
+                <input type="date" name="asset-installed" value="${toDateInputValue(asset.installedDate)}" class="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200" />
+              </label>
               <label class="text-sm font-medium text-slate-600">Status
                 <select name="asset-status" class="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200">
                   ${statusOptions
@@ -1539,38 +1580,31 @@ text-blue-700">
               <label class="text-sm font-medium text-slate-600">Next service
                 <input type="date" name="asset-next-service" value="${toDateInputValue(asset.nextService)}" class="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200" />
               </label>
-              <label class="text-sm font-medium text-slate-600">Warranty expiration
-                <input type="date" name="asset-warranty" value="${toDateInputValue(asset.warranty)}" class="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200" />
-              </label>
-            </section>
-
-            <section class="grid gap-4 sm:grid-cols-2">
-              <label class="text-sm font-medium text-slate-600">Spend YTD
-                <input type="number" step="1" min="0" name="asset-spend-ytd" value="${spendYtd}" class="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200" />
-              </label>
-              <label class="text-sm font-medium text-slate-600">Spend MTD
-                <input type="number" step="1" min="0" name="asset-spend-mtd" value="${spendMtd}" class="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200" />
-              </label>
-              <label class="text-sm font-medium text-slate-600">Forecast 30 days
-                <input type="number" step="1" min="0" name="asset-forecast-30" value="${forecast30}" class="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200" />
-              </label>
-              <label class="text-sm font-medium text-slate-600">Forecast 90 days
-                <input type="number" step="1" min="0" name="asset-forecast-90" value="${forecast90}" class="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200" />
-              </label>
-            </section>
-
-            <label class="block text-sm font-medium text-slate-600">Playbook steps (one per line)
-              <textarea name="asset-playbook" rows="3" class="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200">${playbookValue}</textarea>
-            </label>
-
-            <section class="space-y-3">
-              <h3 class="text-sm font-semibold text-slate-700">Service providers</h3>
-              ${providerList}
             </section>
 
             <section class="space-y-3">
-              <h3 class="text-sm font-semibold text-slate-700">Service windows</h3>
-              ${windowList}
+              <h3 class="text-sm font-semibold text-slate-700">Monitoring preferences</h3>
+              <label class="flex items-start gap-3 rounded-2xl border border-slate-200 px-3 py-3 text-sm text-slate-600">
+                <input type="checkbox" name="asset-telemetry" value="telemetry" ${asset.monitoringFlags?.telemetryEnabled ? 'checked' : ''} class="mt-1 h-4 w-4 rounded border-slate-300 text-blue-500 focus:ring-blue-200" />
+                <span>
+                  <span class="block font-semibold text-slate-700">Realtime telemetry</span>
+                  <span class="block text-xs text-slate-400">Stream live sensor health and usage.</span>
+                </span>
+              </label>
+              <label class="flex items-start gap-3 rounded-2xl border border-slate-200 px-3 py-3 text-sm text-slate-600">
+                <input type="checkbox" name="asset-maintenance" value="maintenance" ${asset.monitoringFlags?.maintenanceAutoCreate ? 'checked' : ''} class="mt-1 h-4 w-4 rounded border-slate-300 text-blue-500 focus:ring-blue-200" />
+                <span>
+                  <span class="block font-semibold text-slate-700">Auto maintenance tickets</span>
+                  <span class="block text-xs text-slate-400">Create work orders when anomalies surface.</span>
+                </span>
+              </label>
+              <label class="flex items-start gap-3 rounded-2xl border border-slate-200 px-3 py-3 text-sm text-slate-600">
+                <input type="checkbox" name="asset-safety" value="safety" ${asset.monitoringFlags?.safetyAlerts ? 'checked' : ''} class="mt-1 h-4 w-4 rounded border-slate-300 text-blue-500 focus:ring-blue-200" />
+                <span>
+                  <span class="block font-semibold text-slate-700">Safety escalation</span>
+                  <span class="block text-xs text-slate-400">Notify reliability team on sterilization variance.</span>
+                </span>
+              </label>
             </section>
 
             <div class="flex flex-col gap-3 border-t border-slate-200 pt-4 sm:flex-row sm:items-center sm:justify-between">
@@ -1668,7 +1702,7 @@ text-blue-700">
       }
     }
 
-    function handleDrawerFormSubmit(event) {
+    async function handleDrawerFormSubmit(event) {
       const form = event.target.closest('form');
       if (!form) return;
       const locationFormKey = form.getAttribute('data-location-form');
@@ -1758,94 +1792,63 @@ text-blue-700">
         const type = (formData.get('asset-type') || '').trim();
         if (!id || !type) return;
         const model = (formData.get('asset-model') || '').trim();
+        const manufacturer = (formData.get('asset-manufacturer') || '').trim();
         const locationId = formData.get('asset-location') || '';
+        const installedRaw = formData.get('asset-installed');
         const status = formData.get('asset-status') || 'Healthy';
         const nextServiceRaw = formData.get('asset-next-service');
-        const warrantyRaw = formData.get('asset-warranty');
-        const spendYtdValue = Number.parseFloat(formData.get('asset-spend-ytd') || '0');
-        const spendMtdValue = Number.parseFloat(formData.get('asset-spend-mtd') || '0');
-        const forecast30Value = Number.parseFloat(formData.get('asset-forecast-30') || '0');
-        const forecast90Value = Number.parseFloat(formData.get('asset-forecast-90') || '0');
-        const playbookRaw = formData.get('asset-playbook') || '';
-        const sanitizeNumber = (value) => (Number.isFinite(value) ? Math.max(0, value) : 0);
-        const spendYtd = sanitizeNumber(spendYtdValue);
-        const spendMtd = sanitizeNumber(spendMtdValue);
-        const forecast30 = sanitizeNumber(forecast30Value);
-        const forecast90 = sanitizeNumber(forecast90Value);
-        const playbook = playbookRaw
-          ? playbookRaw.split(/\n+/).map(item => item.trim()).filter(Boolean)
-          : [];
-        const serviceProviderIds = Array.from(form.querySelectorAll('input[name="asset-providers"]:checked')).map(input => input.value);
-        const serviceWindowIds = Array.from(form.querySelectorAll('input[name="asset-windows"]:checked')).map(input => input.value);
-        const nextService = nextServiceRaw ? nextServiceRaw : null;
-        const warranty = warrantyRaw ? warrantyRaw : null;
+        const monitoringFlags = {
+          telemetryEnabled: formData.get('asset-telemetry') === 'telemetry',
+          maintenanceAutoCreate: formData.get('asset-maintenance') === 'maintenance',
+          safetyAlerts: formData.get('asset-safety') === 'safety'
+        };
+        const payload = {
+          assetId: id,
+          type,
+          location: locationId || null,
+          manufacturer: manufacturer || null,
+          model: model || null,
+          installedDate: installedRaw || null,
+          status,
+          nextServiceDate: nextServiceRaw || null,
+          monitoringFlags
+        };
 
-        if (assetFormKey === 'add') {
-          const newAsset = {
-            id,
-            type,
-            model,
-            locationId: locationId || '',
-            status,
-            nextService,
-            warranty,
-            spendYtd,
-            spend: { ytd: spendYtd, mtd: spendMtd },
-            forecast: { '30': forecast30, '90': forecast90 },
-            playbook,
-            serviceProviderIds,
-            serviceWindowIds,
-            trending: generateTrendingFromStatus(status),
-            history: [],
-            sunsetDate: status === 'Sunset' ? new Date().toISOString().slice(0, 10) : null,
-            previousStatus: status === 'Sunset' ? 'Healthy' : null
-          };
-          state.assets.unshift(newAsset);
-          uiState.assetDrawer = { mode: 'edit', assetId: newAsset.id };
-          uiState.activeAssetId = newAsset.id;
-        } else {
-          const index = state.assets.findIndex(item => item.id === assetFormKey);
-          if (index > -1) {
-            const existing = state.assets[index];
-            const updated = {
-              ...existing,
-              id,
-              type,
-              model,
-              locationId: locationId || '',
-              status,
-              nextService,
-              warranty,
-              spendYtd,
-              spend: { ytd: spendYtd, mtd: spendMtd },
-              forecast: { '30': forecast30, '90': forecast90 },
-              playbook,
-              serviceProviderIds,
-              serviceWindowIds,
-              trending: existing.trending && existing.trending.length ? existing.trending : generateTrendingFromStatus(status),
-              history: existing.history || []
-            };
-            if (existing.status !== 'Sunset' && status === 'Sunset') {
-              updated.previousStatus = existing.status;
-              updated.sunsetDate = new Date().toISOString().slice(0, 10);
-            } else if (status !== 'Sunset') {
-              updated.previousStatus = null;
-              updated.sunsetDate = null;
-            }
-            if (status === 'Sunset' && !updated.sunsetDate) {
-              updated.sunsetDate = new Date().toISOString().slice(0, 10);
-            }
-            state.assets[index] = updated;
-            uiState.assetDrawer.assetId = updated.id;
-            if (uiState.activeAssetId === existing.id) {
-              uiState.activeAssetId = updated.id;
-            }
+        const existing = assetFormKey === 'add' ? null : state.assets.find(item => item.id === assetFormKey);
+        const endpoint = existing?.apiId ? `${apiConfig.baseUrl}/${existing.apiId}` : apiConfig.baseUrl;
+        const method = existing?.apiId ? 'PUT' : 'POST';
+
+        try {
+          const response = await fetch(endpoint, {
+            method,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          if (!response.ok) {
+            const errorPayload = await response.json().catch(() => ({}));
+            throw new Error(errorPayload.error || 'Unable to save asset.');
           }
+          const saved = await response.json();
+          const mapped = mapApiAsset(saved);
+          if (existing) {
+            const index = state.assets.findIndex(item => item.id === existing.id);
+            if (index > -1) {
+              state.assets[index] = { ...existing, ...mapped };
+            } else {
+              state.assets.unshift(mapped);
+            }
+          } else {
+            state.assets.unshift(mapped);
+          }
+          uiState.assetDrawer = { mode: 'edit', assetId: mapped.id };
+          uiState.activeAssetId = mapped.id;
+          renderAssets();
+          renderAssetDetail();
+          showToast(`${mapped.id} saved`);
+          closeDrawer('asset-management');
+        } catch (error) {
+          showToast(error.message || 'Unable to save asset.');
         }
-        renderAssets();
-        renderAssetDetail();
-        showToast(`${id} saved`);
-        closeDrawer('asset-management');
       }
     }
 
@@ -1966,7 +1969,7 @@ text-blue-700">
       });
     }
 
-    function initialize() {
+    async function initialize() {
       refs.practiceName = document.getElementById('practice-name');
       refs.practiceName.textContent = state.practiceOverview.practiceName;
       refs.lastRefreshed = document.getElementById('last-refreshed');
@@ -1976,6 +1979,11 @@ text-blue-700">
         hour: 'numeric',
         minute: '2-digit'
       });
+      state.assets = state.assets.map(normalizeAsset);
+      const apiAssets = await loadAssetsFromApi();
+      if (apiAssets && apiAssets.length) {
+        state.assets = apiAssets;
+      }
       renderKPIs();
       renderTrends();
       renderAssets();

@@ -11,5 +11,11 @@
     <PackageReference Include="Microsoft.Azure.Functions.Worker" Version="1.23.0" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Http" Version="3.2.0" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" Version="1.17.0" OutputItemType="Analyzer" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.8" />
+    <PackageReference Include="System.Web.HttpUtility" Version="4.7.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Migrations/*.sql" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

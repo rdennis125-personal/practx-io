@@ -104,6 +104,76 @@
           `Status: ${status}`,
           `Dispatch: ${dispatch}`,
           `Priority: ${priority}`,
+    practice(form, formData) {
+      const name = getTextValue(formData, 'practice-name') || 'New practice';
+      const region = getSelectLabel(form, 'practice-region') || 'Region pending';
+      const stage = getSelectLabel(form, 'practice-stage') || 'Stage pending';
+      const lead = getTextValue(formData, 'practice-lead') || 'Sponsor pending';
+      const launch = formatDateValue(formData.get('practice-launch')) || 'Launch date TBD';
+      const readiness = getCheckedLabels(form, 'practice-readiness-');
+
+      return {
+        heading: `${name} intake captured`,
+        body: `${name} is staged for ${stage.toLowerCase()} in the ${region.toLowerCase()} region.`,
+        details: [
+          `Executive sponsor: ${lead}`,
+          `Target launch: ${launch}`,
+          readiness.length
+            ? `Readiness: ${readiness.join(', ')}`
+            : 'Readiness: Pending checklists',
+        ],
+      };
+    },
+    milestone(form, formData) {
+      const practice = getTextValue(formData, 'milestone-practice') || 'Practice pending';
+      const stage = getSelectLabel(form, 'milestone-stage') || 'Stage pending';
+      const milestone = getTextValue(formData, 'milestone-next') || 'Milestone pending';
+      const date = formatDateValue(formData.get('milestone-date')) || 'Date TBD';
+      const owner = getTextValue(formData, 'milestone-owner') || 'Owner pending';
+      const risk = getSelectLabel(form, 'milestone-risk') || 'Risk pending';
+
+      return {
+        heading: `${practice} milestone updated`,
+        body: `${milestone} is now targeting ${date} with ${owner}.`,
+        details: [
+          `Stage: ${stage}`,
+          `Risk level: ${risk}`,
+          `Support owner: ${owner}`,
+        ],
+      };
+    },
+    task(form, formData) {
+      const title = getTextValue(formData, 'task-title') || 'Task pending';
+      const owner = getTextValue(formData, 'task-owner') || 'Owner pending';
+      const due = formatDateValue(formData.get('task-due')) || 'Due date TBD';
+      const priority = getSelectLabel(form, 'task-priority') || 'Priority pending';
+      const team = getSelectLabel(form, 'task-team') || '';
+      const support = getCheckedLabels(form, 'task-support-');
+
+      return {
+        heading: `${title} assigned`,
+        body: `${title} is assigned to ${owner} ${team ? `for ${team}` : ''}.`,
+        details: [
+          `Due: ${due}`,
+          `Priority: ${priority}`,
+          support.length
+            ? `Support needed: ${support.join(', ')}`
+            : 'Support needed: Standard coverage',
+        ],
+      };
+    },
+    forecast(form, formData) {
+      const delta = getTextValue(formData, 'forecast-delta') || 'Forecast update';
+      const owner = getTextValue(formData, 'forecast-owner') || 'Owner pending';
+      const date = formatDateValue(formData.get('forecast-date')) || 'Effective date TBD';
+      const notes = getTextValue(formData, 'forecast-notes') || 'No notes provided';
+
+      return {
+        heading: 'Forecast update logged',
+        body: `${delta} captured by ${owner}.`,
+        details: [
+          `Effective: ${date}`,
+          `Notes: ${notes}`,
         ],
       };
     },
