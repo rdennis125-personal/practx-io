@@ -13,6 +13,162 @@
   <meta name="twitter:card" content="summary" />
   <link rel="icon" href="/assets/logo.png" type="image/png" />
   <link rel="stylesheet" href="/assets/styles.css" />
+  <style>
+    .drawer-enter {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+
+    .drawer-open {
+      transform: translateX(0);
+      opacity: 1;
+    }
+
+    .drawer {
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      display: none;
+      pointer-events: none;
+    }
+
+    .drawer.is-visible {
+      display: block;
+      pointer-events: auto;
+    }
+
+    .drawer__backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.45);
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .drawer.is-visible .drawer__backdrop {
+      opacity: 1;
+    }
+
+    .drawer__panel {
+      position: absolute;
+      right: 0;
+      top: 0;
+      height: 100%;
+      width: 100%;
+      max-width: 36rem;
+      background: #fff;
+      box-shadow: -20px 0 40px rgba(15, 23, 42, 0.2);
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    .drawer__content {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .drawer__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.35);
+      padding: 1.5rem;
+    }
+
+    .drawer__body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem;
+    }
+
+    .modal-enter {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+
+    .modal-open {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: none;
+      pointer-events: none;
+    }
+
+    .modal.is-visible {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: auto;
+    }
+
+    .modal__backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.45);
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .modal.is-visible .modal__backdrop {
+      opacity: 1;
+    }
+
+    .modal__panel {
+      position: relative;
+      width: min(90vw, 40rem);
+      transition: transform 0.2s ease, opacity 0.2s ease;
+      z-index: 1;
+    }
+
+    .modal__content {
+      padding: 2rem;
+    }
+
+    .focus-outline:focus {
+      outline: 3px solid rgba(46, 90, 172, 0.55);
+      outline-offset: 2px;
+    }
+
+    .section-heading-inline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .section-heading-inline .button {
+      padding: 0.65rem 1.4rem;
+      font-size: 0.9rem;
+    }
+
+    .detail-card {
+      margin-top: 1.5rem;
+      border-left: 4px solid var(--color-primary);
+    }
+
+    .detail-card__meta {
+      color: var(--color-muted);
+      margin: 0.35rem 0 1rem;
+    }
+
+    .detail-card__actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+
+    .data-table tbody tr.is-selected {
+      background: rgba(46, 90, 172, 0.08);
+    }
+  </style>
   <script defer src="/assets/js/auth-modal.js"></script>
   <script defer src="/assets/js/entity-forms.js"></script>
 </head>
@@ -66,7 +222,12 @@
     </section>
 
     <section class="dashboard-section">
-      <h2>Operations pulse</h2>
+      <div class="section-heading-inline">
+        <h2>Operations pulse</h2>
+        <button type="button" class="button secondary focus-outline" data-open-drawer="practice-add" aria-controls="drawer-practice-add">
+          Add practice
+        </button>
+      </div>
       <div class="dashboard-grid">
         <article class="dashboard-card card">
           <h3>Schedule health</h3>
@@ -99,9 +260,19 @@
     </section>
 
     <section class="dashboard-section">
-      <div class="section-heading">
-        <h2>Practice milestones</h2>
-        <p>Track onboarding, renovation, and expansion workstreams for every office.</p>
+      <div class="section-heading section-heading-inline">
+        <div>
+          <h2>Practice milestones</h2>
+          <p>Track onboarding, renovation, and expansion workstreams for every office.</p>
+        </div>
+        <div class="detail-card__actions">
+          <button type="button" class="button secondary focus-outline" data-open-drawer="milestone-update" aria-controls="drawer-milestone-update">
+            Update milestone
+          </button>
+          <button type="button" class="button focus-outline" data-open-modal="milestone-intake" aria-controls="modal-milestone-intake">
+            Add milestone
+          </button>
+        </div>
       </div>
       <div class="card table-card">
         <div class="table-wrapper" role="region" aria-live="polite">
@@ -114,92 +285,136 @@
                 <th scope="col">Next milestone</th>
                 <th scope="col">Status</th>
                 <th scope="col">Support owner</th>
+                <th scope="col">Details</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
+              <tr data-milestone-id="summit-north" data-practice="Summit North" data-stage="Onboarding" data-next="HRIS go-live Apr 22" data-status="On track" data-owner="P. Nguyen" data-risk="Low">
                 <td>Summit North</td>
                 <td>Onboarding</td>
                 <td>Martinez</td>
                 <td>HRIS go-live Apr 22</td>
                 <td><span class="status-pill status-pill--scheduled">On track</span></td>
                 <td>P. Nguyen</td>
+                <td><button type="button" class="text-button focus-outline" data-milestone-select="summit-north">View</button></td>
               </tr>
-              <tr>
+              <tr data-milestone-id="harbor-pointe" data-practice="Harbor Pointe" data-stage="Renovation" data-next="Ops layout review Apr 24" data-status="Watch" data-owner="L. Patel" data-risk="Moderate">
                 <td>Harbor Pointe</td>
                 <td>Renovation</td>
                 <td>Owens</td>
                 <td>Ops layout review Apr 24</td>
                 <td><span class="status-pill status-pill--attention">Watch</span></td>
                 <td>L. Patel</td>
+                <td><button type="button" class="text-button focus-outline" data-milestone-select="harbor-pointe">View</button></td>
               </tr>
-              <tr>
+              <tr data-milestone-id="skyline-ortho" data-practice="Skyline Ortho" data-stage="Expansion" data-next="CBCT install May 2" data-status="Scheduled" data-owner="T. Glover" data-risk="Low">
                 <td>Skyline Ortho</td>
                 <td>Expansion</td>
                 <td>Rivera</td>
                 <td>CBCT install May 2</td>
                 <td><span class="status-pill status-pill--scheduled">Scheduled</span></td>
                 <td>T. Glover</td>
+                <td><button type="button" class="text-button focus-outline" data-milestone-select="skyline-ortho">View</button></td>
               </tr>
-              <tr>
+              <tr data-milestone-id="midtown-smile" data-practice="Midtown Smile" data-stage="Stabilize" data-next="AR clean-up sprint" data-status="Intensive" data-owner="M. Chen" data-risk="High">
                 <td>Midtown Smile</td>
                 <td>Stabilize</td>
                 <td>Nguyen</td>
                 <td>AR clean-up sprint</td>
                 <td><span class="status-pill status-pill--attention">Intensive</span></td>
                 <td>M. Chen</td>
+                <td><button type="button" class="text-button focus-outline" data-milestone-select="midtown-smile">View</button></td>
               </tr>
-              <tr>
+              <tr data-milestone-id="valley-creek" data-practice="Valley Creek" data-stage="Optimization" data-next="Team KPI workshop May 8" data-status="Green" data-owner="A. Shah" data-risk="Low">
                 <td>Valley Creek</td>
                 <td>Optimization</td>
                 <td>Martinez</td>
                 <td>Team KPI workshop May 8</td>
                 <td><span class="status-pill status-pill--ok">Green</span></td>
                 <td>A. Shah</td>
+                <td><button type="button" class="text-button focus-outline" data-milestone-select="valley-creek">View</button></td>
               </tr>
             </tbody>
           </table>
         </div>
       </div>
+      <article id="milestone-detail" class="card detail-card" aria-live="polite">
+        <h3>Milestone detail</h3>
+        <p class="detail-card__meta">Select a milestone row to review next actions and owners.</p>
+        <ul class="dashboard-list">
+          <li>Upcoming dates, risks, and dependencies will appear here.</li>
+          <li>Use “Update milestone” to log progress or adjust dates.</li>
+        </ul>
+        <div class="detail-card__actions">
+          <button type="button" class="button secondary focus-outline" data-open-drawer="milestone-update" aria-controls="drawer-milestone-update">
+            Edit milestone
+          </button>
+          <button type="button" class="button focus-outline" data-open-modal="milestone-intake" aria-controls="modal-milestone-intake">
+            Add new milestone
+          </button>
+        </div>
+      </article>
     </section>
 
     <section class="dashboard-section">
       <div class="dashboard-grid dashboard-grid--two">
         <article class="dashboard-card card">
-          <h2>Leadership focus</h2>
+          <div class="section-heading-inline">
+            <h2>Leadership focus</h2>
+            <button type="button" class="button secondary focus-outline" data-open-modal="assign-task" aria-controls="modal-assign-task">
+              Assign task
+            </button>
+          </div>
           <ul class="status-list">
-            <li>
+            <li data-leadership-id="collections-sprint" data-title="Collections sprint" data-owner="Owens" data-date="Apr 19" data-theme="Cash acceleration" data-status="In progress">
               <div class="status-list__details">
                 <span class="status-title">Collections sprint</span>
                 <span class="status-meta">Apr 19 &bull; Cash acceleration &bull; Owner: Owens</span>
               </div>
               <span class="status-pill status-pill--scheduled">In progress</span>
+              <button type="button" class="text-button focus-outline" data-leadership-select="collections-sprint">Details</button>
             </li>
-            <li>
+            <li data-leadership-id="recruitment-blitz" data-title="Recruitment blitz" data-owner="HR partner" data-date="Apr 21" data-theme="6 hygienist offers" data-status="Watch">
               <div class="status-list__details">
                 <span class="status-title">Recruitment blitz</span>
                 <span class="status-meta">Apr 21 &bull; 6 hygienist offers &bull; Owner: HR partner</span>
               </div>
               <span class="status-pill status-pill--attention">Watch</span>
+              <button type="button" class="text-button focus-outline" data-leadership-select="recruitment-blitz">Details</button>
             </li>
-            <li>
+            <li data-leadership-id="membership-conversion" data-title="Membership conversion" data-owner="Growth team" data-date="Apr 28" data-theme="Smile Spa + practice bundle rollout" data-status="Launching">
               <div class="status-list__details">
                 <span class="status-title">Membership conversion</span>
                 <span class="status-meta">Apr 28 &bull; Smile Spa + practice bundle rollout</span>
               </div>
               <span class="status-pill status-pill--scheduled">Launching</span>
+              <button type="button" class="text-button focus-outline" data-leadership-select="membership-conversion">Details</button>
             </li>
-            <li>
+            <li data-leadership-id="ce-compliance" data-title="CE compliance" data-owner="Compliance" data-date="May 3" data-theme="Provider CE audit" data-status="Ready">
               <div class="status-list__details">
                 <span class="status-title">CE compliance</span>
                 <span class="status-meta">May 3 &bull; Provider CE audit &bull; Owner: Compliance</span>
               </div>
               <span class="status-pill status-pill--ok">Ready</span>
+              <button type="button" class="text-button focus-outline" data-leadership-select="ce-compliance">Details</button>
             </li>
           </ul>
+          <article id="leadership-detail" class="card detail-card" aria-live="polite">
+            <h3>Leadership priority detail</h3>
+            <p class="detail-card__meta">Select a leadership focus item to review owners, blockers, and next steps.</p>
+            <ul class="dashboard-list">
+              <li>Owner, timeline, and support needs will appear here.</li>
+              <li>Use “Assign task” to delegate follow-ups.</li>
+            </ul>
+          </article>
         </article>
         <article class="dashboard-card card">
-          <h2>Team workload</h2>
+          <div class="section-heading-inline">
+            <h2>Team workload</h2>
+            <button type="button" class="button secondary focus-outline" data-open-drawer="workload-adjust" aria-controls="drawer-workload-adjust">
+              Rebalance workload
+            </button>
+          </div>
           <ul class="status-list">
             <li>
               <div class="status-list__details">
@@ -235,7 +450,12 @@
     </section>
 
     <section class="dashboard-section">
-      <h2>Financial outlook</h2>
+      <div class="section-heading-inline">
+        <h2>Financial outlook</h2>
+        <button type="button" class="button secondary focus-outline" data-open-modal="forecast-update" aria-controls="modal-forecast-update">
+          Log forecast update
+        </button>
+      </div>
       <div class="spend-grid">
         <article class="card spend-card">
           <div class="spend-metric">
@@ -264,6 +484,303 @@
       </div>
     </section>
   </main>
+  <div id="drawer-practice-add" class="drawer" data-drawer="practice-add" aria-hidden="true">
+    <div class="drawer__backdrop" data-drawer-backdrop></div>
+    <div class="drawer__panel drawer-enter" data-drawer-panel>
+      <div class="drawer__content">
+        <div class="drawer__header">
+          <div>
+            <p class="eyebrow">Operations intake</p>
+            <h2>Add a practice</h2>
+          </div>
+          <button type="button" class="text-button focus-outline" data-close-drawer aria-label="Close add practice drawer">Close</button>
+        </div>
+        <div class="drawer__body">
+          <form class="entity-form" data-entity-type="practice" data-destination="/practice/practice-command-center.html">
+            <label>
+              Practice name
+              <input type="text" name="practice-name" placeholder="e.g. Summit Lakes" required />
+            </label>
+            <label>
+              Region
+              <select name="practice-region" required>
+                <option value="">Select region</option>
+                <option>Pacific Northwest</option>
+                <option>Midwest</option>
+                <option>Southwest</option>
+                <option>East Coast</option>
+              </select>
+            </label>
+            <label>
+              Launch stage
+              <select name="practice-stage" required>
+                <option value="">Select stage</option>
+                <option>Onboarding</option>
+                <option>Renovation</option>
+                <option>Expansion</option>
+                <option>Optimization</option>
+              </select>
+            </label>
+            <label>
+              Executive sponsor
+              <input type="text" name="practice-lead" placeholder="Name or role" />
+            </label>
+            <label>
+              Target launch date
+              <input type="date" name="practice-launch" />
+            </label>
+            <fieldset>
+              <legend>Go-live readiness</legend>
+              <label><input type="checkbox" name="practice-readiness-credentials" /> Credentialing verified</label>
+              <label><input type="checkbox" name="practice-readiness-hardware" /> Hardware order placed</label>
+              <label><input type="checkbox" name="practice-readiness-marketing" /> Marketing launch briefed</label>
+            </fieldset>
+            <div class="detail-card__actions">
+              <button type="submit" class="button focus-outline">Save practice</button>
+              <button type="button" class="button secondary focus-outline" data-close-drawer>Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="drawer-milestone-update" class="drawer" data-drawer="milestone-update" aria-hidden="true">
+    <div class="drawer__backdrop" data-drawer-backdrop></div>
+    <div class="drawer__panel drawer-enter" data-drawer-panel>
+      <div class="drawer__content">
+        <div class="drawer__header">
+          <div>
+            <p class="eyebrow">Milestone tracker</p>
+            <h2>Update milestone</h2>
+          </div>
+          <button type="button" class="text-button focus-outline" data-close-drawer aria-label="Close milestone drawer">Close</button>
+        </div>
+        <div class="drawer__body">
+          <form class="entity-form" data-entity-type="milestone" data-destination="/practice/practice-command-center.html">
+            <label>
+              Practice
+              <select name="milestone-practice" required>
+                <option value="">Select practice</option>
+                <option>Summit North</option>
+                <option>Harbor Pointe</option>
+                <option>Skyline Ortho</option>
+                <option>Midtown Smile</option>
+                <option>Valley Creek</option>
+              </select>
+            </label>
+            <label>
+              Milestone stage
+              <select name="milestone-stage" required>
+                <option value="">Select stage</option>
+                <option>Onboarding</option>
+                <option>Renovation</option>
+                <option>Expansion</option>
+                <option>Stabilize</option>
+                <option>Optimization</option>
+              </select>
+            </label>
+            <label>
+              Next milestone
+              <input type="text" name="milestone-next" placeholder="e.g. HRIS go-live" required />
+            </label>
+            <label>
+              Target date
+              <input type="date" name="milestone-date" />
+            </label>
+            <label>
+              Support owner
+              <input type="text" name="milestone-owner" placeholder="Owner or pod" />
+            </label>
+            <label>
+              Risk level
+              <select name="milestone-risk">
+                <option value="">Select risk</option>
+                <option>Low</option>
+                <option>Moderate</option>
+                <option>High</option>
+              </select>
+            </label>
+            <div class="detail-card__actions">
+              <button type="submit" class="button focus-outline">Save update</button>
+              <button type="button" class="button secondary focus-outline" data-close-drawer>Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="drawer-workload-adjust" class="drawer" data-drawer="workload-adjust" aria-hidden="true">
+    <div class="drawer__backdrop" data-drawer-backdrop></div>
+    <div class="drawer__panel drawer-enter" data-drawer-panel>
+      <div class="drawer__content">
+        <div class="drawer__header">
+          <div>
+            <p class="eyebrow">Capacity shift</p>
+            <h2>Rebalance workload</h2>
+          </div>
+          <button type="button" class="text-button focus-outline" data-close-drawer aria-label="Close workload drawer">Close</button>
+        </div>
+        <div class="drawer__body">
+          <form class="entity-form" data-entity-type="task" data-destination="/practice/practice-command-center.html">
+            <label>
+              Team focus
+              <select name="task-team" required>
+                <option value="">Select team</option>
+                <option>Care coordinators</option>
+                <option>Front office</option>
+                <option>Clinical teams</option>
+                <option>Virtual concierge</option>
+              </select>
+            </label>
+            <label>
+              Coverage request
+              <input type="text" name="task-title" placeholder="e.g. Add Saturday support" required />
+            </label>
+            <label>
+              Owner
+              <input type="text" name="task-owner" placeholder="Name or role" />
+            </label>
+            <label>
+              Target completion
+              <input type="date" name="task-due" />
+            </label>
+            <fieldset>
+              <legend>Support type</legend>
+              <label><input type="checkbox" name="task-support-shift" /> Shift swap needed</label>
+              <label><input type="checkbox" name="task-support-hiring" /> Hiring request</label>
+              <label><input type="checkbox" name="task-support-training" /> Training coverage</label>
+            </fieldset>
+            <div class="detail-card__actions">
+              <button type="submit" class="button focus-outline">Send request</button>
+              <button type="button" class="button secondary focus-outline" data-close-drawer>Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-milestone-intake" class="modal" data-modal="milestone-intake" aria-hidden="true">
+    <div class="modal__backdrop" data-modal-backdrop></div>
+    <div class="modal__panel modal-enter" data-modal-panel>
+      <div class="card modal__content">
+        <div class="section-heading-inline">
+          <div>
+            <p class="eyebrow">New milestone</p>
+            <h2>Add milestone</h2>
+          </div>
+          <button type="button" class="text-button focus-outline" data-close-modal aria-label="Close milestone modal">Close</button>
+        </div>
+        <form class="entity-form" data-entity-type="milestone" data-destination="/practice/practice-command-center.html">
+          <label>
+            Practice
+            <input type="text" name="milestone-practice" placeholder="Practice name" required />
+          </label>
+          <label>
+            Milestone
+            <input type="text" name="milestone-next" placeholder="Next milestone title" required />
+          </label>
+          <label>
+            Target date
+            <input type="date" name="milestone-date" />
+          </label>
+          <label>
+            Support owner
+            <input type="text" name="milestone-owner" />
+          </label>
+          <div class="detail-card__actions">
+            <button type="submit" class="button focus-outline">Add milestone</button>
+            <button type="button" class="button secondary focus-outline" data-close-modal>Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-assign-task" class="modal" data-modal="assign-task" aria-hidden="true">
+    <div class="modal__backdrop" data-modal-backdrop></div>
+    <div class="modal__panel modal-enter" data-modal-panel>
+      <div class="card modal__content">
+        <div class="section-heading-inline">
+          <div>
+            <p class="eyebrow">Leadership action</p>
+            <h2>Assign leadership task</h2>
+          </div>
+          <button type="button" class="text-button focus-outline" data-close-modal aria-label="Close assign task modal">Close</button>
+        </div>
+        <form class="entity-form" data-entity-type="task" data-destination="/practice/practice-command-center.html">
+          <label>
+            Task title
+            <input type="text" name="task-title" placeholder="e.g. Draft outreach cadence" required />
+          </label>
+          <label>
+            Owner
+            <input type="text" name="task-owner" placeholder="Name or role" required />
+          </label>
+          <label>
+            Due date
+            <input type="date" name="task-due" />
+          </label>
+          <label>
+            Priority
+            <select name="task-priority">
+              <option value="">Select priority</option>
+              <option>Routine</option>
+              <option>High</option>
+              <option>Urgent</option>
+            </select>
+          </label>
+          <label>
+            Notes
+            <textarea name="task-notes" rows="3" placeholder="Add any context or blockers."></textarea>
+          </label>
+          <div class="detail-card__actions">
+            <button type="submit" class="button focus-outline">Assign task</button>
+            <button type="button" class="button secondary focus-outline" data-close-modal>Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-forecast-update" class="modal" data-modal="forecast-update" aria-hidden="true">
+    <div class="modal__backdrop" data-modal-backdrop></div>
+    <div class="modal__panel modal-enter" data-modal-panel>
+      <div class="card modal__content">
+        <div class="section-heading-inline">
+          <div>
+            <p class="eyebrow">Finance log</p>
+            <h2>Log forecast update</h2>
+          </div>
+          <button type="button" class="text-button focus-outline" data-close-modal aria-label="Close forecast modal">Close</button>
+        </div>
+        <form class="entity-form" data-entity-type="forecast" data-destination="/practice/practice-command-center.html">
+          <label>
+            Forecast delta
+            <input type="text" name="forecast-delta" placeholder="e.g. +$120K pipeline" required />
+          </label>
+          <label>
+            Owner
+            <input type="text" name="forecast-owner" placeholder="Finance partner" />
+          </label>
+          <label>
+            Effective date
+            <input type="date" name="forecast-date" />
+          </label>
+          <label>
+            Notes
+            <textarea name="forecast-notes" rows="3" placeholder="Add drivers or assumptions."></textarea>
+          </label>
+          <div class="detail-card__actions">
+            <button type="submit" class="button focus-outline">Save update</button>
+            <button type="button" class="button secondary focus-outline" data-close-modal>Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
   <script>
     (async () => {
       const redirectToLogin = () => {
@@ -286,6 +803,224 @@
         redirectToLogin();
       }
     })();
+  </script>
+  <script>
+    const focusTrap = (() => {
+      let active = null;
+      const getFocusable = (container) => Array.from(
+        container.querySelectorAll('a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])')
+      ).filter(el => !el.hasAttribute('disabled') && !el.getAttribute('aria-hidden'));
+      const handleKeydown = (event) => {
+        if (!active) return;
+        if (event.key === 'Tab') {
+          const { first, last } = active;
+          if (event.shiftKey && document.activeElement === first) {
+            event.preventDefault();
+            last.focus();
+          } else if (!event.shiftKey && document.activeElement === last) {
+            event.preventDefault();
+            first.focus();
+          }
+        }
+        if (event.key === 'Escape') {
+          if (typeof active.onEscape === 'function') {
+            active.onEscape();
+          }
+        }
+      };
+      return {
+        trap(container, onEscape) {
+          const focusable = getFocusable(container);
+          if (focusable.length) {
+            focusable[0].focus();
+          }
+          active = { container, first: focusable[0], last: focusable[focusable.length - 1], onEscape };
+          container.addEventListener('keydown', handleKeydown);
+          document.addEventListener('keydown', handleKeydown);
+        },
+        release() {
+          if (!active) return;
+          active.container.removeEventListener('keydown', handleKeydown);
+          document.removeEventListener('keydown', handleKeydown);
+          active = null;
+        }
+      };
+    })();
+
+    let activeDrawerKey = null;
+    let activeModalKey = null;
+
+    function openDrawer(key) {
+      const drawer = document.querySelector(`[data-drawer="${key}"]`);
+      if (!drawer) return;
+      drawer.classList.add('is-visible');
+      drawer.setAttribute('aria-hidden', 'false');
+      const backdrop = drawer.querySelector('[data-drawer-backdrop]');
+      const panel = drawer.querySelector('[data-drawer-panel]');
+      requestAnimationFrame(() => {
+        panel.classList.remove('drawer-enter');
+        panel.classList.add('drawer-open');
+      });
+      const close = () => closeDrawer(key);
+      drawer.querySelectorAll('[data-close-drawer]').forEach(btn => btn.addEventListener('click', close, { once: true }));
+      if (backdrop) {
+        backdrop.addEventListener('click', close, { once: true });
+      }
+      activeDrawerKey = key;
+      focusTrap.trap(panel, close);
+    }
+
+    function closeDrawer(key) {
+      const drawer = document.querySelector(`[data-drawer="${key}"]`);
+      if (!drawer) return;
+      const backdrop = drawer.querySelector('[data-drawer-backdrop]');
+      const panel = drawer.querySelector('[data-drawer-panel]');
+      panel.classList.remove('drawer-open');
+      panel.classList.add('drawer-enter');
+      setTimeout(() => {
+        drawer.classList.remove('is-visible');
+        drawer.setAttribute('aria-hidden', 'true');
+      }, 220);
+      if (activeDrawerKey === key) {
+        activeDrawerKey = null;
+      }
+      focusTrap.release();
+    }
+
+    function openModal(key) {
+      const modal = document.querySelector(`[data-modal="${key}"]`);
+      if (!modal) return;
+      modal.classList.add('is-visible');
+      modal.setAttribute('aria-hidden', 'false');
+      const backdrop = modal.querySelector('[data-modal-backdrop]');
+      const panel = modal.querySelector('[data-modal-panel]');
+      requestAnimationFrame(() => {
+        panel.classList.remove('modal-enter');
+        panel.classList.add('modal-open');
+      });
+      const close = () => closeModal(key);
+      modal.querySelectorAll('[data-close-modal]').forEach(btn => btn.addEventListener('click', close, { once: true }));
+      if (backdrop) {
+        backdrop.addEventListener('click', close, { once: true });
+      }
+      activeModalKey = key;
+      focusTrap.trap(panel, close);
+    }
+
+    function closeModal(key) {
+      const modal = document.querySelector(`[data-modal="${key}"]`);
+      if (!modal) return;
+      const backdrop = modal.querySelector('[data-modal-backdrop]');
+      const panel = modal.querySelector('[data-modal-panel]');
+      panel.classList.remove('modal-open');
+      panel.classList.add('modal-enter');
+      setTimeout(() => {
+        modal.classList.remove('is-visible');
+        modal.setAttribute('aria-hidden', 'true');
+      }, 220);
+      if (activeModalKey === key) {
+        activeModalKey = null;
+      }
+      focusTrap.release();
+    }
+
+    function handleMilestoneSelection(targetId) {
+      const row = document.querySelector(`[data-milestone-id="${targetId}"]`);
+      if (!row) return;
+      document.querySelectorAll('[data-milestone-id]').forEach((item) => item.classList.remove('is-selected'));
+      row.classList.add('is-selected');
+      const detail = document.getElementById('milestone-detail');
+      if (!detail) return;
+      const practice = row.dataset.practice || 'Practice';
+      const stage = row.dataset.stage || 'Stage';
+      const next = row.dataset.next || 'Next milestone';
+      const status = row.dataset.status || 'Status';
+      const owner = row.dataset.owner || 'Owner';
+      const risk = row.dataset.risk || 'Risk';
+      detail.innerHTML = `
+        <h3>${practice} milestone</h3>
+        <p class="detail-card__meta">${stage} • ${status} • Risk: ${risk}</p>
+        <ul class="dashboard-list">
+          <li><strong>Next milestone:</strong> ${next}</li>
+          <li><strong>Support owner:</strong> ${owner}</li>
+          <li><strong>Escalations:</strong> Pending approvals will surface here.</li>
+        </ul>
+        <div class="detail-card__actions">
+          <button type="button" class="button secondary focus-outline" data-open-drawer="milestone-update" aria-controls="drawer-milestone-update">Edit milestone</button>
+          <button type="button" class="button focus-outline" data-open-modal="milestone-intake" aria-controls="modal-milestone-intake">Add related milestone</button>
+        </div>
+      `;
+      detail.querySelectorAll('[data-open-drawer]').forEach((button) => {
+        button.addEventListener('click', () => openDrawer(button.getAttribute('data-open-drawer')));
+      });
+      detail.querySelectorAll('[data-open-modal]').forEach((button) => {
+        button.addEventListener('click', () => openModal(button.getAttribute('data-open-modal')));
+      });
+    }
+
+    function handleLeadershipSelection(targetId) {
+      const item = document.querySelector(`[data-leadership-id="${targetId}"]`);
+      if (!item) return;
+      const detail = document.getElementById('leadership-detail');
+      if (!detail) return;
+      const title = item.dataset.title || 'Leadership initiative';
+      const owner = item.dataset.owner || 'Owner';
+      const date = item.dataset.date || 'Date';
+      const theme = item.dataset.theme || 'Theme';
+      const status = item.dataset.status || 'Status';
+      detail.innerHTML = `
+        <h3>${title}</h3>
+        <p class="detail-card__meta">${date} • ${status}</p>
+        <ul class="dashboard-list">
+          <li><strong>Owner:</strong> ${owner}</li>
+          <li><strong>Focus:</strong> ${theme}</li>
+          <li><strong>Next steps:</strong> Draft update for Friday leadership sync.</li>
+        </ul>
+        <div class="detail-card__actions">
+          <button type="button" class="button secondary focus-outline" data-open-modal="assign-task" aria-controls="modal-assign-task">Assign follow-up</button>
+          <button type="button" class="button focus-outline" data-open-drawer="workload-adjust" aria-controls="drawer-workload-adjust">Request support</button>
+        </div>
+      `;
+      detail.querySelectorAll('[data-open-drawer]').forEach((button) => {
+        button.addEventListener('click', () => openDrawer(button.getAttribute('data-open-drawer')));
+      });
+      detail.querySelectorAll('[data-open-modal]').forEach((button) => {
+        button.addEventListener('click', () => openModal(button.getAttribute('data-open-modal')));
+      });
+    }
+
+    document.querySelectorAll('[data-open-drawer]').forEach((button) => {
+      button.addEventListener('click', () => openDrawer(button.getAttribute('data-open-drawer')));
+    });
+
+    document.querySelectorAll('[data-open-modal]').forEach((button) => {
+      button.addEventListener('click', () => openModal(button.getAttribute('data-open-modal')));
+    });
+
+    document.querySelectorAll('[data-milestone-select]').forEach((button) => {
+      button.addEventListener('click', () => handleMilestoneSelection(button.dataset.milestoneSelect));
+    });
+
+    document.querySelectorAll('[data-leadership-select]').forEach((button) => {
+      button.addEventListener('click', () => handleLeadershipSelection(button.dataset.leadershipSelect));
+    });
+
+    document.querySelectorAll('[data-milestone-id]').forEach((row) => {
+      row.addEventListener('click', (event) => {
+        if (event.target.closest('button')) return;
+        handleMilestoneSelection(row.dataset.milestoneId);
+      });
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        if (activeDrawerKey) {
+          closeDrawer(activeDrawerKey);
+        } else if (activeModalKey) {
+          closeModal(activeModalKey);
+        }
+      }
+    });
   </script>
   <footer>
     <div class="footer-content">

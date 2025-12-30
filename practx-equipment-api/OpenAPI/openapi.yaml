@@ -35,3 +35,279 @@ paths:
                   version:
                     type: string
                     example: 1.0.0
+  /equipment:
+    get:
+      summary: List equipment
+      tags:
+        - Equipment
+      parameters:
+        - in: query
+          name: search
+          schema:
+            type: string
+          description: Search by asset id, type, or room/space
+        - in: query
+          name: status
+          schema:
+            $ref: '#/components/schemas/EquipmentStatus'
+        - in: query
+          name: sort
+          schema:
+            type: string
+            enum: [spendYtd, nextService]
+        - in: query
+          name: direction
+          schema:
+            type: string
+            enum: [asc, desc]
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 200
+        - in: query
+          name: offset
+          schema:
+            type: integer
+            minimum: 0
+      responses:
+        '200':
+          description: A list of equipment assets.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EquipmentListResponse'
+    post:
+      summary: Create equipment
+      tags:
+        - Equipment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EquipmentCreateRequest'
+      responses:
+        '201':
+          description: Equipment created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EquipmentResponse'
+        '400':
+          description: Invalid input.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /equipment/{id}:
+    get:
+      summary: Get equipment
+      tags:
+        - Equipment
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Equipment details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EquipmentResponse'
+        '404':
+          description: Not found.
+    put:
+      summary: Update equipment
+      tags:
+        - Equipment
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EquipmentUpdateRequest'
+      responses:
+        '200':
+          description: Equipment updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EquipmentResponse'
+        '400':
+          description: Invalid input.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not found.
+    delete:
+      summary: Delete equipment
+      tags:
+        - Equipment
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Equipment deleted.
+        '404':
+          description: Not found.
+components:
+  schemas:
+    EquipmentStatus:
+      type: string
+      enum: [Unknown, Healthy, Attention, Down, Sunset]
+    EquipmentMonitoringFlags:
+      type: object
+      properties:
+        telemetryEnabled:
+          type: boolean
+        maintenanceAutoCreate:
+          type: boolean
+        safetyAlerts:
+          type: boolean
+      required: [telemetryEnabled, maintenanceAutoCreate, safetyAlerts]
+    EquipmentCreateRequest:
+      type: object
+      properties:
+        assetId:
+          type: string
+        type:
+          type: string
+        location:
+          type: string
+          nullable: true
+        manufacturer:
+          type: string
+          nullable: true
+        model:
+          type: string
+          nullable: true
+        installedDate:
+          type: string
+          format: date
+          nullable: true
+        status:
+          $ref: '#/components/schemas/EquipmentStatus'
+        nextServiceDate:
+          type: string
+          format: date
+          nullable: true
+        monitoringFlags:
+          $ref: '#/components/schemas/EquipmentMonitoringFlags'
+      required: [assetId, type, monitoringFlags]
+    EquipmentUpdateRequest:
+      type: object
+      properties:
+        assetId:
+          type: string
+        type:
+          type: string
+        location:
+          type: string
+          nullable: true
+        manufacturer:
+          type: string
+          nullable: true
+        model:
+          type: string
+          nullable: true
+        installedDate:
+          type: string
+          format: date
+          nullable: true
+        status:
+          $ref: '#/components/schemas/EquipmentStatus'
+        nextServiceDate:
+          type: string
+          format: date
+          nullable: true
+        monitoringFlags:
+          $ref: '#/components/schemas/EquipmentMonitoringFlags'
+      required: [assetId, type, monitoringFlags]
+    EquipmentResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        assetId:
+          type: string
+        type:
+          type: string
+        location:
+          type: string
+          nullable: true
+        manufacturer:
+          type: string
+          nullable: true
+        model:
+          type: string
+          nullable: true
+        installedDate:
+          type: string
+          format: date
+          nullable: true
+        status:
+          $ref: '#/components/schemas/EquipmentStatus'
+        nextServiceDate:
+          type: string
+          format: date
+          nullable: true
+        monitoringFlags:
+          $ref: '#/components/schemas/EquipmentMonitoringFlags'
+        spendYearToDate:
+          type: number
+          format: float
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - assetId
+        - type
+        - status
+        - monitoringFlags
+        - spendYearToDate
+        - createdAt
+        - updatedAt
+    EquipmentListResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/EquipmentResponse'
+        limit:
+          type: integer
+        offset:
+          type: integer
+        count:
+          type: integer
+      required: [items, limit, offset, count]
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
