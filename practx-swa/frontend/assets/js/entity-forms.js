@@ -87,6 +87,23 @@
         ],
       };
     },
+    service(form, formData) {
+      const workOrder = getTextValue(formData, 'wo-id') || 'New work order';
+      const practice = getTextValue(formData, 'wo-practice') || 'Practice pending';
+      const asset = getTextValue(formData, 'wo-asset') || 'Asset pending';
+      const sla = getSelectLabel(form, 'wo-sla') || 'SLA pending';
+      const status = getSelectLabel(form, 'wo-status') || 'Status queued';
+      const dispatch = getSelectLabel(form, 'wo-dispatch') || 'Dispatch plan pending';
+      const priority = getSelectLabel(form, 'wo-priority') || 'Priority pending';
+
+      return {
+        heading: `${workOrder} staged for dispatch`,
+        body: `${workOrder} logged for ${practice} on ${asset}.`,
+        details: [
+          `SLA: ${sla}`,
+          `Status: ${status}`,
+          `Dispatch: ${dispatch}`,
+          `Priority: ${priority}`,
     practice(form, formData) {
       const name = getTextValue(formData, 'practice-name') || 'New practice';
       const region = getSelectLabel(form, 'practice-region') || 'Region pending';
@@ -302,6 +319,13 @@
     banner.appendChild(meta);
 
     main.prepend(banner);
+
+    try {
+      window.dispatchEvent(new CustomEvent('entity-submission', { detail: payload }));
+    } catch (err) {
+      console.warn('Unable to dispatch entity submission event', err);
+    }
+
     clearSubmission();
 
     try {
@@ -327,12 +351,23 @@
     const formData = new FormData(form);
     const summaryBuilder = entityType ? summaryBuilders[entityType] : null;
     const summary = summaryBuilder ? summaryBuilder(form, formData) : null;
+    const fields = {};
+
+    formData.forEach((value, key) => {
+      if (typeof value === 'string') {
+        const trimmed = value.trim();
+        if (trimmed) {
+          fields[key] = trimmed;
+        }
+      }
+    });
 
     storeSubmission({
       destination,
       entityType: entityType || 'unknown',
       timestamp: Date.now(),
       summary,
+      fields,
     });
 
     window.location.assign(destination);

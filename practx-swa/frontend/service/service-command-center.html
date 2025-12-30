@@ -13,7 +13,167 @@
   <meta name="twitter:card" content="summary" />
   <link rel="icon" href="/assets/logo.png" type="image/png" />
   <link rel="stylesheet" href="/assets/styles.css" />
+  <style>
+    .drawer-enter {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+
+    .drawer-open {
+      transform: translateX(0);
+      opacity: 1;
+    }
+
+    .modal-enter {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+
+    .modal-open {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .focus-outline:focus {
+      outline: 3px solid #2563eb;
+      outline-offset: 2px;
+    }
+
+    .command-center-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+
+    .action-button {
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
+      background-color: #ffffff;
+      color: #1f2937;
+      padding: 0.4rem 1rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+      cursor: pointer;
+    }
+
+    .action-button:hover {
+      border-color: #9ca3af;
+      color: #111827;
+      box-shadow: 0 4px 10px rgba(15, 23, 42, 0.08);
+    }
+
+    .action-button--primary {
+      background-color: #2563eb;
+      border-color: #2563eb;
+      color: #ffffff;
+    }
+
+    .action-button--primary:hover {
+      border-color: #1d4ed8;
+      color: #ffffff;
+    }
+
+    .table-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: flex-end;
+      margin-top: 1rem;
+    }
+
+    .action-link {
+      background: none;
+      border: none;
+      color: #2563eb;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .is-hidden {
+      display: none;
+    }
+
+    .pointer-events-none {
+      pointer-events: none;
+    }
+
+    .service-drawer,
+    .service-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 60;
+    }
+
+    .service-drawer__backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.55);
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+
+    .service-drawer__panel {
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: min(480px, 100%);
+      height: 100%;
+      background: #ffffff;
+      box-shadow: -10px 0 30px rgba(15, 23, 42, 0.2);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .service-modal__panel {
+      margin: 10vh auto 0;
+      width: min(540px, 92vw);
+      background: #ffffff;
+      border-radius: 24px;
+      padding: 1.5rem;
+      box-shadow: 0 30px 60px rgba(15, 23, 42, 0.3);
+    }
+
+    .service-form {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .service-form label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #475569;
+      display: grid;
+      gap: 0.35rem;
+    }
+
+    .service-form input,
+    .service-form select,
+    .service-form textarea {
+      border: 1px solid #d1d5db;
+      border-radius: 12px;
+      padding: 0.6rem 0.75rem;
+      font-size: 0.95rem;
+      font-family: inherit;
+    }
+
+    .service-form__actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      justify-content: flex-end;
+    }
+
+    .table-row--new {
+      background: #eff6ff;
+    }
+  </style>
   <script defer src="/assets/js/auth-modal.js"></script>
+  <script defer src="/assets/js/entity-forms.js"></script>
 </head>
 <body class="command-center">
   <header>
@@ -75,6 +235,17 @@
             <li>6 jobs require Smile Spa coordination</li>
             <li>Average travel time holding at 38 minutes</li>
           </ul>
+          <div class="command-center-actions">
+            <button type="button" class="action-button action-button--primary focus-outline" data-open-drawer="work-order">
+              ➕ Create work order
+            </button>
+            <button type="button" class="action-button focus-outline" data-open-drawer="dispatch">
+              🧭 Assign tech
+            </button>
+            <button type="button" class="action-button focus-outline" data-open-modal="escalation">
+              ⚠️ Escalate incident
+            </button>
+          </div>
         </article>
         <article class="dashboard-card card">
           <h3>Technician readiness</h3>
@@ -99,8 +270,21 @@
 
     <section class="dashboard-section">
       <div class="section-heading">
-        <h2>Live incidents</h2>
-        <p>Every work order carries context from equipment history, practice priorities, and outreach triggers.</p>
+        <div>
+          <h2>Live incidents</h2>
+          <p>Every work order carries context from equipment history, practice priorities, and outreach triggers.</p>
+        </div>
+        <div class="table-actions">
+          <button type="button" class="action-button action-button--primary focus-outline" data-open-drawer="work-order">
+            ➕ Create work order
+          </button>
+          <button type="button" class="action-button focus-outline" data-open-drawer="dispatch">
+            🚚 Dispatch board
+          </button>
+          <button type="button" class="action-button focus-outline" data-open-modal="escalation">
+            🧯 Escalate incident
+          </button>
+        </div>
       </div>
       <div class="card table-card">
         <div class="table-wrapper" role="region" aria-live="polite">
@@ -113,9 +297,10 @@
                 <th scope="col">Opened</th>
                 <th scope="col">SLA</th>
                 <th scope="col">Status</th>
+                <th scope="col">Actions</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody id="live-incidents-body">
               <tr>
                 <td>WO-4432</td>
                 <td>Summit North</td>
@@ -123,6 +308,10 @@
                 <td>Apr 16 08:14</td>
                 <td>4 hr critical</td>
                 <td><span class="status-pill status-pill--risk">Tech en route</span></td>
+                <td>
+                  <button type="button" class="action-link focus-outline" data-open-drawer="incident" data-wo="WO-4432" data-practice="Summit North" data-asset="Compressor CP-207" data-sla="4 hr critical" data-status="Tech en route">Dispatch</button>
+                  <button type="button" class="action-link focus-outline" data-open-modal="escalation" data-wo="WO-4432">Escalate</button>
+                </td>
               </tr>
               <tr>
                 <td>WO-4439</td>
@@ -131,6 +320,10 @@
                 <td>Apr 16 09:02</td>
                 <td>Next day</td>
                 <td><span class="status-pill status-pill--scheduled">Scheduled</span></td>
+                <td>
+                  <button type="button" class="action-link focus-outline" data-open-drawer="incident" data-wo="WO-4439" data-practice="Valley Creek" data-asset="Delivery unit DU-311" data-sla="Next day" data-status="Scheduled">Dispatch</button>
+                  <button type="button" class="action-link focus-outline" data-open-modal="escalation" data-wo="WO-4439">Escalate</button>
+                </td>
               </tr>
               <tr>
                 <td>WO-4441</td>
@@ -139,6 +332,10 @@
                 <td>Apr 16 09:27</td>
                 <td>Same day</td>
                 <td><span class="status-pill status-pill--attention">Awaiting parts</span></td>
+                <td>
+                  <button type="button" class="action-link focus-outline" data-open-drawer="incident" data-wo="WO-4441" data-practice="Midtown Smile" data-asset="Sterilizer ST-305" data-sla="Same day" data-status="Awaiting parts">Dispatch</button>
+                  <button type="button" class="action-link focus-outline" data-open-modal="escalation" data-wo="WO-4441">Escalate</button>
+                </td>
               </tr>
               <tr>
                 <td>WO-4444</td>
@@ -147,6 +344,10 @@
                 <td>Apr 16 10:11</td>
                 <td>48 hr</td>
                 <td><span class="status-pill status-pill--scheduled">Spare staged</span></td>
+                <td>
+                  <button type="button" class="action-link focus-outline" data-open-drawer="incident" data-wo="WO-4444" data-practice="Harbor Pointe" data-asset="Chair CH-228" data-sla="48 hr" data-status="Spare staged">Dispatch</button>
+                  <button type="button" class="action-link focus-outline" data-open-modal="escalation" data-wo="WO-4444">Escalate</button>
+                </td>
               </tr>
               <tr>
                 <td>WO-4450</td>
@@ -155,6 +356,10 @@
                 <td>Apr 16 11:42</td>
                 <td>Remote</td>
                 <td><span class="status-pill status-pill--ok">Resolved</span></td>
+                <td>
+                  <button type="button" class="action-link focus-outline" data-open-drawer="incident" data-wo="WO-4450" data-practice="Skyline Ortho" data-asset="CBCT CB-088" data-sla="Remote" data-status="Resolved">Dispatch</button>
+                  <button type="button" class="action-link focus-outline" data-open-modal="escalation" data-wo="WO-4450">Escalate</button>
+                </td>
               </tr>
             </tbody>
           </table>
@@ -263,6 +468,373 @@
       </div>
     </section>
   </main>
+  <div id="drawer-work-order" class="service-drawer is-hidden pointer-events-none" data-drawer="work-order" aria-hidden="true">
+    <div class="service-drawer__backdrop" data-drawer-backdrop></div>
+    <div class="service-drawer__panel drawer-enter" data-drawer-panel>
+      <div class="card" style="border-radius: 0; box-shadow: none;">
+        <div style="display:flex; align-items:center; justify-content:space-between; padding: 1.5rem; border-bottom: 1px solid #e2e8f0;">
+          <div>
+            <h2 style="margin:0;">Create work order</h2>
+            <p style="margin:0.4rem 0 0; color:#64748b;">Log a new service request and route it to dispatch.</p>
+          </div>
+          <button type="button" class="action-button focus-outline" data-close-drawer>Close</button>
+        </div>
+        <div style="padding: 1.5rem; overflow-y: auto;">
+          <form class="entity-form service-form" data-entity-type="service" data-destination="/service/service-command-center.html">
+            <label>
+              Work order ID
+              <input type="text" name="wo-id" placeholder="WO-4461" required />
+            </label>
+            <label>
+              Practice
+              <input type="text" name="wo-practice" placeholder="Summit North" required />
+            </label>
+            <label>
+              Asset
+              <input type="text" name="wo-asset" placeholder="Compressor CP-207" required />
+            </label>
+            <label>
+              SLA window
+              <select name="wo-sla" required>
+                <option value="">Select SLA</option>
+                <option value="2 hr critical">2 hr critical</option>
+                <option value="4 hr critical">4 hr critical</option>
+                <option value="Same day">Same day</option>
+                <option value="Next day">Next day</option>
+              </select>
+            </label>
+            <label>
+              Status
+              <select name="wo-status" required>
+                <option value="">Select status</option>
+                <option value="Awaiting dispatch">Awaiting dispatch</option>
+                <option value="Tech assigned">Tech assigned</option>
+                <option value="Awaiting parts">Awaiting parts</option>
+                <option value="Resolved">Resolved</option>
+              </select>
+            </label>
+            <label>
+              Dispatch plan
+              <select name="wo-dispatch" required>
+                <option value="">Select dispatch plan</option>
+                <option value="Primary tech, immediate roll">Primary tech, immediate roll</option>
+                <option value="Remote triage first">Remote triage first</option>
+                <option value="Spare staging + next-day tech">Spare staging + next-day tech</option>
+                <option value="Escalate to regional lead">Escalate to regional lead</option>
+              </select>
+            </label>
+            <label>
+              Priority tier
+              <select name="wo-priority" required>
+                <option value="">Select priority</option>
+                <option value="P1 - Critical">P1 - Critical</option>
+                <option value="P2 - High">P2 - High</option>
+                <option value="P3 - Routine">P3 - Routine</option>
+              </select>
+            </label>
+            <label>
+              Notes for dispatch
+              <textarea name="wo-notes" rows="3" placeholder="Capture equipment history, travel constraints, or escalation triggers."></textarea>
+            </label>
+            <div class="service-form__actions">
+              <button type="button" class="action-button focus-outline" data-close-drawer>Cancel</button>
+              <button type="submit" class="action-button action-button--primary focus-outline">Submit work order</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="drawer-dispatch" class="service-drawer is-hidden pointer-events-none" data-drawer="dispatch" aria-hidden="true">
+    <div class="service-drawer__backdrop" data-drawer-backdrop></div>
+    <div class="service-drawer__panel drawer-enter" data-drawer-panel>
+      <div class="card" style="border-radius: 0; box-shadow: none;">
+        <div style="display:flex; align-items:center; justify-content:space-between; padding: 1.5rem; border-bottom: 1px solid #e2e8f0;">
+          <div>
+            <h2 style="margin:0;">Dispatch board</h2>
+            <p style="margin:0.4rem 0 0; color:#64748b;">Assign technicians and confirm logistics for active work orders.</p>
+          </div>
+          <button type="button" class="action-button focus-outline" data-close-drawer>Close</button>
+        </div>
+        <div style="padding: 1.5rem; display:grid; gap:1rem;">
+          <div class="card" style="margin:0;">
+            <strong>Next available techs</strong>
+            <ul class="dashboard-list" style="margin-top:0.75rem;">
+              <li>R. Patel • 18 min away • Compressor certified</li>
+              <li>S. Chen • 22 min away • CBCT specialist</li>
+              <li>L. Gomez • 31 min away • Loaner transport ready</li>
+            </ul>
+          </div>
+          <div class="card" style="margin:0;">
+            <strong>Route confirmations</strong>
+            <ul class="dashboard-list" style="margin-top:0.75rem;">
+              <li>Summit North • ETA 09:40 • Spare compressor loaded</li>
+              <li>Midtown Smile • Parts arriving 13:20 • Hold until pickup</li>
+              <li>Harbor Pointe • Loaner chair staged • Awaiting client access</li>
+            </ul>
+          </div>
+          <div class="service-form__actions">
+            <button type="button" class="action-button focus-outline" data-close-drawer>Close board</button>
+            <button type="button" class="action-button action-button--primary focus-outline">Confirm dispatch plan</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="drawer-incident" class="service-drawer is-hidden pointer-events-none" data-drawer="incident" aria-hidden="true">
+    <div class="service-drawer__backdrop" data-drawer-backdrop></div>
+    <div class="service-drawer__panel drawer-enter" data-drawer-panel>
+      <div class="card" style="border-radius: 0; box-shadow: none;">
+        <div style="display:flex; align-items:center; justify-content:space-between; padding: 1.5rem; border-bottom: 1px solid #e2e8f0;">
+          <div>
+            <h2 id="incident-title" style="margin:0;">Incident dispatch</h2>
+            <p style="margin:0.4rem 0 0; color:#64748b;">Review SLA risk and confirm technician assignments.</p>
+          </div>
+          <button type="button" class="action-button focus-outline" data-close-drawer>Close</button>
+        </div>
+        <div style="padding: 1.5rem; display:grid; gap:1rem;">
+          <div class="card" style="margin:0;">
+            <strong>Incident snapshot</strong>
+            <ul class="dashboard-list" id="incident-details" style="margin-top:0.75rem;">
+              <li>WO: --</li>
+              <li>Practice: --</li>
+              <li>Asset: --</li>
+              <li>SLA: --</li>
+              <li>Status: --</li>
+            </ul>
+          </div>
+          <div class="card" style="margin:0;">
+            <strong>Recommended actions</strong>
+            <ul class="dashboard-list" style="margin-top:0.75rem;">
+              <li>Confirm onsite access and sterilization clearance.</li>
+              <li>Notify parts courier if SLA &lt; 4 hours.</li>
+              <li>Update client after assignment confirmation.</li>
+            </ul>
+          </div>
+          <div class="service-form__actions">
+            <button type="button" class="action-button focus-outline" data-close-drawer>Back to table</button>
+            <button type="button" class="action-button action-button--primary focus-outline">Assign dispatch lead</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="escalation-modal" class="service-modal is-hidden pointer-events-none" data-modal="escalation" role="dialog" aria-modal="true" aria-labelledby="escalation-title">
+    <div class="service-drawer__backdrop" data-modal-backdrop></div>
+    <div class="service-modal__panel modal-enter">
+      <div style="display:flex; align-items:center; justify-content:space-between;">
+        <div>
+          <h2 id="escalation-title" style="margin:0;">Escalate incident</h2>
+          <p style="margin:0.4rem 0 0; color:#64748b;">Alert leadership and capture escalation triggers.</p>
+        </div>
+        <button type="button" class="action-button focus-outline" data-close-modal>Close</button>
+      </div>
+      <div style="margin-top:1.5rem; display:grid; gap:1rem;">
+        <div class="card" style="margin:0;">
+          <strong>Escalation checklist</strong>
+          <ul class="dashboard-list" style="margin-top:0.75rem;">
+            <li>Confirm downtime impact and revenue risk.</li>
+            <li>Notify Smile Spa coordination if patient flow impacted.</li>
+            <li>Send SMS update to practice owner and office manager.</li>
+          </ul>
+        </div>
+        <div class="service-form__actions">
+          <button type="button" class="action-button focus-outline" data-close-modal>Cancel</button>
+          <button type="button" class="action-button action-button--primary focus-outline">Send escalation alert</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    (() => {
+      const statusClass = (status) => {
+        if (!status) return 'status-pill--attention';
+        const normalized = status.toLowerCase();
+        if (normalized.includes('resolved')) return 'status-pill--ok';
+        if (normalized.includes('assigned') || normalized.includes('scheduled')) return 'status-pill--scheduled';
+        if (normalized.includes('critical') || normalized.includes('risk')) return 'status-pill--risk';
+        return 'status-pill--attention';
+      };
+
+      const openDrawer = (key, trigger) => {
+        const drawer = document.querySelector(`[data-drawer="${key}"]`);
+        if (!drawer) return;
+        drawer.classList.remove('is-hidden', 'pointer-events-none');
+        drawer.setAttribute('aria-hidden', 'false');
+        const backdrop = drawer.querySelector('[data-drawer-backdrop]');
+        const panel = drawer.querySelector('[data-drawer-panel]');
+        if (backdrop) {
+          backdrop.style.opacity = '1';
+        }
+        if (panel) {
+          requestAnimationFrame(() => {
+            panel.classList.remove('drawer-enter');
+            panel.classList.add('drawer-open');
+          });
+        }
+
+        if (key === 'incident' && trigger) {
+          const details = drawer.querySelector('#incident-details');
+          const title = drawer.querySelector('#incident-title');
+          const wo = trigger.getAttribute('data-wo') || 'WO-0000';
+          const practice = trigger.getAttribute('data-practice') || 'Practice pending';
+          const asset = trigger.getAttribute('data-asset') || 'Asset pending';
+          const sla = trigger.getAttribute('data-sla') || 'SLA pending';
+          const status = trigger.getAttribute('data-status') || 'Status pending';
+
+          if (title) {
+            title.textContent = `${wo} dispatch`;
+          }
+
+          if (details) {
+            details.innerHTML = `
+              <li>WO: ${wo}</li>
+              <li>Practice: ${practice}</li>
+              <li>Asset: ${asset}</li>
+              <li>SLA: ${sla}</li>
+              <li>Status: ${status}</li>
+            `;
+          }
+        }
+
+        drawer.querySelectorAll('[data-close-drawer]').forEach((button) => {
+          button.addEventListener('click', () => closeDrawer(key), { once: true });
+        });
+        if (backdrop) {
+          backdrop.addEventListener('click', () => closeDrawer(key), { once: true });
+        }
+      };
+
+      const closeDrawer = (key) => {
+        const drawer = document.querySelector(`[data-drawer="${key}"]`);
+        if (!drawer) return;
+        const backdrop = drawer.querySelector('[data-drawer-backdrop]');
+        const panel = drawer.querySelector('[data-drawer-panel]');
+        if (panel) {
+          panel.classList.remove('drawer-open');
+          panel.classList.add('drawer-enter');
+        }
+        if (backdrop) {
+          backdrop.style.opacity = '0';
+        }
+        setTimeout(() => {
+          drawer.classList.add('is-hidden', 'pointer-events-none');
+          drawer.setAttribute('aria-hidden', 'true');
+        }, 240);
+      };
+
+      const openModal = (key, trigger) => {
+        const modal = document.querySelector(`[data-modal="${key}"]`);
+        if (!modal) return;
+        modal.classList.remove('is-hidden', 'pointer-events-none');
+        const backdrop = modal.querySelector('[data-modal-backdrop]');
+        const panel = modal.querySelector('.modal-enter');
+        if (backdrop) {
+          backdrop.style.opacity = '1';
+        }
+        if (panel) {
+          requestAnimationFrame(() => {
+            panel.classList.add('modal-open');
+          });
+        }
+        if (trigger) {
+          const wo = trigger.getAttribute('data-wo');
+          const title = modal.querySelector('#escalation-title');
+          if (wo && title) {
+            title.textContent = `Escalate ${wo}`;
+          }
+        }
+
+        modal.querySelectorAll('[data-close-modal]').forEach((button) => {
+          button.addEventListener('click', () => closeModal(key), { once: true });
+        });
+        if (backdrop) {
+          backdrop.addEventListener('click', () => closeModal(key), { once: true });
+        }
+      };
+
+      const closeModal = (key) => {
+        const modal = document.querySelector(`[data-modal="${key}"]`);
+        if (!modal) return;
+        const backdrop = modal.querySelector('[data-modal-backdrop]');
+        const panel = modal.querySelector('.modal-enter');
+        if (panel) {
+          panel.classList.remove('modal-open');
+        }
+        if (backdrop) {
+          backdrop.style.opacity = '0';
+        }
+        setTimeout(() => {
+          modal.classList.add('is-hidden', 'pointer-events-none');
+        }, 200);
+      };
+
+      document.querySelectorAll('[data-open-drawer]').forEach((button) => {
+        button.addEventListener('click', () => {
+          const key = button.getAttribute('data-open-drawer');
+          if (key) {
+            openDrawer(key, button);
+          }
+        });
+      });
+
+      document.querySelectorAll('[data-open-modal]').forEach((button) => {
+        button.addEventListener('click', () => {
+          const key = button.getAttribute('data-open-modal');
+          if (key) {
+            openModal(key, button);
+          }
+        });
+      });
+
+      window.addEventListener('entity-submission', (event) => {
+        const payload = event.detail;
+        if (!payload || payload.entityType !== 'service') {
+          return;
+        }
+        const fields = payload.fields || {};
+        const tableBody = document.getElementById('live-incidents-body');
+        if (!tableBody) {
+          return;
+        }
+
+        const wo = fields['wo-id'] || 'WO-NEW';
+        const practice = fields['wo-practice'] || 'Practice pending';
+        const asset = fields['wo-asset'] || 'Asset pending';
+        const sla = fields['wo-sla'] || 'TBD';
+        const status = fields['wo-status'] || 'Awaiting dispatch';
+        const opened = new Date(payload.timestamp).toLocaleString(undefined, {
+          month: 'short',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+        });
+
+        const row = document.createElement('tr');
+        row.className = 'table-row--new';
+        row.innerHTML = `
+          <td>${wo}</td>
+          <td>${practice}</td>
+          <td>${asset}</td>
+          <td>${opened}</td>
+          <td>${sla}</td>
+          <td><span class="status-pill ${statusClass(status)}">${status}</span></td>
+          <td>
+            <button type="button" class="action-link focus-outline" data-open-drawer="incident" data-wo="${wo}" data-practice="${practice}" data-asset="${asset}" data-sla="${sla}" data-status="${status}">Dispatch</button>
+            <button type="button" class="action-link focus-outline" data-open-modal="escalation" data-wo="${wo}">Escalate</button>
+          </td>
+        `;
+        tableBody.prepend(row);
+
+        row.querySelectorAll('[data-open-drawer]').forEach((button) => {
+          button.addEventListener('click', () => openDrawer('incident', button));
+        });
+        row.querySelectorAll('[data-open-modal]').forEach((button) => {
+          button.addEventListener('click', () => openModal('escalation', button));
+        });
+      });
+    })();
+  </script>
   <script>
     (async () => {
       const redirectToLogin = () => {
